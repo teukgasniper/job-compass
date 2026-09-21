@@ -66,4 +66,17 @@ while True:
     data = fetch(page)
     batch = data.get("result") or []
     items += batch
-    total =
+    total = int(data.get("totalCount") or 0)
+    if len(batch) < 1000 or len(items) >= total or page >= 5:
+        break
+    page += 1
+
+slim = [{k: x.get(k) for k in KEEP} for x in items if x.get("ongoingYn") == "Y"]
+if len(slim) < 50:
+    sys.exit(f"수집 건수가 너무 적음({len(slim)}건) → 기존 데이터 유지")
+
+kst = datetime.now(timezone(timedelta(hours=9)))
+out = {"generated_at": kst.strftime("%Y-%m-%d %H:%M"), "count": len(slim), "result": slim}
+with open("jobs.json", "w", encoding="utf-8") as f:
+    json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+print(f"완료: {len(slim)}건 저장 ({out['generated_at']} KST)")
