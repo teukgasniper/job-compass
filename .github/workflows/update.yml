@@ -6,11 +6,20 @@ on:
   workflow_dispatch:         # 수동 실행 버튼
 
 permissions:
-  contents: write
+  contents: write   # jobs.json 백업 저장
+  pages: write      # Pages 배포
+  id-token: write   # Pages 배포 인증
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,10 +29,22 @@ jobs:
         env:
           ALIO_API_KEY: ${{ secrets.ALIO_API_KEY }}
         run: python fetch_jobs.py
-      - name: 변경사항 저장
+      - name: 저장소에 백업
         run: |
           git config user.name "job-compass-bot"
           git config user.email "actions@users.noreply.github.com"
           git add jobs.json
           git diff --cached --quiet || git commit -m "채용공고 업데이트 $(date -u +'%Y-%m-%d %H:%M') UTC"
           git push
+      - name: 배포 파일 준비
+        run: |
+          mkdir -p _site
+          cp jobs.json _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Pages 배포
+        id: deployment
+        uses: actions/deploy-pages@v4
