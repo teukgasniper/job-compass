@@ -1,29 +1,54 @@
 """잡알리오 채용공고 수집 → jobs.json (4시간마다 GitHub Actions에서 실행)
 API 키는 GitHub Secrets의 ALIO_API_KEY 에서만 읽습니다. 코드에 키를 적지 마세요."""
-import json, os, sys, time, urllib.request, urllib.parse
+import json, os, sys, time, socket, urllib.request, urllib.parse
 from datetime import datetime, timezone, timedelta
 
 KEY = os.environ.get("ALIO_API_KEY", "").strip()
 if not KEY:
     sys.exit("ALIO_API_KEY 가 설정되지 않았습니다.")
 
-BASE = "https://apis.data.go.kr/1051000/recruitment/list"
+# 해외 서버에서 https가 막히는 경우가 있어 여러 경로를 차례로 시도
+BASES = [
+    "http://apis.data.go.kr/1051000/recruitment/list",
+    "https://apis.data.go.kr/1051000/recruitment/list",
+]
 KEEP = ["recrutPblntSn","instNm","recrutPbancTtl","hireTypeNmLst","workRgnNmLst","recrutSeNm",
         "recrutNope","pbancBgngYmd","pbancEndYmd","srcUrl","acbgCondNmLst","replmprYn",
         "ongoingYn","ncsCdNmLst"]
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+           "Accept": "application/json"}
 
+def diagnose():
+    """접속 진단: 어느 경로가 열려있는지 로그에 남김"""
+    for host, port in [("apis.data.go.kr", 80), ("apis.data.go.kr", 443)]:
+        try:
+            t = time.time()
+            socket.create_connection((host, port), timeout=10).close()
+            print(f"[진단] {host}:{port} 연결 OK ({time.time()-t:.1f}초)")
+        except Exception as e:
+            print(f"[진단] {host}:{port} 연결 실패: {e}")
+
+working_base = None
 def fetch(page):
+    global working_base
     q = urllib.parse.urlencode({"serviceKey": KEY, "numOfRows": 1000, "pageNo": page,
                                 "resultType": "json", "ongoingYn": "Y"}, safe="%")
-    for attempt in range(3):
-        try:
-            with urllib.request.urlopen(f"{BASE}?{q}", timeout=40) as r:
-                return json.loads(r.read().decode("utf-8"))
-        except Exception as e:
-            print(f"page {page} 시도 {attempt+1} 실패: {e}")
-            time.sleep(5)
-    raise RuntimeError(f"page {page} 수집 실패")
+    bases = [working_base] if working_base else BASES
+    for base in bases:
+        for attempt in range(2):
+            try:
+                req = urllib.request.Request(f"{base}?{q}", headers=HEADERS)
+                with urllib.request.urlopen(req, timeout=25) as r:
+                    data = json.loads(r.read().decode("utf-8"))
+                working_base = base
+                print(f"page {page} 수집 성공 ({base.split(':')[0]})")
+                return data
+            except Exception as e:
+                print(f"page {page} {base.split(':')[0]} 시도 {attempt+1} 실패: {e}")
+                time.sleep(3)
+    raise RuntimeError(f"page {page} 수집 실패 (모든 경로 실패)")
 
+diagnose()
 items, page = [], 1
 while True:
     data = fetch(page)
@@ -34,10 +59,7 @@ while True:
         break
     page += 1
 
-# 진행 중인 공고만, 필요한 칸만
 slim = [{k: x.get(k) for k in KEEP} for x in items if x.get("ongoingYn") == "Y"]
-
-# 안전장치: 비정상적으로 적게 오면 기존 파일을 덮어쓰지 않음
 if len(slim) < 50:
     sys.exit(f"수집 건수가 너무 적음({len(slim)}건) → 기존 jobs.json 유지")
 
