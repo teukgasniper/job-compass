@@ -6,9 +6,9 @@ on:
   workflow_dispatch:         # 수동 실행 버튼
 
 permissions:
-  contents: write   # jobs.json 백업 저장
-  pages: write      # Pages 배포
-  id-token: write   # Pages 배포 인증
+  contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: pages
@@ -25,24 +25,39 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: 채용공고 수집
         env:
           ALIO_API_KEY: ${{ secrets.ALIO_API_KEY }}
           RELAY_URL: ${{ secrets.RELAY_URL }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
         run: python fetch_jobs.py
+
+      - name: 상세 글 자동 발행 (hiring03)
+        continue-on-error: true      # 발행이 실패해도 카드 데이터 배포는 계속
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          PUBLISH_PER_RUN: ${{ vars.PUBLISH_PER_RUN || '5' }}
+        run: python publish_to_blogger.py
+
       - name: 저장소에 백업
         run: |
           git config user.name "job-compass-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add jobs.json
+          [ -f job_posts.json ] || echo '{}' > job_posts.json
+          git add jobs.json job_posts.json
           git diff --cached --quiet || git commit -m "채용공고 업데이트 $(date -u +'%Y-%m-%d %H:%M') UTC"
           git push
+
       - name: 배포 파일 준비
         run: |
           mkdir -p _site
-          cp jobs.json _site/
+          cp jobs.json job_posts.json _site/
           touch _site/.nojekyll
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
