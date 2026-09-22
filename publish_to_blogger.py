@@ -1,8 +1,10 @@
 """채용 상세 글 자동 발행 (hiring03.ddolbestory.com)
 ─────────────────────────────────────────────
 jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생성 → Blogger 발행 → job_posts.json 매핑 저장
-- 한 번 실행에 PUBLISH_PER_RUN개만 발행 (기본 5개, 4시간마다 → 하루 30개)
-- 새 공고 먼저, 남는 자리에 기존 공고를 추천 점수순으로
+- 한 번 실행에 평균 PUBLISH_PER_RUN개 발행 (기본 5개 ±2 랜덤, 4시간마다 → 하루 약 30개)
+- 랜덤 발행: 시작 전 0~30분 대기 + 글 사이 1~5분 간격 (몰아치기 방지)
+- 우선순위: ① 쓰레드 글감 후보(정규직·무기계약·채용형인턴 + 신입 + 의사직 제외)
+            ② 점수순: 모집인원 + 브랜드 + 마감임박 + 학력무관 + 전국 + 새 공고 가산
 - 마감 2일 이내 공고는 건너뜀 / 마감된 글은 삭제하지 않음(축적)
 - 퍼머링크: 영문 제목으로 먼저 발행해 주소 고정 → 한글 제목으로 수정
 로컬 미리보기: python publish_to_blogger.py --preview 3   (API 없이 preview/ 폴더에 HTML 생성)
@@ -10,12 +12,17 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 """
 import json, os, sys, time, re, urllib.request, urllib.parse, urllib.error
 from datetime import datetime
-from post_template import build_html, make_title, make_labels, days_left, clean_inst, ncs_list, hire_list, KST
+from post_template import build_html, make_title, make_labels, days_left, clean_inst, ncs_list, hire_list, regions, KST
+import random
 
 JOBS_FILE, MAPPING_FILE = "jobs.json", "job_posts.json"
-PER_RUN = int(os.environ.get("PUBLISH_PER_RUN", "5"))
+PER_RUN = int(os.environ.get("PUBLISH_PER_RUN", "5"))   # 1회 평균 발행 개수 (실제는 ±2 랜덤)
 MIN_DAYS_LEFT = 2
 NEW_WITHIN_DAYS = 2   # 접수 시작 2일 이내 = 새 공고
+JITTER = os.environ.get("PUBLISH_JITTER", "1") != "0"    # 랜덤 발행 (끄려면 0)
+START_WAIT_MAX = 30 * 60      # 시작 전 0~30분 랜덤 대기
+GAP_MIN, GAP_MAX = 60, 300    # 글 사이 1~5분 랜덤 간격
+DOCTOR_WORDS = ["전임의", "전공의", "레지던트", "임상강사", "의사직", "의무직", "촉탁의"]
 
 # 주요 기관 영문 약칭 (퍼머링크용) — 없으면 job-번호
 ABBR = {
@@ -44,16 +51,29 @@ def slug_for(job):
             return f"{v}-{job['recrutPblntSn']}"
     return f"job-{job['recrutPblntSn']}"
 
-def score(job):
-    s = 0
-    name = clean_inst(job["instNm"])
-    if any(k in name for k in ABBR): s += 30                     # 브랜드
+def thread_eligible(job, now=None):
+    """쓰레드 글감 조건 (지침서 4장): 정규직·무기계약직·채용형인턴 + 신입 가능 + 의사직 제외"""
     hl = hire_list(job)
-    if "정규직" in hl: s += 25
-    if "무기계약직" in hl: s += 12
-    if "신입" in (job.get("recrutSeNm") or ""): s += 10
-    n = job.get("recrutNope") or 0
-    s += min(n, 100) * 0.3                                       # 대규모 채용
+    if not any(h in ("정규직", "무기계약직", "청년인턴(채용형)") for h in hl):
+        return False
+    if "신입" not in (job.get("recrutSeNm") or ""):
+        return False
+    title = job.get("recrutPbancTtl") or ""
+    if any(w in title for w in DOCTOR_WORDS):
+        return False
+    return True
+
+def score(job, now=None):
+    """트래픽이 몰릴 공고일수록 높은 점수 (지침서 4장 스코어링과 같은 기준)"""
+    now = now or datetime.now(KST)
+    s = min(job.get("recrutNope") or 0, 100)                      # 모집인원 (최대 100점)
+    name = clean_inst(job["instNm"])
+    if any(k in name for k in ABBR): s += 20                      # 브랜드 파워
+    dl = days_left(job, now)
+    if 1 <= dl <= 10: s += 15                                     # 마감 임박
+    elif 11 <= dl <= 15: s += 5
+    if "학력무관" in (job.get("acbgCondNmLst") or ""): s += 5      # 누구나 지원 가능
+    if len(regions(job)) >= 10: s += 5                            # 전국 모집
     return s
 
 def is_new(job, now):
@@ -112,15 +132,17 @@ def publish(job, jobs, now, token):
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
     todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT]
-    new = sorted([j for j in todo if is_new(j, now)], key=lambda j: -score(j))
-    old = sorted([j for j in todo if not is_new(j, now)], key=lambda j: -score(j))
-    return new + old, len(new), len(old)
+    # 1순위 쓰레드 글감 후보(정규직·신입 등) → 그 안에서 점수순 (새 공고는 +15점 가산)
+    todo.sort(key=lambda j: (not thread_eligible(j, now), -(score(j, now) + (15 if is_new(j, now) else 0))))
+    n_hot = sum(1 for j in todo if thread_eligible(j, now))
+    n_new = sum(1 for j in todo if is_new(j, now))
+    return todo, n_hot, n_new
 
 def main():
     now = datetime.now(KST)
     jobs = json.load(open(JOBS_FILE, encoding="utf-8"))["result"]
     mapping = json.load(open(MAPPING_FILE, encoding="utf-8")) if os.path.exists(MAPPING_FILE) else {}
-    queue, n_new, n_old = pick_queue(jobs, mapping, now)
+    queue, n_hot, n_new = pick_queue(jobs, mapping, now)
 
     if "--preview" in sys.argv:
         k = int(sys.argv[sys.argv.index("--preview") + 1]) if len(sys.argv) > sys.argv.index("--preview") + 1 else 3
@@ -129,26 +151,34 @@ def main():
             path = f"preview/{slug_for(j)}.html"
             open(path, "w", encoding="utf-8").write(build_html(j, j.get("srcUrl", ""), related_jobs(j, jobs, now)))
             print(f"{path}\n  제목: {make_title(j)}\n  라벨: {make_labels(j)}")
-        print(f"대기열: 새 공고 {n_new}개 / 기존 공고 {n_old}개")
+        print(f"대기열 {len(queue)}개 (쓰레드 후보 {n_hot}개 / 새 공고 {n_new}개)")
         return
 
-    print(f"[대기열] 새 공고 {n_new}개 / 기존 공고 {n_old}개 / 이번 실행 {min(PER_RUN, len(queue))}개 발행")
+    count = max(1, PER_RUN + random.randint(-2, 2)) if JITTER else PER_RUN
+    print(f"[대기열] {len(queue)}개 (쓰레드 후보 {n_hot}개 / 새 공고 {n_new}개) → 이번 실행 {min(count, len(queue))}개 발행")
     if not queue:
         return
     need = ["BLOGGER_CLIENT_ID", "BLOGGER_CLIENT_SECRET", "BLOGGER_REFRESH_TOKEN", "BLOGGER_BLOG_ID"]
     if not all(os.environ.get(k) for k in need):
         print("[건너뜀] Blogger Secrets가 아직 없어요 → 채용공고 수집·배포만 진행")
         return
+    if JITTER:
+        wait = random.randint(0, START_WAIT_MAX)
+        print(f"[랜덤 대기] {wait // 60}분 {wait % 60}초 후 시작")
+        time.sleep(wait)
     token = access_token()
     done = 0
     try:
-        for job in queue[:PER_RUN]:
+        for i, job in enumerate(queue[:count]):
+            if i and JITTER:
+                time.sleep(random.randint(GAP_MIN, GAP_MAX))
             info = publish(job, jobs, now, token)
             if info:
                 mapping[str(job["recrutPblntSn"])] = info
                 done += 1
-                print(f"[발행] {info['url']}  |  {info['title'][:40]}")
-            time.sleep(3)
+                print(f"[발행] {datetime.now(KST).strftime('%H:%M:%S')} {info['url']}  |  {info['title'][:40]}")
+            if not JITTER:
+                time.sleep(3)
     except RuntimeError as e:
         print(f"[중단] {e}")
     finally:
