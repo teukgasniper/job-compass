@@ -2,7 +2,27 @@
 원칙: 과장은 OK, 거짓은 NO — 데이터에 없는 사실(연봉·전형 확정·어학 기준)은 쓰지 않는다.
 v2: 인트로 후킹 강화 / 섹션4 보수 수준 교체 / 인트로CTA-H2#1 광고 제거 / 정년보장 분기 / 결론 강화"""
 from datetime import datetime, timezone, timedelta
-import re
+import re, json, os
+
+# 연봉 데이터 로딩
+_SALARY_PATH = os.path.join(os.path.dirname(__file__), "salary_data.json")
+try:
+    with open(_SALARY_PATH, encoding="utf-8") as _f:
+        SALARY_DB = json.load(_f)
+except Exception:
+    SALARY_DB = {}
+
+def _find_salary(inst_name):
+    """기관명으로 연봉 데이터 찾기 (부분 일치)"""
+    clean = re.sub(r"\(주\)|\(재\)|\(사\)|주식회사", "", inst_name).strip()
+    if clean in SALARY_DB:
+        return SALARY_DB[clean]
+    for k, v in SALARY_DB.items():
+        if k.startswith("_"):
+            continue
+        if clean in k or k in clean:
+            return v
+    return None
 
 KST = timezone(timedelta(hours=9))
 AD_CLIENT = "ca-pub-1043776171226680"
@@ -231,12 +251,20 @@ def build_html(job, src, related=None):
           + p("이 조건 보고 포기하시는 분 많은데, 막상 원문을 보면 해당되는 경우가 훨씬 많아요.")
           + cta("지원 자격 보기", src))
 
-    # ★ H2 4 보수 수준 (고용형태 개념설명 제거)
+    # ★ H2 4 보수 수준 (연봉 JSON 연동)
+    sal = _find_salary(inst)
+    if sal:
+        avg_val = f"약 {sal['avg']:,}만원"
+        sal_rows = [["직원 평균보수", r(avg_val)]]
+        if sal.get("entry") and sal["entry"] > 0:
+            sal_rows.append(["신입 초봉 (추정)", f"약 {sal['entry']:,}만원"])
+        sal_intro = f"{inst}의 알리오 공개 데이터 기준 보수 수준을 정리했어요."
+    else:
+        sal_rows = [["직원 평균보수", "공개 데이터 확인 중"]]
+        sal_intro = f"{inst}의 보수 수준은 아직 공개 데이터에서 확인하지 못했어요."
     s4 = (h2(4, toc_items[3])
-          + p(f"{inst}의 공개 데이터 기준 보수 수준을 정리했어요.")
-          + table(["구분", "금액"], [
-              ["직원 평균보수", r("공개 데이터 기준")],
-          ], ["40%", "60%"])
+          + p(sal_intro)
+          + table(["구분", "금액"], sal_rows, ["40%", "60%"])
           + box("blue", "📌 참고하세요", "위 금액은 공개 데이터 기준 전 직원 평균이에요. 신입 초봉과는 차이가 있으며, 실제 보수는 직급·직무·성과에 따라 달라져요.")
           + p("그런데 가장 중요한 건 실제 수령액이에요. 기본급 외에 성과급·수당·복리후생이 더해지면 체감 연봉이 달라져요.")
           + p("생각보다 금액이 커서 놀라시는 분이 많아요. 실제 처우부터 확인해보세요.")
