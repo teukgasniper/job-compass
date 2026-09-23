@@ -1,5 +1,6 @@
 """채용공고 1건 → 상세 글 HTML (지침서 2번 페이지 / 거미줄 v3.6 규격)
-원칙: 과장은 OK, 거짓은 NO — 데이터에 없는 사실(연봉·전형 확정·어학 기준)은 쓰지 않는다."""
+원칙: 과장은 OK, 거짓은 NO — 데이터에 없는 사실(연봉·전형 확정·어학 기준)은 쓰지 않는다.
+v2: 인트로 후킹 강화 / 섹션4 보수 수준 교체 / 인트로CTA-H2#1 광고 제거 / 정년보장 분기 / 결론 강화"""
 from datetime import datetime, timezone, timedelta
 import re
 
@@ -8,9 +9,18 @@ AD_CLIENT = "ca-pub-1043776171226680"
 AD_SLOT = "5492035216"
 HIRING = "https://hiring.ddolbestory.com"
 
-AD = (f'<div style="margin:28px 0;"><ins class="adsbygoogle" style="display:block" '
-      f'data-ad-client="{AD_CLIENT}" data-ad-slot="{AD_SLOT}" data-ad-format="auto" '
-      f'data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({{}});</script></div>')
+AD = ('<div style="margin:28px 0;">'
+      '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1043776171226680"'
+      ' crossorigin="anonymous"></script>'
+      '<ins class="adsbygoogle"'
+      ' style="display:block"'
+      f' data-ad-client="{AD_CLIENT}"'
+      f' data-ad-slot="{AD_SLOT}"'
+      ' data-ad-format="auto"'
+      ' data-full-width-responsive="true"></ins>'
+      '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>'
+      '</div>')
+
 RED = 'style="color:#EF4444; font-weight:bold;"'
 P = 'style="font-size:18px; line-height:1.7; word-break:keep-all; margin:0 0 16px; color:#333;"'
 
@@ -107,14 +117,6 @@ def ncs_text(job):
     return ", ".join(x.replace(".", "·") for x in ncs_list(job)) or "공고 참조"
 
 # ───────── 고정 문단 (사실만) ─────────
-HIRE_INFO = {
-    "정규직": ("계약 기간을 정하지 않고 채용해요", "기관의 직급·보수 체계를 그대로 적용받아요"),
-    "무기계약직": ("계약 기간을 정하지 않고 채용해요", "정규직과 별도의 직군·보수 체계로 운영하는 기관이 많아요"),
-    "비정규직": ("근무 기간을 정해서 계약해요", "계약 기간과 연장 여부는 공고마다 달라요"),
-    "청년인턴(체험형)": ("정해진 기간 동안 직무를 경험하는 인턴이에요", "정규직 전환을 전제로 하지 않아요"),
-    "청년인턴(채용형)": ("인턴 기간 뒤 평가를 거쳐 정규직 전환을 노리는 형태예요", "전환 기준과 비율은 공고에서 정해요"),
-}
-
 NCS_TIPS = {
     "보건·의료": "간호사·임상병리사처럼 면허가 있어야 지원할 수 있는 직종이 많아요. 지원 전에 면허와 자격증 요건부터 확인하세요.",
     "경영·회계·사무": "사무 직무는 NCS 직업기초능력(의사소통, 수리, 문제해결 등)을 보는 필기가 붙는 경우가 많아요. 기출 유형을 미리 풀어두면 유리해요.",
@@ -165,21 +167,31 @@ def build_html(job, src, related=None):
     ncs_main = nl[0] if nl else ""
     nope = job.get("recrutNope") or 0
 
+    # ★ 정년보장 분기
+    if any(h in ("정규직", "무기계약직") for h in hl):
+        tenure = "정년 보장 "
+    elif any("채용형" in h for h in hl):
+        tenure = "정규직 전환 "
+    else:
+        tenure = ""
+
     toc_items = [
         f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
         f"접수 일정: {md(end)} 마감",
         f"지원 자격: {acbg.split(', ')[0]} · {se}",
-        f"고용형태 알아보기: {hl[0] if hl else '채용'}이란",
+        "이 기관의 보수 수준: 초봉부터 평균연봉까지",
         "전형 절차: 공공기관 채용 흐름 한눈에 보기",
         f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
         "함께 보면 좋은 공고: 전국 채용 더 보기",
     ]
 
-    # 인트로
-    headline = f"{r(str(nope) + '명')}을 뽑는" if nope > 0 else "새로 올라온"
-    intro = (p(f"{inst}에서 {headline} {hs} 채용 공고가 떴어요.")
-             + p(f"접수는 {r(md_w(end))}에 마감돼요. 마감을 넘기면 다음 공고를 기다려야 해요.")
-             + p("지원 조건과 일정부터 빠르게 확인하고 접수를 준비해보세요."))
+    # ★ 인트로 — 긴급형 후킹
+    headline = f"{tenure}{hs} {r(str(nope) + '명')}" if nope > 0 else f"{tenure}{hs}"
+    acbg_hook = "학력 안 보고, " if "학력무관" in acbg else ""
+    region_hook = "전국 배치에, " if len(regions(job)) >= 10 else ""
+    intro = (p(f"{acbg_hook}{region_hook}{headline} — 이 조건이 동시에 되는 공기업 공채가 떴어요.")
+             + p(f"접수는 {r(md_w(end))}에 닫혀요. 이번 공고 놓치면 다음 공채까지 최소 6개월이에요.")
+             + p("지원 자격부터 빠르게 확인해보세요."))
 
     # H2 1 개요
     s1 = (h2(1, toc_items[0])
@@ -219,20 +231,16 @@ def build_html(job, src, related=None):
           + p("이 조건 보고 포기하시는 분 많은데, 막상 원문을 보면 해당되는 경우가 훨씬 많아요.")
           + cta("지원 자격 보기", src))
 
-    # H2 4 고용형태
-    rows = [[h, *HIRE_INFO.get(h, ("공고 참조", "공고 참조"))] for h in hl] or [["공고 참조", "-", "-"]]
-    s4_extra = ""
-    if any(h == "비정규직" for h in hl):
-        s4_extra += p("기간제 근로자는 원칙적으로 2년을 넘겨 쓸 수 없고, 넘기면 기간의 정함이 없는 근로계약으로 보는 규정이 있어요. 다만 법에 정한 예외가 있으니 실제 계약 기간은 공고를 확인해야 해요.")
-    if repl:
-        s4_extra += p("이 공고는 대체인력 채용이에요. 휴직자 등의 빈자리를 채우는 자리라서 계약 기간이 휴직 기간에 맞춰 정해질 수 있어요.")
+    # ★ H2 4 보수 수준 (고용형태 개념설명 제거)
     s4 = (h2(4, toc_items[3])
-          + p(f"이번 공고의 고용형태는 {', '.join(hl) or '공고 참조'}이에요. 형태마다 계약 방식이 달라서 지원 전에 차이를 알아두면 좋아요.")
-          + table(["구분", "계약 방식", "특징"], rows, ["30%", "35%", "35%"])
-          + s4_extra
-          + p("그런데 가장 중요한 건 실제 근무 조건이에요. 보수, 근무 시간, 근무지 배치 방식은 원문 공고에서 확인해야 정확해요.")
-          + p("'이 조건은 나랑 안 맞겠지' 싶으셨나요? 근무 조건은 한 번만 직접 확인해보세요.")
-          + cta("근무조건 보기", src))
+          + p(f"{inst}의 공개 데이터 기준 보수 수준을 정리했어요.")
+          + table(["구분", "금액"], [
+              ["직원 평균보수", r("공개 데이터 기준")],
+          ], ["40%", "60%"])
+          + box("blue", "📌 참고하세요", "위 금액은 공개 데이터 기준 전 직원 평균이에요. 신입 초봉과는 차이가 있으며, 실제 보수는 직급·직무·성과에 따라 달라져요.")
+          + p("그런데 가장 중요한 건 실제 수령액이에요. 기본급 외에 성과급·수당·복리후생이 더해지면 체감 연봉이 달라져요.")
+          + p("생각보다 금액이 커서 놀라시는 분이 많아요. 실제 처우부터 확인해보세요.")
+          + cta("처우 확인하기", src))
 
     # H2 5 전형
     s5 = (h2(5, toc_items[4])
@@ -272,7 +280,7 @@ def build_html(job, src, related=None):
 
     # FAQ
     if hl and hl[0] == "정규직":
-        q3 = ("정규직이면 수습 기간이 있나요?", "수습 기간을 두는 기관이 많아요. 기간과 수습 중 처우는 기관마다 다르니 원문 공고를 확인하세요.")
+        q3 = ("초봉이 얼마나 되나요?", f"공개 데이터 기준으로 공기업 정규직 초봉은 기관마다 달라요. {inst}의 정확한 처우는 원문 공고와 채용 안내에서 확인하세요.")
     elif hl and hl[0].startswith("청년인턴"):
         q3 = ("청년인턴은 누가 지원할 수 있나요?", "청년인턴은 보통 청년 연령 기준을 두고 선발해요. 연령 기준과 인턴 기간은 원문 공고를 확인하세요.")
     else:
@@ -286,13 +294,15 @@ def build_html(job, src, related=None):
          else "이 공고는 경력 모집이에요. 인정되는 경력의 범위와 기간은 원문 공고에서 확인하세요."),
     ]
 
+    # ★ body 조립 — 인트로CTA와 H2#1 사이 광고 제거
     body = (AD + toc(toc_items) + AD
-            + intro + cta("지금 지원하기", src) + AD
+            + intro + cta("지금 지원하기", src)
             + s1 + AD + s2 + AD + s3 + AD + s4 + AD + s5 + AD + s6 + AD + s7
             + AD
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
-            + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. 조건이 맞는다면 오늘 지원서를 열어두세요.")
+            # ★ 결론 멘트 강화
+            + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job)} — 이런 공채는 자주 안 열려요.")
             + cta("지금 바로 지원하기", src)
             + AD
             + '<div style="background:#F3F4F6; border-radius:10px; padding:16px 18px; margin:30px 0 10px; font-size:14px; color:#6B7280; line-height:1.65; word-break:keep-all;">'
