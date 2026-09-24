@@ -51,6 +51,7 @@ jobs:
           [ -f job_posts.json ] || echo '{}' > job_posts.json
           git add jobs.json job_posts.json
           git diff --cached --quiet || git commit -m "채용공고 업데이트 $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git pull --rebase origin main
           git push
 
       - name: 배포 파일 준비
