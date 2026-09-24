@@ -255,7 +255,7 @@ def publish(job, jobs, now, token):
 
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
-    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT]
+    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)]
     # 1순위 쓰레드 글감 후보(정규직·신입 등) → 그 안에서 점수순 (새 공고는 +15점 가산)
     todo.sort(key=lambda j: (not thread_eligible(j, now), -(score(j, now) + (15 if is_new(j, now) else 0))))
     n_hot = sum(1 for j in todo if thread_eligible(j, now))
