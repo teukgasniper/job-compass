@@ -134,12 +134,11 @@ def is_gojobs_excluded(x):
 # 알바급 제외 필터 — 정규직·무기계약직·채용형인턴 아닌 공고 차단
 # ─────────────────────────────────────────────────────────────
 def is_quality_post(x):
-    """쓰레드·본문 글감이 되는 공고만 통과"""
-    # 나라일터는 고용형태가 비어있으므로 별도 필터(is_gojobs_excluded)로 이미 처리됨
     if x.get("_source") == "gojobs":
         return True
     ht = x.get("hireTypeNmLst") or ""
-    return any(k in ht for k in ["정규직", "무기계약직", "채용형"])
+    types = [h.strip() for h in ht.split(",")]
+    return any(t in ("정규직", "무기계약직") or "채용형" in t for t in types)
 
 
 def get_json(url, timeout):
