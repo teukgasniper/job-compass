@@ -3,7 +3,8 @@
 나라일터: 인사혁신처 공공취업정보 조회 서비스 (중앙부처·지자체·교육청 포함)
 키·주소·암호는 GitHub Secrets에서만 읽습니다. 코드에 적지 마세요.
 
-[2026-09-24 수정] 나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
+[2026-09-24 수정] 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 수집
+                  나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
                   중복 소거 + 특수직·아르바이트급 제외 + 합격자 발표 제외
                   500건씩 + 90초 타임아웃 + 3회 재시도
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
@@ -107,6 +108,18 @@ def is_gojobs_excluded(x):
     if any(k in title for k in GOJOBS_TITLE_EXCLUDE):
         return True
     return False
+
+
+# ─────────────────────────────────────────────────────────────
+# 알바급 제외 필터 — 정규직·무기계약직·채용형인턴 아닌 공고 차단
+# ─────────────────────────────────────────────────────────────
+def is_quality_post(x):
+    """쓰레드·본문 글감이 되는 공고만 통과"""
+    # 나라일터는 고용형태가 비어있으므로 별도 필터(is_gojobs_excluded)로 이미 처리됨
+    if x.get("_source") == "gojobs":
+        return True
+    ht = x.get("hireTypeNmLst") or ""
+    return any(k in ht for k in ["정규직", "무기계약직", "채용형"])
 
 
 def get_json(url, timeout):
@@ -365,6 +378,11 @@ print("=" * 50)
 alio_items = collect_alio()
 gojobs_items = collect_gojobs()
 merged = merge_and_dedup(alio_items, gojobs_items)
+
+# ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
+before = len(merged)
+merged = [x for x in merged if is_quality_post(x)]
+print(f"[품질필터] {before}건 → {len(merged)}건 (알바급 {before - len(merged)}건 제외)")
 
 if len(merged) < 50:
     sys.exit(f"수집 건수가 너무 적음({len(merged)}건) → 기존 데이터 유지")
