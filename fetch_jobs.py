@@ -4,6 +4,7 @@
 키·주소·암호는 GitHub Secrets에서만 읽습니다. 코드에 적지 마세요.
 
 [2026-09-24 수정] 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 수집
+                  임원급 제외 — 비상임이사·사장공모 등 일반 취준생 대상 아닌 공고 차단
                   나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
                   중복 소거 + 특수직·아르바이트급 제외 + 합격자 발표 제외
                   500건씩 + 90초 타임아웃 + 3회 재시도
@@ -45,6 +46,15 @@ SAFE_KEYWORDS = [
 ]
 
 # ─────────────────────────────────────────────────────────────
+# 임원급 제외 필터 (잡알리오 + 나라일터 공통)
+# ─────────────────────────────────────────────────────────────
+EXECUTIVE_KEYWORDS = [
+    "비상임이사", "상임이사", "이사장 공모", "사장 공모", "감사 공모",
+    "임원 공모", "임원(", "기관장 공모", "원장 공모", "이사 모집",
+    "비상임감사", "상임감사", "사장 모집", "이사 공모",
+]
+
+# ─────────────────────────────────────────────────────────────
 # 나라일터 전용 제외 필터
 # ─────────────────────────────────────────────────────────────
 
@@ -68,7 +78,7 @@ GOJOBS_INST_EXCLUDE = [
     "소년원", "분류심사원", "보호관찰소",
 ]
 
-# 공고 제목에 포함되면 제외 (아르바이트급 + 특수직 + 비채용 공고)
+# 공고 제목에 포함되면 제외 (아르바이트급 + 특수직 + 임원급 + 비채용 공고)
 GOJOBS_TITLE_EXCLUDE = [
     # 아르바이트급·단순노무
     "조리원", "조리사", "급식보조", "청소원", "환경미화", "당직",
@@ -76,6 +86,10 @@ GOJOBS_TITLE_EXCLUDE = [
     "방과후", "돌봄", "교육실무", "일용직",
     # 특수직
     "변호사", "검사", "법무관",
+    # 임원급
+    "비상임이사", "상임이사", "이사장 공모", "사장 공모", "감사 공모",
+    "임원 공모", "기관장 공모", "원장 공모", "이사 모집", "비상임감사",
+    "상임감사", "사장 모집", "이사 공모",
     # 비채용 공고 (합격자 발표·취소·연기 등)
     "합격자", "불합격", "취소", "연기", "정정",
 ]
@@ -97,6 +111,12 @@ def is_doctor_post(x):
     if "의사" in text and not any(s in text for s in SAFE_KEYWORDS):
         return True
     return False
+
+
+def is_executive_post(x):
+    """임원급 공고 제외 — 일반 취준생 대상 아님"""
+    title = _as_text(x.get("recrutPbancTtl") or x.get("title"))
+    return any(k in title for k in EXECUTIVE_KEYWORDS)
 
 
 def is_gojobs_excluded(x):
@@ -188,13 +208,21 @@ def collect_alio():
             break
         page += 1
     ongoing = [x for x in items if x.get("ongoingYn") == "Y"]
+    # 의사직 제외
     doctor_posts = [x for x in ongoing if is_doctor_post(x)]
     clean = [x for x in ongoing if not is_doctor_post(x)]
     if doctor_posts:
         print(f"[잡알리오] 의사직 공고 {len(doctor_posts)}건 제외")
         for x in doctor_posts[:5]:
             print(f"  - {x.get('instNm')} | {x.get('recrutPbancTtl')}")
-    print(f"[잡알리오] 수집 완료: {len(clean)}건 (의사직 {len(doctor_posts)}건 제외)")
+    # 임원급 제외
+    exec_posts = [x for x in clean if is_executive_post(x)]
+    clean = [x for x in clean if not is_executive_post(x)]
+    if exec_posts:
+        print(f"[잡알리오] 임원급 공고 {len(exec_posts)}건 제외")
+        for x in exec_posts[:5]:
+            print(f"  - {x.get('instNm')} | {x.get('recrutPbancTtl')}")
+    print(f"[잡알리오] 수집 완료: {len(clean)}건 (의사직 {len(doctor_posts)}건, 임원급 {len(exec_posts)}건 제외)")
     return clean
 
 
@@ -287,7 +315,7 @@ def collect_gojobs():
             continue
         after_doctor.append(x)
 
-    # 5) 특수직·아르바이트급·비채용 공고 제외
+    # 5) 특수직·아르바이트급·임원급·비채용 공고 제외
     clean = []
     n_special = 0
     for x in after_doctor:
@@ -296,7 +324,7 @@ def collect_gojobs():
             continue
         clean.append(x)
 
-    print(f"[나라일터] 진행 중: {len(ongoing)}건 → 의사직 {n_doctor}건 제외 → 특수직·아르바이트 {n_special}건 제외 → 최종: {len(clean)}건")
+    print(f"[나라일터] 진행 중: {len(ongoing)}건 → 의사직 {n_doctor}건 제외 → 특수직·아르바이트·임원급 {n_special}건 제외 → 최종: {len(clean)}건")
     return clean
 
 
