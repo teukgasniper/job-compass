@@ -31,6 +31,7 @@ jobs:
           ALIO_API_KEY: ${{ secrets.ALIO_API_KEY }}
           RELAY_URL: ${{ secrets.RELAY_URL }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
+          GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}
         run: python fetch_jobs.py
 
       - name: 상세 글 자동 발행 (hiring03)
