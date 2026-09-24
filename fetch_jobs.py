@@ -301,7 +301,7 @@ def gojobs_to_alio_format(gj):
         "recrutNope": 0,
         "pbancBgngYmd": bgn,
         "pbancEndYmd": enddate,
-        "srcUrl": "https://www.gojobs.go.kr/",
+        "srcUrl": f"https://www.gojobs.go.kr/apmView.do?empmnsn={gj.get('idx', '')}",
         "acbgCondNmLst": "",
         "replmprYn": "N",
         "ongoingYn": "Y",
