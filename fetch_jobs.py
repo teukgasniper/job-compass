@@ -4,9 +4,8 @@
 키·주소·암호는 GitHub Secrets에서만 읽습니다. 코드에 적지 마세요.
 
 [2026-09-24 수정] 나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
-                  중복 소거: 같은 기관+같은 공고명은 잡알리오 우선, 1건만 유지
-                  같은 기관이라도 공고명(부서)이 다르면 둘 다 유지
-                  나라일터 타임아웃 대응: 500건씩 + 90초 타임아웃 + 3회 재시도
+                  중복 소거 + 특수직·아르바이트급 제외 + 합격자 발표 제외
+                  500건씩 + 90초 타임아웃 + 3회 재시도
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
@@ -30,7 +29,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
            "Accept": "application/json"}
 
 # ─────────────────────────────────────────────────────────────
-# 의사직 제외 필터
+# 의사직 제외 필터 (잡알리오 + 나라일터 공통)
 # ─────────────────────────────────────────────────────────────
 DOCTOR_KEYWORDS = [
     "전문의", "전임의", "레지던트", "전공의", "수련의",
@@ -42,6 +41,42 @@ SAFE_KEYWORDS = [
     "간호", "임상병리", "방사선", "물리치료", "작업치료",
     "치과위생", "응급구조", "약사", "영양사", "의무기록",
     "보건직", "의사소통",
+]
+
+# ─────────────────────────────────────────────────────────────
+# 나라일터 전용 제외 필터
+# ─────────────────────────────────────────────────────────────
+
+# 기관명에 포함되면 제외 (특수직 기관 + 개별 학교/우체국)
+GOJOBS_INST_EXCLUDE = [
+    # 군 관련
+    "국방부", "공군", "육군", "해군", "해병대", "국군", "사령부", "군단",
+    # 경찰
+    "경찰청", "경찰서", "기동단", "경찰학교",
+    # 소방
+    "소방청", "소방서", "119구조",
+    # 검찰·법원
+    "검찰청", "지방법원", "고등법원", "가정법원", "대법원",
+    # 교정시설
+    "교도소", "구치소", "교정청",
+    # 개별 학교 (교육청 본부는 유지)
+    "초등학교", "중학교", "고등학교", "유치원",
+    # 개별 우체국 (우정사업본부 본부는 유지)
+    "우체국",
+    # 소년원·보호시설
+    "소년원", "분류심사원", "보호관찰소",
+]
+
+# 공고 제목에 포함되면 제외 (아르바이트급 + 특수직 + 비채용 공고)
+GOJOBS_TITLE_EXCLUDE = [
+    # 아르바이트급·단순노무
+    "조리원", "조리사", "급식보조", "청소원", "환경미화", "당직",
+    "대체인력", "대체직원", "육아휴직 대체",
+    "방과후", "돌봄", "교육실무", "일용직",
+    # 특수직
+    "변호사", "검사", "법무관",
+    # 비채용 공고 (합격자 발표·취소·연기 등)
+    "합격자", "불합격", "취소", "연기", "정정",
 ]
 
 
@@ -59,6 +94,17 @@ def is_doctor_post(x):
     if any(k in text for k in DOCTOR_KEYWORDS):
         return True
     if "의사" in text and not any(s in text for s in SAFE_KEYWORDS):
+        return True
+    return False
+
+
+def is_gojobs_excluded(x):
+    """나라일터 전용 제외: 특수직 기관 + 아르바이트급 + 비채용 공고"""
+    inst = x.get("insttname") or x.get("instNm") or ""
+    title = x.get("title") or x.get("recrutPbancTtl") or ""
+    if any(k in inst for k in GOJOBS_INST_EXCLUDE):
+        return True
+    if any(k in title for k in GOJOBS_TITLE_EXCLUDE):
         return True
     return False
 
@@ -192,10 +238,9 @@ def collect_gojobs():
         return []
 
     # 2) 최근 데이터 수집
-    #    500건씩 20페이지 = 최대 10,000건 (등록일 오름차순이므로 뒤에서부터)
     per_page = 500
     last_page = (total + per_page - 1) // per_page
-    start_page = max(1, last_page - 19)  # 최근 20페이지
+    start_page = max(1, last_page - 19)
 
     items = []
     success_count = 0
@@ -205,7 +250,7 @@ def collect_gojobs():
             items.extend(batch)
             success_count += 1
             print(f"[나라일터] page {page}/{last_page} 수집 ({len(batch)}건)")
-        time.sleep(1)  # API 부하 방지
+        time.sleep(1)
 
     print(f"[나라일터] 수집 완료: {len(items)}건 ({success_count}/{last_page - start_page + 1} 페이지 성공)")
 
@@ -216,17 +261,29 @@ def collect_gojobs():
         if len(enddate) >= 8 and enddate >= today_str:
             ongoing.append(x)
 
-    # 4) 의사직 제외 (나라일터용)
-    clean = []
+    # 4) 의사직 제외
+    after_doctor = []
+    n_doctor = 0
     for x in ongoing:
         title = x.get("title", "")
         if any(k in title for k in DOCTOR_KEYWORDS):
+            n_doctor += 1
             continue
         if "의사" in title and not any(s in title for s in SAFE_KEYWORDS):
+            n_doctor += 1
+            continue
+        after_doctor.append(x)
+
+    # 5) 특수직·아르바이트급·비채용 공고 제외
+    clean = []
+    n_special = 0
+    for x in after_doctor:
+        if is_gojobs_excluded(x):
+            n_special += 1
             continue
         clean.append(x)
 
-    print(f"[나라일터] 진행 중 공고: {len(ongoing)}건 → 의사직 제외 후: {len(clean)}건")
+    print(f"[나라일터] 진행 중: {len(ongoing)}건 → 의사직 {n_doctor}건 제외 → 특수직·아르바이트 {n_special}건 제외 → 최종: {len(clean)}건")
     return clean
 
 
@@ -257,13 +314,11 @@ def gojobs_to_alio_format(gj):
 # 3. 중복 소거 (같은 기관 + 같은 공고명 = 중복 → 잡알리오 우선)
 # ─────────────────────────────────────────────────────────────
 def normalize_inst(name):
-    """기관명 정규화: (주), (재), 공백, 특수문자 제거"""
     name = re.sub(r'\(주\)|\(재\)|\(사\)|\(학\)', '', name)
     name = re.sub(r'[㈜㈔\s]', '', name)
     return name.strip()
 
 def normalize_title(title):
-    """공고명 정규화: 공백·특수문자 제거 후 앞 30자 (부분 매칭용)"""
     title = re.sub(r'[\s\-·~]', '', title)
     return title[:30]
 
@@ -272,11 +327,9 @@ def dedup_key(inst, title):
 
 
 def merge_and_dedup(alio_items, gojobs_items):
-    """잡알리오 우선, 나라일터는 잡알리오에 없는 공고만 추가"""
     seen = set()
     merged = []
 
-    # 잡알리오 먼저 (우선권)
     for x in alio_items:
         key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
         if key not in seen:
@@ -285,7 +338,6 @@ def merge_and_dedup(alio_items, gojobs_items):
             item["_source"] = "alio"
             merged.append(item)
 
-    # 나라일터: 잡알리오에 없는 것만 추가
     added = 0
     skipped = 0
     for gj in gojobs_items:
@@ -310,13 +362,8 @@ print("=" * 50)
 print("채용공고 수집 시작")
 print("=" * 50)
 
-# 잡알리오 수집
 alio_items = collect_alio()
-
-# 나라일터 수집
 gojobs_items = collect_gojobs()
-
-# 병합 + 중복 소거
 merged = merge_and_dedup(alio_items, gojobs_items)
 
 if len(merged) < 50:
