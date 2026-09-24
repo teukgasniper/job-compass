@@ -6,9 +6,10 @@
 [2026-09-24 수정] 나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
                   중복 소거: 같은 기관+같은 공고명은 잡알리오 우선, 1건만 유지
                   같은 기관이라도 공고명(부서)이 다르면 둘 다 유지
+                  나라일터 타임아웃 대응: 500건씩 + 90초 타임아웃 + 3회 재시도
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
 """
-import json, os, sys, time, socket, urllib.request, urllib.parse
+import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 
@@ -144,6 +145,30 @@ def collect_alio():
 GOJOBS_BASE = "https://apis.data.go.kr/1760000/PblJobService/getList"
 
 
+def fetch_gojobs_page(page, per_page):
+    """나라일터 1페이지 수집 (3회 재시도, 90초 타임아웃)"""
+    q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}, safe="%")
+    for attempt in range(3):
+        try:
+            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 90)
+            root = ET.fromstring(xml_data)
+            err = root.findtext(".//errMsg")
+            if err:
+                print(f"[나라일터] page {page} API 에러: {err}")
+                return []
+            items = []
+            for item in root.findall(".//item"):
+                fields = {child.tag: child.text for child in item}
+                items.append(fields)
+            return items
+        except Exception as e:
+            print(f"[나라일터] page {page} 시도 {attempt+1}/3 실패: {e}")
+            if attempt < 2:
+                time.sleep(3)
+    print(f"[나라일터] page {page} 3회 모두 실패 → 건너뜀")
+    return []
+
+
 def collect_gojobs():
     if not GOJOBS_KEY:
         print("[나라일터] GOJOBS_API_KEY 없음 → 건너뜀")
@@ -154,9 +179,8 @@ def collect_gojobs():
     # 1) 전체 건수 확인
     try:
         q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": 1, "pageNo": 1}, safe="%")
-        xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 20)
+        xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 30)
         root = ET.fromstring(xml_data)
-        # 에러 체크
         err = root.findtext(".//errMsg")
         if err:
             print(f"[나라일터] API 에러: {err}")
@@ -167,25 +191,23 @@ def collect_gojobs():
         print(f"[나라일터] 전체 건수 확인 실패: {e}")
         return []
 
-    # 2) 최근 데이터 수집 (마지막 15페이지 = 최대 15,000건)
-    #    데이터가 등록일 오름차순이므로 뒤에서부터 가져와야 최신
-    per_page = 1000
+    # 2) 최근 데이터 수집
+    #    500건씩 20페이지 = 최대 10,000건 (등록일 오름차순이므로 뒤에서부터)
+    per_page = 500
     last_page = (total + per_page - 1) // per_page
-    start_page = max(1, last_page - 14)  # 최근 15페이지
+    start_page = max(1, last_page - 19)  # 최근 20페이지
 
     items = []
+    success_count = 0
     for page in range(start_page, last_page + 1):
-        try:
-            q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}, safe="%")
-            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 30)
-            root = ET.fromstring(xml_data)
-            for item in root.findall(".//item"):
-                fields = {child.tag: child.text for child in item}
-                items.append(fields)
-            print(f"[나라일터] page {page}/{last_page} 수집 ({len(root.findall('.//item'))}건)")
-        except Exception as e:
-            print(f"[나라일터] page {page} 실패: {e}")
-        time.sleep(0.3)  # API 부하 방지
+        batch = fetch_gojobs_page(page, per_page)
+        if batch:
+            items.extend(batch)
+            success_count += 1
+            print(f"[나라일터] page {page}/{last_page} 수집 ({len(batch)}건)")
+        time.sleep(1)  # API 부하 방지
+
+    print(f"[나라일터] 수집 완료: {len(items)}건 ({success_count}/{last_page - start_page + 1} 페이지 성공)")
 
     # 3) 마감일 기준 진행 중 공고만 필터
     ongoing = []
@@ -213,29 +235,27 @@ def gojobs_to_alio_format(gj):
     enddate = gj.get("enddate", "")
     bgn = gj.get("regdate", "")
     return {
-        "recrutPblntSn": f"GJ-{gj.get('idx', '')}",   # 나라일터 출처 표시
+        "recrutPblntSn": f"GJ-{gj.get('idx', '')}",
         "instNm": gj.get("insttname", ""),
         "recrutPbancTtl": gj.get("title", ""),
-        "hireTypeNmLst": "",                            # 나라일터에 없는 필드
-        "workRgnNmLst": "",                             # areacode는 코드라 변환 불가
+        "hireTypeNmLst": "",
+        "workRgnNmLst": "",
         "recrutSeNm": "",
         "recrutNope": 0,
         "pbancBgngYmd": bgn,
         "pbancEndYmd": enddate,
-        "srcUrl": f"https://www.gojobs.go.kr/",         # 원문 링크 없음
+        "srcUrl": "https://www.gojobs.go.kr/",
         "acbgCondNmLst": "",
         "replmprYn": "N",
         "ongoingYn": "Y",
         "ncsCdNmLst": "",
-        "_source": "gojobs",                            # 출처 구분용
+        "_source": "gojobs",
     }
 
 
 # ─────────────────────────────────────────────────────────────
 # 3. 중복 소거 (같은 기관 + 같은 공고명 = 중복 → 잡알리오 우선)
 # ─────────────────────────────────────────────────────────────
-import re
-
 def normalize_inst(name):
     """기관명 정규화: (주), (재), 공백, 특수문자 제거"""
     name = re.sub(r'\(주\)|\(재\)|\(사\)|\(학\)', '', name)
@@ -302,7 +322,6 @@ merged = merge_and_dedup(alio_items, gojobs_items)
 if len(merged) < 50:
     sys.exit(f"수집 건수가 너무 적음({len(merged)}건) → 기존 데이터 유지")
 
-# _source 필드는 jobs.json에 포함 (카드 스킨에서는 무시, 디버깅용)
 kst = datetime.now(timezone(timedelta(hours=9)))
 out = {"generated_at": kst.strftime("%Y-%m-%d %H:%M"), "count": len(merged), "result": merged}
 with open("jobs.json", "w", encoding="utf-8") as f:
