@@ -453,7 +453,7 @@ AGENCY_DOMAINS = ("cleaneye", "incruit", "gojobs", "recruiter.co.kr", "careerlin
                   "recruitcenter", "saramin", "fairyhr", "jobkorea", "alio", "kpcice", "jinhak",
                   "catch.co.kr", "worknet", "work24", "midashri", "hrlink", "insaworks", "career.co.kr",
                   "scout.co.kr")
-CARD_W = 1200
+CARD_W = 1440
 
 
 def find_logo_file(inst: str):
@@ -488,7 +488,7 @@ def _load_image(url, ref):
     data = r.content
     if url.lower().split("?")[0].endswith(".svg") or b"<svg" in data[:500]:
         import cairosvg
-        data = cairosvg.svg2png(bytestring=data, output_width=800)
+        data = cairosvg.svg2png(bytestring=data, output_width=2400)
     im = Image.open(io.BytesIO(data)); im.load()
     return im
 
@@ -624,6 +624,13 @@ def _try_site_logo(site, inst):
     imgs = sorted([x for x in imgs if x[0] >= 5], key=lambda x: -x[0])
     for _, t in imgs[:8]:
         src = urljoin(r.url, t["src"])
+        if t.get("srcset"):  # 고해상도(2x 등) 버전이 있으면 그걸로
+            cands = [c.strip().split(" ") for c in t["srcset"].split(",") if c.strip()]
+            def _w(c):
+                try: return float(re.sub(r"[^0-9.]", "", c[1])) if len(c) > 1 else 1
+                except Exception: return 1
+            best = max(cands, key=_w, default=None)
+            if best: src = urljoin(r.url, best[0])
         try:
             im = _load_image(src, r.url)
         except Exception:
@@ -639,13 +646,45 @@ def _try_site_logo(site, inst):
     return None
 
 
+def commons_logo(inst):
+    """위키데이터에 등록된 공식 로고(SVG 등)를 고해상도로 받기"""
+    H = {"User-Agent": "job-compass-bot/1.0 (github teukgasniper)"}
+    try:
+        d = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+            "action": "wbsearchentities", "search": inst, "language": "ko", "format": "json", "limit": 1}).json()
+        for e in d.get("search", []):
+            if norm_key(e.get("label", "")) != norm_key(inst):
+                continue
+            ent = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+                "action": "wbgetentities", "ids": e["id"], "props": "claims", "format": "json"}).json()
+            files = [c["mainsnak"]["datavalue"]["value"] for c in
+                     ent["entities"][e["id"]].get("claims", {}).get("P154", []) if "datavalue" in c["mainsnak"]]
+            if not files:
+                return None
+            from PIL import Image
+            url = "https://commons.wikimedia.org/wiki/Special:FilePath/" + quote(files[-1].replace(" ", "_")) + "?width=2400"
+            r = requests.get(url, headers=H, timeout=30)
+            if r.ok and r.headers.get("content-type", "").startswith("image"):
+                im = Image.open(io.BytesIO(r.content)); im.load()
+                return im
+    except Exception as e:
+        print(f"[warn] 위키미디어 로고 조회 실패: {e}")
+    return None
+
+
 def auto_collect_logo(inst, job):
-    """① 원문·위키데이터 홈페이지 → ② 실패하면 Claude 웹검색으로 공식 홈페이지 찾아서 재시도"""
+    """⓪ 위키미디어 공식 로고 → ① 원문·위키데이터 홈페이지 → ② Claude 웹검색으로 홈페이지 찾아 재시도"""
     try:
         import bs4  # noqa
         import urllib3; urllib3.disable_warnings()
     except Exception:
         return None
+    im = commons_logo(inst)  # ⓪ 위키미디어 공식 로고 (가장 고화질)
+    if im is not None and _visible_enough(im):
+        card = make_card(im)
+        if ai_is_logo(card, inst):
+            print("로고 자동 수집 성공: 위키미디어 공식 로고")
+            return card
     tried = []
     for site in _homepages(inst, job):
         tried.append(urlparse(site).netloc.replace("www.", ""))
