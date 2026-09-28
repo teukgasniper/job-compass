@@ -15,8 +15,10 @@
   COMMENT_TEXT     profile 모드 댓글 문구 (기본 "👆 프로필 링크 확인!")
   CLAUDE_MODEL     기본 claude-sonnet-5
   JITTER_MAX_MIN   발행 전 랜덤 대기 최대 분 (예약 실행 시 자연스럽게)
+  USE_LOGO         기본 on — 글 하단에 기관 로고 카드(logos/기관명.png) 첨부, off면 글만
 """
-import os, re, json, time, random, datetime as dt
+import os, re, io, json, time, base64, random, subprocess, datetime as dt
+from urllib.parse import urljoin, urlparse, quote
 import requests
 
 JOBS_URL = "https://teukgasniper.github.io/job-compass/jobs.json"
@@ -31,6 +33,12 @@ COMMENT_TEXT = os.environ.get("COMMENT_TEXT", "").strip() or "👆 프로필 링
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
+
+USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
+REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
+LOGO_DIR = "logos"
+MISSING_PATH = "logos_missing.txt"
+LOGO_RETRY_DAYS = 14
 
 STATE_DIR = "threads_state"
 STATE_PATH = os.path.join(STATE_DIR, f"{ACCOUNT}.json")
@@ -406,17 +414,300 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
     raise RuntimeError(f"후킹글 생성 실패: {err}")
 
 
+
+# ─────────────────────────── 기관 로고 카드 ───────────────────────────
+BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                            "(KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
+AGENCY_DOMAINS = ("cleaneye", "incruit", "gojobs", "recruiter.co.kr", "careerlink", "applyin",
+                  "recruitcenter", "saramin", "fairyhr", "jobkorea", "alio", "kpcice", "jinhak",
+                  "catch.co.kr", "worknet", "work24", "midashri", "hrlink", "insaworks", "career.co.kr",
+                  "scout.co.kr")
+CARD_W = 1200
+
+
+def find_logo_file(inst: str):
+    """logos/ 폴더에서 기관명으로 카드 찾기 (띄어쓰기·(재) 등 무시)"""
+    if not os.path.isdir(LOGO_DIR):
+        return None
+    target = norm_key(norm_inst(inst)).replace("재단법인", "")
+    for fn in os.listdir(LOGO_DIR):
+        stem, ext = os.path.splitext(fn)
+        if ext.lower() not in (".png", ".jpg", ".jpeg"):
+            continue
+        if norm_key(norm_inst(stem)).replace("재단법인", "") == target:
+            return os.path.join(LOGO_DIR, fn)
+    return None
+
+
+def _visible_enough(im):
+    rgba = im.convert("RGBA"); rgba.thumbnail((300, 300))
+    px = list(rgba.getdata())
+    vis = [p for p in px if p[3] > 128]
+    if len(vis) < len(px) * 0.03:
+        return False
+    dark = sum(1 for r, g, b, a in vis if (0.299 * r + 0.587 * g + 0.114 * b) < 170)
+    colorful = sum(1 for r, g, b, a in vis if max(r, g, b) - min(r, g, b) > 60)
+    return dark + colorful >= len(px) * 0.02
+
+
+def _load_image(url, ref):
+    from PIL import Image
+    r = requests.get(url, headers={**BROWSER_UA, "Referer": ref}, timeout=15, verify=False)
+    r.raise_for_status()
+    data = r.content
+    if url.lower().split("?")[0].endswith(".svg") or b"<svg" in data[:500]:
+        import cairosvg
+        data = cairosvg.svg2png(bytestring=data, output_width=800)
+    im = Image.open(io.BytesIO(data)); im.load()
+    return im
+
+
+def _img_score(tag, inst):
+    attrs = " ".join([tag.get("src", ""), tag.get("alt", ""), tag.get("title", ""),
+                      str(tag.get("class", "")), str(tag.get("id", ""))]).lower()
+    s = 0
+    if "logo" in attrs: s += 5
+    if inst[:4] in (tag.get("alt", "") + tag.get("title", "")): s += 3
+    for p in tag.parents:
+        if not hasattr(p, "get"): break
+        if "logo" in (str(p.get("class", "")) + str(p.get("id", "")) + (p.name or "")).lower():
+            s += 4; break
+    for p in tag.parents:
+        if not hasattr(p, "get"): break
+        if p.name in ("header", "h1") or "header" in (str(p.get("class", "")) + str(p.get("id", ""))).lower():
+            s += 2; break
+    if any(b in attrs for b in ("footer", "foot", "banner", "sns", "icon", "btn", "top_", "close", "popup",
+                                "visual", "slide", "wa_", "qr", "award", "egov", "fki", "ict", "prize")):
+        s -= 6
+    if re.search(r"(logo_f|f-logo|flogo|ft_logo|_bott|_w\.|white|_wh)", attrs):
+        s -= 3
+    return s
+
+
+def _homepages(inst, job):
+    sites = []
+    net = urlparse(job.get("srcUrl") or "").netloc
+    if net and not any(a in net for a in AGENCY_DOMAINS):
+        parts = net.split(".")
+        if parts[0] in ("recruit", "job", "jobs", "career", "info"):
+            net = "www." + ".".join(parts[1:])
+        sites.append("https://" + net + "/")
+    try:  # 위키데이터 공식 홈페이지 (라벨이 기관명과 맞을 때만)
+        H = {"User-Agent": "job-compass-bot/1.0"}
+        d = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+            "action": "wbsearchentities", "search": inst, "language": "ko", "format": "json", "limit": 1}).json()
+        for e in d.get("search", []):
+            if norm_key(e.get("label", "")) != norm_key(inst):
+                continue
+            ent = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+                "action": "wbgetentities", "ids": e["id"], "props": "claims", "format": "json"}).json()
+            for c in ent["entities"][e["id"]].get("claims", {}).get("P856", []):
+                v = c["mainsnak"].get("datavalue", {}).get("value")
+                if v: sites.append(v)
+    except Exception:
+        pass
+    return list(dict.fromkeys(sites))
+
+
+def make_card(im):
+    """흰 배경 가로형 로고 카드 (가로:세로 1.8~4.2, 로고가 꽉 차게)"""
+    from PIL import Image, ImageChops
+    im = im.convert("RGBA")
+    flat = Image.new("RGBA", im.size, (255, 255, 255, 255)); flat.alpha_composite(im)
+    box = ImageChops.difference(flat.convert("RGB"), Image.new("RGB", im.size, "white")).getbbox()
+    if box: im = im.crop(box)
+    w, h = im.size
+    ratio = min(max(w / h, 1.8), 4.2)
+    cw, ch = CARD_W, int(CARD_W / ratio)
+    s = min(cw * 0.86 / w, ch * 0.78 / h)
+    im = im.resize((max(1, int(w * s)), max(1, int(h * s))), Image.LANCZOS)
+    card = Image.new("RGBA", (cw, ch), (255, 255, 255, 255))
+    card.alpha_composite(im, ((cw - im.width) // 2, (ch - im.height) // 2))
+    return card.convert("RGB")
+
+
+def ai_is_logo(card, inst) -> bool:
+    """Claude가 이미지를 보고 공식 대표 로고가 맞는지 판별 (1건 1~2원)"""
+    buf = io.BytesIO(); c = card.copy(); c.thumbnail((800, 450)); c.save(buf, "JPEG", quality=85)
+    prompt = (f"이 이미지가 '{inst}'의 공식 대표 로고(심볼+기관명 또는 기관 워드마크)인가? "
+              "수상 배너, 하위 서비스·캠페인 브랜드, 다른 기관 로고, 아이콘 조각, 흐릿하거나 잘린 이미지면 NO. "
+              "YES 또는 NO 한 단어로만 답해.")
+    content = [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg",
+                                            "data": base64.b64encode(buf.getvalue()).decode()}},
+               {"type": "text", "text": prompt}]
+    try:
+        for model in (CLAUDE_MODEL, FALLBACK_MODEL):
+            r = requests.post("https://api.anthropic.com/v1/messages", timeout=60, headers={
+                "x-api-key": os.environ["CLAUDE_API_KEY"], "anthropic-version": "2023-06-01",
+                "content-type": "application/json"},
+                json={"model": model, "max_tokens": 5, "messages": [{"role": "user", "content": content}]})
+            if r.status_code != 404:
+                break
+        r.raise_for_status()
+        ans = "".join(b.get("text", "") for b in r.json()["content"]).strip().upper()
+        return ans.startswith("YES")
+    except Exception as e:
+        print(f"[warn] 로고 AI 판별 실패: {e}")
+        return False
+
+
+def ai_find_homepage(inst):
+    """Claude 웹 검색으로 기관 공식 홈페이지 주소 찾기 (새 기관일 때만, 1회 20~30원)"""
+    prompt = (f"'{inst}'의 공식 홈페이지 메인 주소를 웹 검색으로 찾아줘. "
+              "채용대행 사이트(인크루트·잡코리아·사람인·recruiter.co.kr 등), 위키, 뉴스, 블로그 주소는 안 됨. "
+              "기관이 직접 운영하는 공식 홈페이지 주소 하나만 URL로 답해. 설명 없이 URL만. 못 찾으면 NONE.")
+    try:
+        for model in (CLAUDE_MODEL, FALLBACK_MODEL):
+            r = requests.post("https://api.anthropic.com/v1/messages", timeout=120, headers={
+                "x-api-key": os.environ["CLAUDE_API_KEY"], "anthropic-version": "2023-06-01",
+                "content-type": "application/json"},
+                json={"model": model, "max_tokens": 300,
+                      "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 2}],
+                      "messages": [{"role": "user", "content": prompt}]})
+            if r.status_code != 404:
+                break
+        r.raise_for_status()
+        text = " ".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
+        for u in re.findall(r"https?://[^\s\"'<>()\]\[]+", text):
+            net = urlparse(u).netloc
+            if net and not any(a in net for a in AGENCY_DOMAINS) and "wiki" not in net:
+                print(f"AI 홈페이지 검색: {inst} → {u}")
+                return u.rstrip(".,")
+    except Exception as e:
+        print(f"[warn] AI 홈페이지 검색 실패: {e}")
+    return None
+
+
+def _try_site_logo(site, inst):
+    """홈페이지 1곳에서 로고 찾기 → AI 판별 통과한 카드 반환"""
+    from bs4 import BeautifulSoup
+    try:
+        r = requests.get(site, headers=BROWSER_UA, timeout=15, verify=False)
+        if r.encoding in (None, "ISO-8859-1"):
+            r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, "html.parser")
+    except Exception:
+        return None
+    imgs = [(_img_score(t, inst), t) for t in soup.find_all("img")
+            if t.get("src") and not t["src"].startswith("data:")]
+    imgs = sorted([x for x in imgs if x[0] >= 5], key=lambda x: -x[0])
+    for _, t in imgs[:8]:
+        src = urljoin(r.url, t["src"])
+        try:
+            im = _load_image(src, r.url)
+        except Exception:
+            continue
+        w, h = im.size
+        if w < 60 or h < 15 or w / h > 12 or h / w > 3 or not _visible_enough(im):
+            continue
+        card = make_card(im)
+        if ai_is_logo(card, inst):
+            print(f"로고 자동 수집 성공: {src}")
+            return card
+        print(f"[info] AI가 로고 아님으로 판별: {src}")
+    return None
+
+
+def auto_collect_logo(inst, job):
+    """① 원문·위키데이터 홈페이지 → ② 실패하면 Claude 웹검색으로 공식 홈페이지 찾아서 재시도"""
+    try:
+        import bs4  # noqa
+        import urllib3; urllib3.disable_warnings()
+    except Exception:
+        return None
+    tried = []
+    for site in _homepages(inst, job):
+        tried.append(urlparse(site).netloc.replace("www.", ""))
+        card = _try_site_logo(site, inst)
+        if card:
+            return card
+    site = ai_find_homepage(inst)
+    if site and urlparse(site).netloc.replace("www.", "") not in tried:
+        return _try_site_logo(site, inst)
+    return None
+
+
+def git_push(paths, msg):
+    """새 로고를 저장소에 올리고 커밋 SHA 반환 (이미지 공개 URL용)"""
+    try:
+        subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+        subprocess.run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"], check=True)
+        subprocess.run(["git", "add", *paths], check=True)
+        subprocess.run(["git", "commit", "-m", msg], check=True)
+        for _ in range(3):
+            if subprocess.run(["git", "pull", "--rebase"]).returncode == 0 and \
+               subprocess.run(["git", "push"]).returncode == 0:
+                return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+            time.sleep(5)
+    except Exception as e:
+        print(f"[warn] 로고 push 실패: {e}")
+    return None
+
+
+def raw_url(path, ref="main"):
+    return f"https://raw.githubusercontent.com/{REPO}/{ref}/" + "/".join(quote(p) for p in path.split("/"))
+
+
+def resolve_logo(inst, job, state):
+    """반환: (이미지 URL 또는 None, 상태 메시지)"""
+    if not USE_LOGO:
+        return None, "로고 사용 안 함"
+    path = find_logo_file(inst)
+    if path:
+        return raw_url(path), f"로고 있음 ({path})"
+
+    tried = state.setdefault("logo_tried", {})
+    last = tried.get(inst)
+    if last and (dt.date.today() - dt.date.fromisoformat(last)).days < LOGO_RETRY_DAYS:
+        return None, "로고 없음 (최근 자동수집 실패 — 글만 발행)"
+
+    card = auto_collect_logo(inst, job)
+    if DRY_RUN:
+        return None, "자동수집 성공 (DRY_RUN이라 저장 안 함)" if card else "로고 없음 · 자동수집 실패"
+    if not card:
+        tried[inst] = dt.date.today().isoformat()
+        missing = set()
+        if os.path.exists(MISSING_PATH):
+            missing = {l.strip() for l in open(MISSING_PATH, encoding="utf-8") if l.strip()}
+        missing.add(inst)
+        with open(MISSING_PATH, "w", encoding="utf-8") as f:
+            f.write("\n".join(sorted(missing)) + "\n")
+        return None, "로고 없음 · 자동수집 실패 → logos_missing.txt 기록"
+
+    os.makedirs(LOGO_DIR, exist_ok=True)
+    path = os.path.join(LOGO_DIR, f"{inst}.png")
+    card.save(path, optimize=True)
+    if os.path.exists(MISSING_PATH):
+        rest = [l.strip() for l in open(MISSING_PATH, encoding="utf-8") if l.strip() and l.strip() != inst]
+        with open(MISSING_PATH, "w", encoding="utf-8") as f:
+            f.write("\n".join(rest) + ("\n" if rest else ""))
+    sha = git_push([path, MISSING_PATH] if os.path.exists(MISSING_PATH) else [path], f"logo: {inst} 자동 수집")
+    if not sha:
+        return None, "자동수집 성공했지만 업로드 실패 — 글만 발행"
+    return raw_url(path, sha), "로고 자동수집 성공 → logos/ 저장"
+
+
 # ─────────────────────────── Threads API ───────────────────────────
-def threads_post(text: str, reply_to: str = None) -> str:
+def threads_post(text: str, reply_to: str = None, image_url: str = None) -> str:
     uid, token = os.environ["THREADS_USER_ID"], os.environ["THREADS_TOKEN"]
-    params = {"media_type": "TEXT", "text": text, "access_token": token}
+    params = {"media_type": "IMAGE" if image_url else "TEXT", "text": text, "access_token": token}
+    if image_url:
+        params["image_url"] = image_url
     if reply_to:
         params["reply_to_id"] = reply_to
     r = requests.post(f"{THREADS_API}/{uid}/threads", data=params, timeout=30)
     if not r.ok:
         raise RuntimeError(f"컨테이너 생성 실패 {r.status_code}: {r.text}")
     cid = r.json()["id"]
-    time.sleep(8)
+    # 이미지 처리 완료 대기
+    for _ in range(20):
+        time.sleep(6)
+        st = requests.get(f"{THREADS_API}/{cid}", params={"fields": "status,error_message",
+                                                          "access_token": token}, timeout=30).json()
+        if st.get("status") == "FINISHED":
+            break
+        if st.get("status") in ("ERROR", "EXPIRED"):
+            raise RuntimeError(f"컨테이너 처리 실패: {st}")
     r = requests.post(f"{THREADS_API}/{uid}/threads_publish",
                       data={"creation_id": cid, "access_token": token}, timeout=30)
     if not r.ok:
@@ -470,13 +761,17 @@ def main():
     recent_hooks = [p["hook"].replace("\n", " / ") for p in hook_src if p.get("hook")]
     result = generate(job, inst, d_left, combo, post_text, recent_hooks)
     comment = build_comment(post, d_left)
+    logo_url, logo_msg = resolve_logo(inst, job, state)
+    print(f"로고: {logo_msg}" + (f" → {logo_url}" if logo_url else ""))
 
     print("\n" + "=" * 40 + "\n" + result["text"] + "\n" + "=" * 40)
     if comment:
         print(f"[첫 댓글]\n{comment}")
 
     md = (f"### {'🧪 DRY RUN' if DRY_RUN else '✅ 발행'} — {inst} (D-{d_left}) · {tier_label}\n"
-          f"조합: {' / '.join(combo[:3])}\n\n```\n{result['text']}\n```\n")
+          f"조합: {' / '.join(combo[:3])}\n\n로고: {logo_msg}\n\n```\n{result['text']}\n```\n")
+    if logo_url:
+        md += f"\n![logo]({logo_url})\n"
     if comment:
         md += f"첫 댓글:\n```\n{comment}\n```\n"
 
@@ -490,7 +785,13 @@ def main():
         print(f"랜덤 대기 {wait // 60}분 {wait % 60}초")
         time.sleep(wait)
 
-    thread_id = threads_post(result["text"])
+    try:
+        thread_id = threads_post(result["text"], image_url=logo_url)
+    except Exception as e:
+        if not logo_url:
+            raise
+        print(f"[warn] 이미지 발행 실패 → 글만 발행: {e}")
+        thread_id = threads_post(result["text"])
     print(f"본문 발행 완료: {thread_id}")
 
     comment_id = None
@@ -505,7 +806,7 @@ def main():
 
     state["posts"].append({
         "id": job["recrutPblntSn"], "instNm": inst, "title": job["recrutPbancTtl"],
-        "combo_idx": combo_idx, "hook": result["hook"], "tier": tier,
+        "combo_idx": combo_idx, "hook": result["hook"], "tier": tier, "logo": bool(logo_url),
         "thread_id": thread_id, "comment_id": comment_id,
         "at": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
     })
