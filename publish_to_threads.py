@@ -448,7 +448,46 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
 
 # ─────────────────────────── 기관 로고 카드 ───────────────────────────
 BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                            "(KHTML, like Gecko) Chrome/128.0 Safari/537.36"}
+                            "(KHTML, like Gecko) Chrome/128.0 Safari/537.36",
+              "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+              "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8"}
+
+
+def fetch_page(url):
+    """홈페이지 열기 — meta refresh·자바스크립트 이동까지 따라감"""
+    for _ in range(3):
+        r = requests.get(url, headers=BROWSER_UA, timeout=15, verify=False)
+        if r.encoding in (None, "ISO-8859-1"):
+            r.encoding = r.apparent_encoding
+        html = r.text
+        if len(html) < 3000:
+            clean = re.sub(r"(?s)<!--.*?-->", "", html)
+            m = (re.search(r'http-equiv=["\']refresh["\'][^>]*url=([^"\'>]+)', clean, re.I) or
+                 re.search(r'(?:location\.href|location\.replace\(|window\.location)\s*=?\s*["\']([^"\']+)["\']', clean))
+            if m:
+                url = urljoin(r.url, m.group(1).strip())
+                continue
+        return r
+    return r
+
+
+def _wd_match(e, inst):
+    """위키데이터 검색 결과가 기관명과 정확히 일치하는지 (한글 라벨·별칭 포함)"""
+    names = [e.get("label", ""), (e.get("match") or {}).get("text", "")] + (e.get("aliases") or [])
+    return any(norm_key(n) == norm_key(inst) for n in names if n)
+
+
+def wd_get(params):
+    """위키데이터·위키미디어 요청 (429 재시도)"""
+    H = {"User-Agent": "job-compass-bot/1.0 (github teukgasniper)"}
+    base = params.pop("_base", "https://www.wikidata.org/w/api.php")
+    for i in range(4):
+        r = requests.get(base, headers=H, timeout=20, params={**params, "format": "json"})
+        if r.status_code == 429:
+            time.sleep(4 + i * 4)
+            continue
+        return r.json()
+    return {}
 AGENCY_DOMAINS = ("cleaneye", "incruit", "gojobs", "recruiter.co.kr", "careerlink", "applyin",
                   "recruitcenter", "saramin", "fairyhr", "jobkorea", "alio", "kpcice", "jinhak",
                   "catch.co.kr", "worknet", "work24", "midashri", "hrlink", "insaworks", "career.co.kr",
@@ -524,14 +563,11 @@ def _homepages(inst, job):
             net = "www." + ".".join(parts[1:])
         sites.append("https://" + net + "/")
     try:  # 위키데이터 공식 홈페이지 (라벨이 기관명과 맞을 때만)
-        H = {"User-Agent": "job-compass-bot/1.0"}
-        d = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
-            "action": "wbsearchentities", "search": inst, "language": "ko", "format": "json", "limit": 1}).json()
+        d = wd_get({"action": "wbsearchentities", "search": inst, "language": "ko", "uselang": "ko", "limit": 1})
         for e in d.get("search", []):
-            if norm_key(e.get("label", "")) != norm_key(inst):
+            if not _wd_match(e, inst):
                 continue
-            ent = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
-                "action": "wbgetentities", "ids": e["id"], "props": "claims", "format": "json"}).json()
+            ent = wd_get({"action": "wbgetentities", "ids": e["id"], "props": "claims"})
             for c in ent["entities"][e["id"]].get("claims", {}).get("P856", []):
                 v = c["mainsnak"].get("datavalue", {}).get("value")
                 if v: sites.append(v)
@@ -583,10 +619,11 @@ def ai_is_logo(card, inst) -> bool:
 
 
 def ai_find_homepage(inst):
-    """Claude 웹 검색으로 기관 공식 홈페이지 주소 찾기 (새 기관일 때만, 1회 20~30원)"""
-    prompt = (f"'{inst}'의 공식 홈페이지 메인 주소를 웹 검색으로 찾아줘. "
-              "채용대행 사이트(인크루트·잡코리아·사람인·recruiter.co.kr 등), 위키, 뉴스, 블로그 주소는 안 됨. "
-              "기관이 직접 운영하는 공식 홈페이지 주소 하나만 URL로 답해. 설명 없이 URL만. 못 찾으면 NONE.")
+    """Claude 웹 검색으로 기관 CI(로고) 소개 페이지 + 공식 홈페이지 주소 찾기 (새 기관일 때만)"""
+    prompt = (f"'{inst}'의 ① CI·로고 소개 페이지 주소와 ② 공식 홈페이지 메인 주소를 웹 검색으로 찾아줘. "
+              "채용대행 사이트(인크루트·잡코리아·사람인·recruiter.co.kr 등), 위키, 뉴스, 블로그는 안 됨. "
+              "기관이 직접 운영하는 사이트 주소만. 설명 없이 URL만 한 줄에 하나씩, CI 페이지를 먼저. 못 찾으면 NONE.")
+    urls = []
     try:
         for model in (CLAUDE_MODEL, FALLBACK_MODEL):
             r = requests.post("https://api.anthropic.com/v1/messages", timeout=120, headers={
@@ -602,47 +639,161 @@ def ai_find_homepage(inst):
         for u in re.findall(r"https?://[^\s\"'<>()\]\[]+", text):
             net = urlparse(u).netloc
             if net and not any(a in net for a in AGENCY_DOMAINS) and "wiki" not in net:
-                print(f"AI 홈페이지 검색: {inst} → {u}")
-                return u.rstrip(".,")
+                urls.append(u.rstrip(".,"))
+        if urls:
+            print(f"AI 홈페이지 검색: {inst} → {urls[:2]}")
     except Exception as e:
         print(f"[warn] AI 홈페이지 검색 실패: {e}")
-    return None
+    return list(dict.fromkeys(urls))[:2]
 
 
-def _try_site_logo(site, inst):
-    """홈페이지 1곳에서 로고 찾기 → AI 판별 통과한 카드 반환"""
+def _css_logo_urls(page_url, soup):
+    """CSS 배경이미지로 넣은 로고 (#logo a {background:url(...)}) 찾기"""
+    css = [urljoin(page_url, l["href"]) for l in soup.find_all("link", href=True)
+           if "stylesheet" in (l.get("rel") or [])][:8]
+    sources = [(page_url, st.get_text()) for st in soup.find_all("style")]
+    for c in css:
+        try:
+            sources.append((c, requests.get(c, headers=BROWSER_UA, timeout=10, verify=False).text))
+        except Exception:
+            pass
+    out = []
+    for base, text in sources:
+        for m in re.finditer(r"([^{}]*logo[^{}]*)\{([^}]*)\}", text, re.I):
+            sel, body = m.group(1), m.group(2)
+            if re.search(r"(sns|foot|f_logo|ft_|footer|icon|btn|partner|family|banner)", sel, re.I):
+                continue
+            for u in re.findall(r"url\([\"']?([^\"')]+)[\"']?\)", body):
+                if not u.startswith("data:"):
+                    out.append(urljoin(base, u))
+    return list(dict.fromkeys(out))
+
+
+def _inline_svg_logos(soup):
+    """<h1 class="logo"><svg>...</svg></h1> 처럼 코드로 박힌 로고"""
+    out = []
+    for el in soup.select("[class*=logo], [id*=logo], header h1, h1"):
+        cls = (str(el.get("class", "")) + str(el.get("id", ""))).lower()
+        if re.search(r"(sns|foot|f_logo|ft_|footer|family|partner)", cls):
+            continue
+        svg = el.find("svg")
+        if svg and len(str(svg)) > 300:
+            out.append(str(svg))
+    return out[:3]
+
+
+def _logo_candidates(site, inst):
+    """홈페이지에서 로고 후보 모으기: img 태그 + CSS 배경 + 인라인 SVG"""
     from bs4 import BeautifulSoup
-    try:
-        r = requests.get(site, headers=BROWSER_UA, timeout=15, verify=False)
-        if r.encoding in (None, "ISO-8859-1"):
-            r.encoding = r.apparent_encoding
-        soup = BeautifulSoup(r.text, "html.parser")
-    except Exception:
-        return None
-    imgs = [(_img_score(t, inst), t) for t in soup.find_all("img")
-            if t.get("src") and not t["src"].startswith("data:")]
-    imgs = sorted([x for x in imgs if x[0] >= 5], key=lambda x: -x[0])
-    for _, t in imgs[:8]:
+    r = fetch_page(site)
+    if r.status_code >= 400:
+        raise RuntimeError(f"HTTP {r.status_code}")
+    soup = BeautifulSoup(r.text, "html.parser")
+    cands = []  # (점수, 종류, 값)
+    for t in soup.find_all("img"):
+        if not t.get("src") or t["src"].startswith("data:"):
+            continue
+        sc = _img_score(t, inst)
+        if sc < 5:
+            continue
         src = urljoin(r.url, t["src"])
         if t.get("srcset"):  # 고해상도(2x 등) 버전이 있으면 그걸로
-            cands = [c.strip().split(" ") for c in t["srcset"].split(",") if c.strip()]
+            parts = [c.strip().split(" ") for c in t["srcset"].split(",") if c.strip()]
             def _w(c):
                 try: return float(re.sub(r"[^0-9.]", "", c[1])) if len(c) > 1 else 1
                 except Exception: return 1
-            best = max(cands, key=_w, default=None)
+            best = max(parts, key=_w, default=None)
             if best: src = urljoin(r.url, best[0])
+        cands.append((sc, "url", src))
+    for u in _css_logo_urls(r.url, soup):
+        sc = 7 - (3 if re.search(r"(_w\.|white|_wh)", u.lower()) else 0)
+        if re.search(r"(parents|special|event|season|xmas|christmas|newyear|new_year|anniv|20\d\d)", u.lower()):
+            sc -= 4  # 기념일·이벤트용 스페셜 로고는 뒤로
+        if u.lower().split("?")[0].endswith(".svg"):
+            sc += 1
+        cands.append((sc, "url", u))
+    for svg in _inline_svg_logos(soup):
+        cands.append((6, "svg", svg))
+    cands.sort(key=lambda x: -x[0])
+    return r.url, cands
+
+
+def _open_candidate(kind, val, ref):
+    from PIL import Image
+    if kind == "svg":
+        import cairosvg
+        png = cairosvg.svg2png(bytestring=val.encode("utf-8"), output_width=2400)
+        im = Image.open(io.BytesIO(png)); im.load()
+        return im
+    return _load_image(val, ref)
+
+
+def _try_site_logo(site, inst, max_ai=3):
+    """홈페이지 1곳에서 로고 찾기 → AI 판별 통과한 카드 반환"""
+    try:
+        page, cands = _logo_candidates(site, inst)
+    except Exception:
+        return None
+    ai_used = 0
+    seen = set()
+    for _, kind, val in cands[:12]:
+        key = val[:200]
+        if key in seen:
+            continue
+        seen.add(key)
         try:
-            im = _load_image(src, r.url)
+            im = _open_candidate(kind, val, page)
         except Exception:
             continue
         w, h = im.size
         if w < 60 or h < 15 or w / h > 12 or h / w > 3 or not _visible_enough(im):
             continue
         card = make_card(im)
+        ai_used += 1
         if ai_is_logo(card, inst):
-            print(f"로고 자동 수집 성공: {src}")
+            print(f"로고 자동 수집 성공: {val[:120] if kind == 'url' else '인라인 SVG'}")
             return card
-        print(f"[info] AI가 로고 아님으로 판별: {src}")
+        print(f"[info] AI가 로고 아님으로 판별: {val[:120] if kind == 'url' else '인라인 SVG'}")
+        if ai_used >= max_ai:
+            break
+    return None
+
+
+def commons_search_logo(inst):
+    """위키미디어 공용에서 '기관명 로고' 파일 검색 (P154 등록이 없을 때)"""
+    H = {"User-Agent": "job-compass-bot/1.0 (github teukgasniper)"}
+    from PIL import Image
+    try:
+        titles = []
+        en = None
+        d = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+            "action": "wbsearchentities", "search": inst, "language": "ko", "uselang": "ko", "format": "json", "limit": 1}).json()
+        for e in d.get("search", []):
+            if _wd_match(e, inst):
+                ent = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
+                    "action": "wbgetentities", "ids": e["id"], "props": "labels", "languages": "en",
+                    "format": "json"}).json()
+                en = ent["entities"][e["id"]].get("labels", {}).get("en", {}).get("value")
+        for term in ([f"{en} logo"] if en else []) + [f"{inst} 로고"]:
+            r = requests.get("https://commons.wikimedia.org/w/api.php", headers=H, timeout=15, params={
+                "action": "query", "list": "search", "srsearch": term, "srnamespace": 6,
+                "srlimit": 5, "format": "json"}).json()
+            for h in r.get("query", {}).get("search", []):
+                t = h["title"]
+                if re.search(r"(logo|로고|CI\b|symbol)", t, re.I) and t.lower().endswith((".svg", ".png", ".jpg")):
+                    titles.append(t)
+        for t in list(dict.fromkeys(titles))[:2]:
+            url = "https://commons.wikimedia.org/wiki/Special:FilePath/" + quote(t[5:].replace(" ", "_")) + "?width=2400"
+            r = requests.get(url, headers=H, timeout=30)
+            if r.ok and r.headers.get("content-type", "").startswith("image"):
+                im = Image.open(io.BytesIO(r.content)); im.load()
+                if _visible_enough(im):
+                    card = make_card(im)
+                    if ai_is_logo(card, inst):
+                        print(f"로고 자동 수집 성공: 위키미디어 {t}")
+                        return card
+    except Exception as e:
+        print(f"[warn] 위키미디어 검색 실패: {e}")
     return None
 
 
@@ -651,9 +802,9 @@ def commons_logo(inst):
     H = {"User-Agent": "job-compass-bot/1.0 (github teukgasniper)"}
     try:
         d = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
-            "action": "wbsearchentities", "search": inst, "language": "ko", "format": "json", "limit": 1}).json()
+            "action": "wbsearchentities", "search": inst, "language": "ko", "uselang": "ko", "format": "json", "limit": 1}).json()
         for e in d.get("search", []):
-            if norm_key(e.get("label", "")) != norm_key(inst):
+            if not _wd_match(e, inst):
                 continue
             ent = requests.get("https://www.wikidata.org/w/api.php", headers=H, timeout=15, params={
                 "action": "wbgetentities", "ids": e["id"], "props": "claims", "format": "json"}).json()
@@ -673,13 +824,13 @@ def commons_logo(inst):
 
 
 def auto_collect_logo(inst, job):
-    """⓪ 위키미디어 공식 로고 → ① 원문·위키데이터 홈페이지 → ② Claude 웹검색으로 홈페이지 찾아 재시도"""
+    """⓪ 위키미디어 공식 로고 → ① 홈페이지(img·CSS·SVG) → ② 위키미디어 검색 → ③ Claude 웹검색(CI 페이지·홈페이지)"""
     try:
         import bs4  # noqa
         import urllib3; urllib3.disable_warnings()
     except Exception:
         return None
-    im = commons_logo(inst)  # ⓪ 위키미디어 공식 로고 (가장 고화질)
+    im = commons_logo(inst)
     if im is not None and _visible_enough(im):
         card = make_card(im)
         if ai_is_logo(card, inst):
@@ -691,9 +842,15 @@ def auto_collect_logo(inst, job):
         card = _try_site_logo(site, inst)
         if card:
             return card
-    site = ai_find_homepage(inst)
-    if site and urlparse(site).netloc.replace("www.", "") not in tried:
-        return _try_site_logo(site, inst)
+    card = commons_search_logo(inst)
+    if card:
+        return card
+    for site in ai_find_homepage(inst):
+        if urlparse(site).path.strip("/") == "" and urlparse(site).netloc.replace("www.", "") in tried:
+            continue
+        card = _try_site_logo(site, inst)
+        if card:
+            return card
     return None
 
 
