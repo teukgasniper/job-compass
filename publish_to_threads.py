@@ -1,0 +1,517 @@
+# -*- coding: utf-8 -*-
+"""
+쓰레드 자동발행 (지침서 v3.3 규격)
+흐름: jobs.json + job_posts.json → 본문 글 있는 공고 필터·스코어링 → 중복 소거
+      → hiring03 본문에서 팩트 보강 → Claude(Sonnet) 후킹글 생성·검증
+      → Threads 발행 → 첫 댓글(선택) → 사용 기록 저장
+
+환경변수
+  ACCOUNT          계정 식별자 (예: jami) — 기록 파일 이름에 사용
+  CLAUDE_API_KEY   Anthropic API 키
+  THREADS_TOKEN    Threads 장기 토큰
+  THREADS_USER_ID  Threads 사용자 ID
+  DRY_RUN          'true'면 글만 생성해서 로그에 출력 (발행·기록 X)
+  COMMENT_LINK     profile(기본, 링크 없는 고정 문구) | none(댓글 없음) | hiring | post
+  COMMENT_TEXT     profile 모드 댓글 문구 (기본 "👆 프로필 링크 확인!")
+  CLAUDE_MODEL     기본 claude-sonnet-5
+  JITTER_MAX_MIN   발행 전 랜덤 대기 최대 분 (예약 실행 시 자연스럽게)
+"""
+import os, re, json, time, random, datetime as dt
+import requests
+
+JOBS_URL = "https://teukgasniper.github.io/job-compass/jobs.json"
+POSTS_URL = "https://teukgasniper.github.io/job-compass/job_posts.json"
+HIRING_URL = "https://hiring.ddolbestory.com/"
+THREADS_API = "https://graph.threads.net/v1.0"
+
+ACCOUNT = os.environ.get("ACCOUNT", "jami").strip().lower()
+DRY_RUN = os.environ.get("DRY_RUN", "false").strip().lower() == "true"
+COMMENT_LINK = os.environ.get("COMMENT_LINK", "").strip().lower() or "profile"
+COMMENT_TEXT = os.environ.get("COMMENT_TEXT", "").strip() or "👆 프로필 링크 확인!"
+CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
+FALLBACK_MODEL = "claude-sonnet-4-6"
+JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
+
+STATE_DIR = "threads_state"
+STATE_PATH = os.path.join(STATE_DIR, f"{ACCOUNT}.json")
+KST = dt.timezone(dt.timedelta(hours=9))
+
+# ─────────────────────────── 필터·스코어링 (지침서 4장) ───────────────────────────
+GOOD_HIRE = ("정규직", "무기계약직", "청년인턴(채용형)")
+NEWBIE_OK = ("신입",)                # '신입', '신입+경력', '신입/경력'
+DOCTOR_WORDS = ("전임의", "레지던트", "전공의", "수련의", "의사직", "전문의", "임상강사", "일반의")
+BRANDS = (
+    "한국전력", "한전", "한국토지주택공사", "한국수자원공사", "한국철도공사", "코레일",
+    "한국가스공사", "한국도로공사", "국민건강보험공단", "국민연금공단", "근로복지공단",
+    "한국조폐공사", "인천국제공항공사", "한국공항공사", "한국수력원자력", "한국남동발전",
+    "한국남부발전", "한국동서발전", "한국서부발전", "한국중부발전", "한국지역난방공사",
+    "한국농어촌공사", "한국마사회", "한국관광공사", "대한무역투자진흥공사", "KOTRA",
+    "한국산업은행", "한국수출입은행", "IBK기업은행", "중소벤처기업진흥공단", "한국주택금융공사",
+    "주택도시보증공사", "한국자산관리공사", "건강보험심사평가원", "한국에너지공단",
+    "한국장애인고용공단", "한국산업인력공단", "국가철도공단", "한국부동산원", "한국전기안전공사",
+    "한국가스안전공사", "서울교통공사", "한국원자력환경공단", "한전KDN", "한전KPS", "한국석유공사",
+)
+
+
+def norm_inst(name: str) -> str:
+    return re.sub(r"^\((주|재|사|유|합)\)\s*|\s*\((주|재|사)\)$", "", (name or "")).strip()
+
+
+def norm_key(s: str) -> str:
+    return re.sub(r"[\s\(\)\[\]·,.\-_'\"]", "", s or "")
+
+
+def dday(end_ymd: str, today: dt.date) -> int:
+    try:
+        end = dt.datetime.strptime(end_ymd, "%Y%m%d").date()
+    except Exception:
+        return -999
+    return (end - today).days
+
+
+def eligible(job: dict, today: dt.date) -> bool:
+    """지침서 4장 조건 (본문 글 여부는 pick_job에서 우선순위로 처리)"""
+    if job.get("ongoingYn") != "Y":
+        return False
+    hire = job.get("hireTypeNmLst") or ""
+    if not any(h in hire for h in GOOD_HIRE):
+        return False
+    se = job.get("recrutSeNm") or ""
+    if not (any(n in se for n in NEWBIE_OK) or "무관" in se):
+        return False
+    title = job.get("recrutPbancTtl") or ""
+    if any(w in title for w in DOCTOR_WORDS):
+        return False
+    if dday(job.get("pbancEndYmd", ""), today) < 1:   # D-0·마감 지난 공고 제외
+        return False
+    return True
+
+
+def score(job: dict, today: dt.date) -> float:
+    s = min(int(job.get("recrutNope") or 0), 100)
+    inst = norm_inst(job.get("instNm"))
+    if any(b in inst for b in BRANDS):
+        s += 20
+    d = dday(job.get("pbancEndYmd", ""), today)
+    if 1 <= d <= 10:
+        s += 15
+    elif 11 <= d <= 15:
+        s += 5
+    try:  # 새로 올라온 공고 가산 (3일 이내 등록)
+        if (today - dt.datetime.strptime(job.get("pbancBgngYmd", ""), "%Y%m%d").date()).days <= 3:
+            s += 10
+    except Exception:
+        pass
+    return s
+
+
+# ─────────────────────────── 사용 기록 (중복 소거) ───────────────────────────
+def load_state() -> dict:
+    if os.path.exists(STATE_PATH):
+        with open(STATE_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    return {"account": ACCOUNT, "posts": []}
+
+
+def save_state(state: dict):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    state["posts"] = state["posts"][-500:]
+    with open(STATE_PATH, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=1)
+
+
+def job_key(j: dict) -> str:
+    return norm_key(norm_inst(j.get("instNm"))) + "|" + norm_key(j.get("recrutPbancTtl"))
+
+
+def pick_job(jobs, posts, state, today):
+    """
+    우선순위
+      1순위: 본문 글(hiring03) 있는 새 공고
+      2순위: 본문 글 없는 새 공고
+      3순위: 새 공고가 없으면 이미 올린 공고 재발행 — 반복 횟수 적은 것 → 오래전에 올린 것 → 인기순
+    같은 순위 안에서는 인기 점수순(상위 5개 중 가중 랜덤), 최근 6건과 같은 기관은 뒤로
+    반환: (job, tier, 후보 수)
+    """
+    history = state["posts"]
+    used_ids = {str(p["id"]) for p in history}
+    used_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
+    recent_insts = {norm_key(norm_inst(p["instNm"])) for p in history[-6:]}
+
+    live = [j for j in jobs if eligible(j, today)]
+    new = [j for j in live if str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys]
+    tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
+    tier2 = [j for j in new if str(j["recrutPblntSn"]) not in posts]
+
+    def choose(cands):
+        fresh = [j for j in cands if norm_key(norm_inst(j["instNm"])) not in recent_insts] or cands
+        fresh.sort(key=lambda j: score(j, today), reverse=True)
+        top = fresh[:5]
+        return random.choices(top, weights=[max(score(j, today), 1) for j in top], k=1)[0]
+
+    if tier1:
+        return choose(tier1), 1, len(tier1)
+    if tier2:
+        return choose(tier2), 2, len(tier2)
+
+    # 3순위: 재발행 — 최근 12건(약 하루)에 올린 공고는 제외, 그래도 없으면 전부 허용
+    recent_ids = {str(p["id"]) for p in history[-12:]}
+    repeat = [j for j in live if str(j["recrutPblntSn"]) not in recent_ids] or live
+    if not repeat:
+        return None, 0, 0
+
+    def times(j):
+        return sum(1 for p in history if str(p["id"]) == str(j["recrutPblntSn"]))
+
+    def last_at(j):
+        ts = [p["at"] for p in history if str(p["id"]) == str(j["recrutPblntSn"])]
+        return max(ts) if ts else ""
+
+    repeat.sort(key=lambda j: (
+        times(j),                                   # 덜 반복된 것 먼저
+        str(j["recrutPblntSn"]) not in posts,       # 본문 글 있는 것 먼저
+        last_at(j),                                 # 오래전에 올린 것 먼저
+        -score(j, today),                           # 인기순
+    ))
+    fresh = [j for j in repeat if norm_key(norm_inst(j["instNm"])) not in recent_insts] or repeat
+    return fresh[0], 3, len(repeat)
+
+
+# ─────────────────────────── 본문 글에서 팩트 보강 ───────────────────────────
+def fetch_post_text(post: dict) -> str:
+    """hiring03 본문을 Blogger 피드로 읽어 텍스트만 추출 (실패 시 빈 문자열)"""
+    html = ""
+    try:
+        feed = f"https://hiring03.ddolbestory.com/feeds/posts/default/{post['postId']}?alt=json"
+        r = requests.get(feed, timeout=20)
+        if r.ok:
+            html = r.json()["entry"]["content"]["$t"]
+    except Exception:
+        pass
+    if not html:
+        try:
+            r = requests.get(post["url"], timeout=20)
+            if r.ok:
+                html = r.text
+        except Exception:
+            return ""
+    html = re.sub(r"(?is)<(script|style|ins|noscript)[^>]*>.*?</\1>", " ", html)
+    text = re.sub(r"(?s)<[^>]+>", "\n", html)
+    text = re.sub(r"&nbsp;", " ", text)
+    text = re.sub(r"&[a-z#0-9]+;", "", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n\s*\n+", "\n", text).strip()
+    return text[:4000]
+
+
+# ─────────────────────────── 후킹 조합 순환 (지침서 6장) ───────────────────────────
+COMBOS = [
+    ("부모님", "반응 역전", "기관 업무를 일상 한 마디로 재정의", "📍"),
+    ("엄마", "세대 연결", "기관 고유 소재", "📍"),
+    ("아버지", "반응 역전", "오해→사실", "📍"),
+    ("여자친구", "설득→반응 역전", "오해→사실", "📍"),
+    ("여자친구", "먼저 찾아줌", "상황저격형", "📍"),
+    ("여자친구", "몰래 지원→합격 고백", "기관 고유 클로저", "📍"),
+    ("회사동료", "경쟁 (동료가 먼저 넣음)", "손실회피형", "📍"),
+    ("회사동료", "발견 계기 (점심시간)", "숨은공채형", "📍"),
+    ("본인(독백)", "어차피 안 되겠지→역전", "역전형", "📍"),
+    ("본인(독백)", "발견 계기", "기관 고유 소재", "📍"),
+    ("친구", "친구 경험→나도 발견", "상황저격형", "📍"),
+    ("—", "팩트 한 줄", "저격형", "📍"),
+    ("—", "팩트 한 줄", "오류의심형", "📍"),
+    ("—", "팩트 한 줄", "경고형", "⚠️"),
+    ("—", "마감 카운트다운", "시한폭탄형", "⚠️"),
+]
+
+
+def pick_combo(state, d_left: int):
+    recent = [p.get("combo_idx") for p in state["posts"][-10:]]
+    pool = [i for i in range(len(COMBOS)) if i not in recent]
+    if d_left > 7:  # 마감 여유 있으면 시한폭탄형 제외
+        pool = [i for i in pool if COMBOS[i][2] != "시한폭탄형"] or pool
+    if not pool:
+        pool = list(range(len(COMBOS)))
+    idx = random.choice(pool)
+    return idx, COMBOS[idx]
+
+
+# ─────────────────────────── Claude 프롬프트 ───────────────────────────
+SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작가다. 아래 규격을 100% 지킨다.
+
+[핵심 원칙]
+- 과장은 OK, 거짓은 NO. 훅·클로저는 자극적으로 과장 가능. 리스트 5개의 수치·조건은 반드시 제공된 [공고 데이터]/[본문 발췌]에 있는 팩트만.
+- 후킹은 항상 강력하게. 설명하지 말고 궁금하게. 읽고 "뭔데?"가 떠올라야 함.
+- 기관 고유 소재로 쓴다. 기관이 하는 일·만드는 것·위치·산업 특성을 훅과 클로저에 녹여서 다른 기관에 복붙 불가능해야 함.
+
+[포맷]
+- 훅: 최대 2줄. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명 넣지 않음. 모집 인원은 넣어도 됨.
+- 리스트: 정확히 5개. 1번은 반드시 '기관 정식명칭'을 작은따옴표로 감싸 시작 + 핵심 팩트(인원·고용형태). 
+  필수 팩트: 고용형태, 학력조건, 마감일(보통 5번). 각 항목 짧게 한 줄.
+- 클로저: 1줄. 과장 OK. 훅과 스토리가 이어지게 (예: "보여줬음" → "같이 넣겠다고 함"). 
+- 반말 구어체. 링크·해시태그 금지. 훅 앞 이모지 외 이모지 쓰지 않음.
+
+[금지 패턴]
+- 질문유도형 ("~인지 알아?"), 일상 스토리형 ("전화/신고했더니 공기업이었음"),
+  생활 연결형 ("~할 때 신고하는 곳 → 그 기관이 사람 뽑음"), 비교형 ("A vs B").
+- 아무도 안 할 억지 대화를 지어내는 훅, 잡학 트리비아 톤, AI가 짜낸 티 나는 훅.
+- 고정 클로저 금지: "세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음",
+  "넘기려다 공고 열어본 사람이 붙는 거임", "말하고 싶으면 일단 넣어야 됨", "합격하면 그때 말하려고",
+  "동료는 이미 넣었고 나만 안 넣었음".
+
+[팩트 주의]
+- 고용형태가 여러 개면 데이터 그대로 반영 (예: "정규직 외"), 대체인력·비정규직을 정규직이라고 쓰지 말 것.
+- 평균 연봉은 전 직원 평균이지 신입 초봉이 아님. 연봉을 쓸 거면 무엇인지 명시.
+- "필기 없음", "자소서 없음" 같은 전형 표현은 데이터에 명시돼 있을 때만.
+- 데이터에 없는 내용은 리스트에 넣지 않는다.
+
+[검증된 베스트 예시]
+📍엄마한테 "나 돈 찍는 데 취직한다" 했더니
+사기치지 말라고 하길래 공고 보여줬음
+
+1. '한국조폐공사' 57명 정규직 채용
+2. 화폐·여권·신분증 만드는 공기업
+3. 학력 안 봄 - 누구나 지원 가능
+4. 대전·서울·경산·부여 배치
+5. 10/2 마감 - 아직 열흘 남음
+
+공고 보더니 본인도 넣겠다고 함
+
+⚠️취준생 심장 약하면 스크롤 멈춰
+
+1. '한국토지주택공사' 235명 정규직
+2. 서류에서 자소서 평가 아예 없앰
+3. 학력·나이·경력 제한 전부 없음
+4. 고졸 전형 24명 별도 운영
+5. 접수 9월 29일 마감
+
+자소서 없는 235명 공채는 다음에 없음
+
+📍여자친구한테 "우리 울산 갈까?" 했더니
+미쳤냐고 하길래 이거 보여줬음
+
+1. '한국에너지공단' 93명 정규직
+2. 학력 안 봄 - 블라인드 채용
+3. 울산 본사 + 전국 지역본부 배치
+4. 기계·전기·전산·화공 전 직군
+5. 10월 1일 마감 - D-9
+
+보여줬더니 같이 넣겠다고 함
+
+[출력]
+설명 없이 JSON 객체 하나만 출력. 코드블록 금지.
+{"hook": "훅(줄바꿈은 \\n, 최대 2줄)", "items": ["1번 내용", "2번", "3번", "4번", "5번"], "closer": "클로저 1줄"}
+items 각 원소에는 번호("1.")를 붙이지 말 것.
+"""
+
+
+def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
+    person, structure, tone, emoji = combo
+    end = dt.datetime.strptime(job["pbancEndYmd"], "%Y%m%d")
+    data = {
+        "기관 정식명칭(리스트 1번에 '따옴표'로)": inst,
+        "공고명": job.get("recrutPbancTtl"),
+        "고용형태": job.get("hireTypeNmLst"),
+        "신입/경력": job.get("recrutSeNm"),
+        "모집인원": job.get("recrutNope"),
+        "학력조건": job.get("acbgCondNmLst"),
+        "근무지역": job.get("workRgnNmLst"),
+        "직무분야(NCS)": job.get("ncsCdNmLst"),
+        "마감일": f"{end.month}월 {end.day}일",
+        "D-day": f"D-{d_left}",
+    }
+    for k_src, k_out in (("yearIncome", "연봉(클린아이)"), ("judgeMethod", "전형방법(클린아이)")):
+        if job.get(k_src):
+            data[k_out] = job[k_src]
+
+    lines = [
+        "[이번 글의 조합]",
+        f"- 인물: {person}",
+        f"- 구조: {structure}",
+        f"- 톤: {tone}",
+        f"- 훅 맨 앞 이모지: {emoji}",
+        "",
+        "[공고 데이터]",
+        json.dumps(data, ensure_ascii=False, indent=1),
+        "",
+        "[본문 발췌 — 팩트 보강용, 여기 있는 내용만 추가 팩트로 사용 가능]",
+        post_text or "(없음)",
+    ]
+    if recent_hooks:
+        lines += ["", "[최근 발행한 훅 — 이것들과 문장·구조가 겹치면 안 됨]"] + [f"- {h}" for h in recent_hooks]
+    lines += ["", "위 규격대로 쓰레드 글 1개를 JSON으로 출력해."]
+    return "\n".join(lines)
+
+
+def call_claude(system, user, model):
+    r = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": os.environ["CLAUDE_API_KEY"],
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={"model": model, "max_tokens": 1000, "system": system,
+              "messages": [{"role": "user", "content": user}]},
+        timeout=120,
+    )
+    if r.status_code == 404 and model != FALLBACK_MODEL:
+        print(f"[warn] 모델 {model} 없음 → {FALLBACK_MODEL}로 재시도")
+        return call_claude(system, user, FALLBACK_MODEL)
+    r.raise_for_status()
+    return "".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
+
+
+def parse_and_validate(raw: str, emoji: str):
+    clean = re.sub(r"```(json)?", "", raw).strip()
+    m = re.search(r"\{.*\}", clean, re.S)
+    if not m:
+        return None, "JSON 없음"
+    try:
+        d = json.loads(m.group(0))
+    except Exception as e:
+        return None, f"JSON 파싱 실패: {e}"
+    hook = (d.get("hook") or "").strip()
+    items = [re.sub(r"^\s*\d+[\.\)]\s*", "", str(x)).strip() for x in (d.get("items") or [])]
+    closer = (d.get("closer") or "").strip()
+
+    hook_lines = [l for l in hook.split("\n") if l.strip()]
+    if not hook_lines or len(hook_lines) > 2:
+        return None, "훅 줄 수 오류"
+    if not hook.startswith(emoji):
+        return None, f"훅 이모지 오류 (필요: {emoji})"
+    if len(items) != 5 or any(not x for x in items):
+        return None, "리스트 5개 아님"
+    if not re.match(r"^'[^']+'", items[0]):
+        return None, "1번에 '기관명' 없음"
+    if not closer or "\n" in closer:
+        return None, "클로저 오류"
+    body = hook + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
+    if re.search(r"https?://|#\S", body):
+        return None, "링크/해시태그 포함"
+    if len(body) > 490:
+        return None, f"길이 초과 ({len(body)}자)"
+    return {"hook": hook, "items": items, "closer": closer, "text": body}, None
+
+
+def generate(job, inst, d_left, combo, post_text, recent_hooks):
+    user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks)
+    err = None
+    for attempt in range(3):
+        u = user if not err else user + f"\n\n[이전 출력 오류: {err}] 규격을 다시 지켜서 출력해."
+        raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
+        result, err = parse_and_validate(raw, combo[3])
+        if result:
+            return result
+        print(f"[warn] 생성 {attempt+1}회차 검증 실패: {err}")
+    raise RuntimeError(f"후킹글 생성 실패: {err}")
+
+
+# ─────────────────────────── Threads API ───────────────────────────
+def threads_post(text: str, reply_to: str = None) -> str:
+    uid, token = os.environ["THREADS_USER_ID"], os.environ["THREADS_TOKEN"]
+    params = {"media_type": "TEXT", "text": text, "access_token": token}
+    if reply_to:
+        params["reply_to_id"] = reply_to
+    r = requests.post(f"{THREADS_API}/{uid}/threads", data=params, timeout=30)
+    if not r.ok:
+        raise RuntimeError(f"컨테이너 생성 실패 {r.status_code}: {r.text}")
+    cid = r.json()["id"]
+    time.sleep(8)
+    r = requests.post(f"{THREADS_API}/{uid}/threads_publish",
+                      data={"creation_id": cid, "access_token": token}, timeout=30)
+    if not r.ok:
+        raise RuntimeError(f"발행 실패 {r.status_code}: {r.text}")
+    return r.json()["id"]
+
+
+def build_comment(post: dict, d_left: int):
+    """첫 댓글 — 기본은 링크 없는 고정 문구 (계정 안정성)"""
+    if COMMENT_LINK == "none":
+        return None
+    if COMMENT_LINK in ("hiring", "post"):  # 나중에 링크 달고 싶을 때만
+        link = post["url"] if (COMMENT_LINK == "post" and post) else HIRING_URL
+        lead = f"D-{d_left} 곧 마감 👇" if d_left <= 5 else "지원자격 총정리 👇"
+        return f"{lead}\n{link}"
+    return COMMENT_TEXT
+
+
+def summary(md: str):
+    p = os.environ.get("GITHUB_STEP_SUMMARY")
+    if p:
+        with open(p, "a", encoding="utf-8") as f:
+            f.write(md + "\n")
+
+
+# ─────────────────────────── main ───────────────────────────
+def main():
+    today = dt.datetime.now(KST).date()
+    jobs = requests.get(JOBS_URL, timeout=30).json()["result"]
+    posts = requests.get(POSTS_URL, timeout=30).json()
+    state = load_state()
+
+    job, tier, n_cands = pick_job(jobs, posts, state, today)
+    if not job:
+        print("진행 중인 공고 자체가 없음 — 이번 회차는 건너뜀")
+        summary("### ⏭️ 건너뜀\n진행 중인 공고 없음")
+        return
+    tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 재발행"}[tier]
+
+    inst = norm_inst(job["instNm"])
+    d_left = dday(job["pbancEndYmd"], today)
+    post = posts.get(str(job["recrutPblntSn"]))
+    combo_idx, combo = pick_combo(state, d_left)
+    print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")
+    print(f"조합: {combo}")
+
+    post_text = fetch_post_text(post) if post else ""
+    # 최근 훅 + (재발행이면) 같은 공고로 예전에 쓴 훅 전부 → 겹치지 않게
+    same_job = [p for p in state["posts"] if str(p["id"]) == str(job["recrutPblntSn"])]
+    hook_src = state["posts"][-8:] + [p for p in same_job if p not in state["posts"][-8:]]
+    recent_hooks = [p["hook"].replace("\n", " / ") for p in hook_src if p.get("hook")]
+    result = generate(job, inst, d_left, combo, post_text, recent_hooks)
+    comment = build_comment(post, d_left)
+
+    print("\n" + "=" * 40 + "\n" + result["text"] + "\n" + "=" * 40)
+    if comment:
+        print(f"[첫 댓글]\n{comment}")
+
+    md = (f"### {'🧪 DRY RUN' if DRY_RUN else '✅ 발행'} — {inst} (D-{d_left}) · {tier_label}\n"
+          f"조합: {' / '.join(combo[:3])}\n\n```\n{result['text']}\n```\n")
+    if comment:
+        md += f"첫 댓글:\n```\n{comment}\n```\n"
+
+    if DRY_RUN:
+        summary(md)
+        print("\nDRY_RUN — 발행·기록하지 않음")
+        return
+
+    if JITTER_MAX_MIN > 0:
+        wait = random.randint(0, JITTER_MAX_MIN * 60)
+        print(f"랜덤 대기 {wait // 60}분 {wait % 60}초")
+        time.sleep(wait)
+
+    thread_id = threads_post(result["text"])
+    print(f"본문 발행 완료: {thread_id}")
+
+    comment_id = None
+    if comment:
+        time.sleep(random.randint(30, 90))
+        try:
+            comment_id = threads_post(comment, reply_to=thread_id)
+            print(f"첫 댓글 완료: {comment_id}")
+        except Exception as e:  # 댓글 실패해도 본문은 이미 발행됨 → 기록은 남김
+            print(f"[warn] 첫 댓글 실패 (권한 threads_manage_replies 확인): {e}")
+            md += f"\n⚠️ 첫 댓글 실패: {e}\n"
+
+    state["posts"].append({
+        "id": job["recrutPblntSn"], "instNm": inst, "title": job["recrutPbancTtl"],
+        "combo_idx": combo_idx, "hook": result["hook"], "tier": tier,
+        "thread_id": thread_id, "comment_id": comment_id,
+        "at": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
+    })
+    save_state(state)
+    summary(md)
+
+
+if __name__ == "__main__":
+    main()
