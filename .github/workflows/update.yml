@@ -32,6 +32,7 @@ jobs:
           RELAY_URL: ${{ secrets.RELAY_URL }}
           RELAY_TOKEN: ${{ secrets.RELAY_TOKEN }}
           GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}
+          CLEANEYE_API_KEY: ${{ secrets.CLEANEYE_API_KEY }}     
         run: python fetch_jobs.py
 
       - name: 상세 글 자동 발행 (hiring03)
@@ -41,7 +42,7 @@ jobs:
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
           BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
-          PUBLISH_PER_RUN: ${{ vars.PUBLISH_PER_RUN || '5' }}
+          PUBLISH_PER_RUN: ${{ vars.PUBLISH_PER_RUN || '5' }}          
         run: python publish_to_blogger.py
 
       - name: 저장소에 백업
