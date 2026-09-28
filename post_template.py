@@ -1,6 +1,15 @@
 """채용공고 1건 → 상세 글 HTML (지침서 2번 페이지 / 거미줄 v3.6 규격)
 원칙: 과장은 OK, 거짓은 NO — 데이터에 없는 사실(연봉·전형 확정·어학 기준)은 쓰지 않는다.
-v2: 인트로 후킹 강화 / 섹션4 보수 수준 교체 / 인트로CTA-H2#1 광고 제거 / 정년보장 분기 / 결론 강화"""
+
+v2 변경사항:
+- 인트로 후킹박스 (파란 배경, 연봉 인라인, 셀링포인트 태그)
+- 첫 번째 CTA: "채용공고 바로가기"로 변경 (나머지 CTA는 기존 유지)
+- 연봉 테이블을 H2-1(채용 개요) 안으로 병합 → 별도 H2 삭제
+- NCS 분류 태그 (H2-1 안)
+- 전형절차 화살표 ▼ (테이블 → 화살표 교체)
+- 정규직이면 고용형태 섹션 생략 (H2 6개), 비정규직이면 고용형태 설명 추가 (H2 7개)
+- 광고: 정규직 10개, 비정규직 11개 (소제목 위마다 1개)
+"""
 from datetime import datetime, timezone, timedelta
 import re, json, os
 
@@ -13,7 +22,6 @@ except Exception:
     SALARY_DB = {}
 
 def _find_salary(inst_name):
-    """기관명으로 연봉 데이터 찾기 (부분 일치)"""
     clean = re.sub(r"\(주\)|\(재\)|\(사\)|주식회사", "", inst_name).strip()
     if clean in SALARY_DB:
         return SALARY_DB[clean]
@@ -95,6 +103,135 @@ def faq(items):
                 f'<p style="font-size:17px; font-weight:bold; color:#1e293b; margin:0 0 8px; line-height:1.5;">Q{i}. {q}</p>'
                 f'<p style="font-size:16px; color:#374151; margin:0; line-height:1.65; word-break:keep-all;">{a}</p></div>')
     return out
+
+# ───────── v2 신규 부품 ─────────
+
+def intro_box(inst, total_count, hire_type, starting_salary, avg_salary, inst_desc, selling_point):
+    """인트로 후킹 박스 — 목차 아래, 첫 CTA 위에 1회만"""
+    salary_line = ""
+    if starting_salary and avg_salary:
+        salary_line = (f'<p style="font-size:17px; color:#1e293b; margin:0 0 8px; line-height:1.6; word-break:keep-all;">'
+                       f'신입 초봉 약 <span style="color:#EF4444; font-weight:bold;">{starting_salary:,}만원</span>, '
+                       f'직원 평균 연봉 <span style="color:#EF4444; font-weight:bold;">{avg_salary:,}만원</span> 수준{inst_desc}.</p>')
+    elif avg_salary:
+        salary_line = (f'<p style="font-size:17px; color:#1e293b; margin:0 0 8px; line-height:1.6; word-break:keep-all;">'
+                       f'직원 평균 연봉 <span style="color:#EF4444; font-weight:bold;">{avg_salary:,}만원</span> 수준{inst_desc}.</p>')
+
+    sp_line = ""
+    if selling_point:
+        sp_line = f'<p style="font-size:17px; color:#1e293b; margin:0 0 8px; line-height:1.6; word-break:keep-all;">{selling_point}</p>'
+
+    count_text = f'<span style="color:#EF4444; font-weight:bold;">{total_count}명</span> ' if total_count > 0 else ""
+
+    return (f'<div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:14px; padding:22px 20px; margin:10px 0 24px;">'
+            f'<p style="font-size:20px; font-weight:bold; color:#1E3A8A; margin:0 0 12px; line-height:1.45; word-break:keep-all;">'
+            f'{inst}이(가) {count_text}{hire_type} 채용을 시작했습니다.</p>'
+            f'{salary_line}{sp_line}'
+            f'<p style="font-size:16px; color:#374151; margin:12px 0 0; line-height:1.6; word-break:keep-all;">'
+            f'아래에서 모집 분야, 전형 일정, 시험 과목까지 한 번에 확인하세요.</p>'
+            f'</div>')
+
+def selling_tags(hire_type, total_count, edu_label, deadline_short):
+    """셀링포인트 태그 (인트로 박스 아래)"""
+    tag_style = 'display:inline-block; background:#DBEAFE; color:#1E40AF; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
+    deadline_style = 'display:inline-block; background:#FEF3C7; color:#92400E; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
+    tags = f'<span style="{tag_style}">✅ {hire_type} {total_count}명</span>' if total_count > 0 else f'<span style="{tag_style}">✅ {hire_type}</span>'
+    tags += f' <span style="{tag_style}">✅ {edu_label}</span>'
+    tags += f' <span style="{tag_style}">✅ 블라인드 채용</span>'
+    tags += f' <span style="{deadline_style}">⏰ {deadline_short} 마감</span>'
+    return f'<div style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px;">{tags}</div>'
+
+def salary_table(sal):
+    """연봉 테이블 (H2-1 안에 삽입)"""
+    if not sal:
+        return ""
+    th_s = 'background:#F1F5F9; color:#1e293b; padding:12px 10px; border:1px solid #E2E8F0; font-size:15px; text-align:center;'
+    td_s = 'padding:12px 10px; border:1px solid #E2E8F0; font-size:15px; line-height:1.55; word-break:keep-all; vertical-align:middle; text-align:center;'
+    entry_val = sal.get("entry", 0)
+    avg_val = sal.get("avg", 0)
+    if not avg_val:
+        return ""
+    entry = f'약 {entry_val:,}만원' if entry_val and entry_val > 0 else "공개 데이터 확인 중"
+    avg = f'약 {avg_val:,}만원'
+    return (f'<div style="overflow-x:auto; margin:18px 0 22px;">'
+            f'<table style="width:100%; border-collapse:collapse; background:#fff;">'
+            f'<thead><tr><th style="{th_s} width:50%;">신입 초봉</th><th style="{th_s} width:50%;">직원 평균 연봉</th></tr></thead>'
+            f'<tbody><tr>'
+            f'<td style="{td_s} font-size:18px;"><span style="color:#EF4444; font-weight:bold;">{entry}</span></td>'
+            f'<td style="{td_s} font-size:18px;"><span style="color:#EF4444; font-weight:bold;">{avg}</span></td>'
+            f'</tr></tbody></table></div>'
+            f'<p style="font-size:13px; color:#9CA3AF; margin:0 0 16px; text-align:right;">출처: 알리오 공공기관 경영공시</p>')
+
+def ncs_tags(ncs_items):
+    """NCS 분류 태그 (H2-1 안에 삽입)"""
+    if not ncs_items:
+        return ""
+    tags = ''.join(
+        f'<span style="display:inline-block; background:#F3F4F6; color:#374151; font-size:13px; padding:5px 12px; '
+        f'border-radius:6px; border:1px solid #E5E7EB;">{ncs}</span>' for ncs in ncs_items)
+    return (f'<div style="margin:16px 0 20px;">'
+            f'<p style="font-size:14px; color:#6B7280; margin:0 0 8px; font-weight:600;">NCS 표준직무 분류</p>'
+            f'<div style="display:flex; flex-wrap:wrap; gap:6px;">{tags}</div></div>')
+
+def arrow_step(title, desc, is_last=False):
+    """전형절차 화살표 단일 스텝"""
+    bg = "#F0FDF4" if is_last else "#EFF6FF"
+    border_color = "#22C55E" if is_last else "#3B82F6"
+    text_color = "#166534" if is_last else "#1E3A8A"
+    arrow_color = "#22C55E" if is_last else "#3B82F6"
+    block = (f'<div style="background:{bg}; border:2px solid {border_color}; border-radius:12px; padding:16px 18px; text-align:center;">'
+             f'<p style="margin:0; font-size:16px; font-weight:bold; color:{text_color};">{title}</p>'
+             f'<p style="margin:4px 0 0; font-size:14px; color:#374151;">{desc}</p></div>')
+    if not is_last:
+        block += f'\n<div style="text-align:center; padding:6px 0;"><span style="font-size:24px; color:{arrow_color}; font-weight:bold;">▼</span></div>'
+    return block
+
+def arrow_steps_html(bgn_date, end_date):
+    """전형절차 화살표 블록 (기본 자동발행용)"""
+    steps = [
+        ("접수 기간", f"{bgn_date} ~ {end_date}"),
+        ("1단계 — 서류전형", "입사지원서·자기소개서 + 자격 요건 확인"),
+        ("2단계 — 필기전형", "NCS 직업기초능력 + 전공(공고마다 다름)"),
+        ("3단계 — 면접전형", "직무 역량·인성 면접 (1~2회)"),
+        ("최종 합격", "신원조회 · 채용 신체검사 후 임용"),
+    ]
+    html = '<div style="max-width:400px; margin:20px auto;">'
+    for i, (title, desc) in enumerate(steps):
+        html += arrow_step(title, desc, is_last=(i == len(steps) - 1))
+    html += '</div>'
+    html += '<p style="font-size:14px; color:#9CA3AF; margin:12px 0 0; text-align:center;">※ 단계별 세부 일정은 원문 공고에서 확인하세요.</p>'
+    return html
+
+def hire_type_section(sec_num, hl):
+    """고용형태 설명 섹션 (비정규직일 때만 표시)"""
+    main_type = hl[0] if hl else ""
+
+    if "무기계약직" in main_type:
+        desc = ("무기계약직은 계약 기간의 정함이 없는 근로계약이에요. 정규직과 마찬가지로 정년까지 근무할 수 있고, "
+                "호봉제가 적용되는 기관도 많아요. 다만 승진 체계나 일부 복리후생은 정규직과 다를 수 있어요.")
+        tip = "정년 보장 + 호봉제 적용이 핵심이에요. 처우는 기관마다 다르니 원문 공고에서 확인하세요."
+    elif "채용형" in main_type or "인턴" in main_type:
+        desc = ("채용형 인턴은 일정 기간 인턴으로 근무한 뒤 평가를 거쳐 정규직으로 전환되는 채용 방식이에요. "
+                "전환율은 기관마다 다르지만, 최근 공공기관의 정규직 전환율은 높은 편이에요.")
+        tip = "인턴 기간과 정규직 전환 평가 기준이 핵심이에요. 원문 공고에서 전환율도 확인하세요."
+    elif "공무직" in main_type:
+        desc = ("공무직은 국가기관이나 지자체에서 무기계약 형태로 채용하는 직원이에요. 정년이 보장되고, "
+                "공무원은 아니지만 공무원에 준하는 복리후생을 받는 경우가 많아요.")
+        tip = "정년 보장 + 공무원 준하는 복리후생이 핵심이에요. 공무원과의 차이는 신분과 승진 체계예요."
+    elif "기간제" in main_type or "계약" in main_type:
+        desc = ("기간제 근로계약으로, 계약 기간이 정해져 있어요. 기간 만료 후 재계약하거나 종료될 수 있고, "
+                "2년 이상 근무 시 무기계약직으로 전환되는 경우도 있어요.")
+        tip = "계약 기간과 연장·전환 가능성이 핵심이에요. 원문 공고에서 계약 조건을 확인하세요."
+    else:
+        desc = f"이 공고의 고용형태는 「{main_type}」이에요. 고용 조건과 계약 기간은 원문 공고에서 확인하세요."
+        tip = "고용형태에 따라 계약 기간, 전환 가능성, 복리후생이 달라져요."
+
+    return (h2(sec_num, f"고용형태 알아보기: {main_type}")
+            + p(desc)
+            + box("blue", "📌 핵심 포인트", tip)
+            + p("고용형태가 정규직이 아니라고 포기하지 마세요. 무기계약직과 채용형 인턴은 정년 보장이나 정규직 전환이 가능한 경우가 많아요.")
+            + p("이 공고의 정확한 고용 조건은 원문 공고에서 확인하세요."))
+
 
 # ───────── 데이터 가공 ─────────
 def ymd(d): return datetime.strptime(d, "%Y%m%d").replace(tzinfo=KST)
@@ -187,47 +324,71 @@ def build_html(job, src, related=None):
     ncs_main = nl[0] if nl else ""
     nope = job.get("recrutNope") or 0
 
-    # ★ 정년보장 분기
-    if any(h in ("정규직", "무기계약직") for h in hl):
-        tenure = "정년 보장 "
-    elif any("채용형" in h for h in hl):
-        tenure = "정규직 전환 "
+    # ★ 정규직 여부 판단
+    is_regular = any(h in ("정규직",) for h in hl)
+
+    # ★ 연봉 데이터
+    sal = _find_salary(inst)
+    starting = sal.get("entry", 0) if sal else 0
+    avg = sal.get("avg", 0) if sal else 0
+    inst_desc = ""  # 기관 설명 (향후 확장 가능)
+
+    # ★ 셀링포인트
+    points = []
+    if "학력무관" in acbg:
+        points.append("학력무관")
+    if nope >= 50:
+        points.append("대규모 공채")
+    if len(regions(job)) >= 10:
+        points.append("전국 배치")
+    selling_point = ", ".join(points) + " — 누구나 지원 가능합니다." if points else ""
+
+    # ★ 목차 구성 (정규직 H2 6개 / 비정규직 H2 7개)
+    if is_regular:
+        toc_items = [
+            f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
+            f"접수 일정: {md(end)} 마감",
+            f"지원 자격: {acbg.split(', ')[0]} · {se}",
+            "전형 절차: 공공기관 채용 흐름 한눈에 보기",
+            f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
+            "함께 보면 좋은 공고: 전국 채용 더 보기",
+        ]
     else:
-        tenure = ""
+        toc_items = [
+            f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
+            f"접수 일정: {md(end)} 마감",
+            f"지원 자격: {acbg.split(', ')[0]} · {se}",
+            f"고용형태 알아보기: {hs}",
+            "전형 절차: 공공기관 채용 흐름 한눈에 보기",
+            f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
+            "함께 보면 좋은 공고: 전국 채용 더 보기",
+        ]
 
-    toc_items = [
-        f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
-        f"접수 일정: {md(end)} 마감",
-        f"지원 자격: {acbg.split(', ')[0]} · {se}",
-        "이 기관의 보수 수준: 초봉부터 평균연봉까지",
-        "전형 절차: 공공기관 채용 흐름 한눈에 보기",
-        f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
-        "함께 보면 좋은 공고: 전국 채용 더 보기",
-    ]
+    # ★ 인트로 박스 + 셀링포인트 태그
+    edu_label = "학력무관" if "학력무관" in acbg else acbg.split(", ")[0]
+    deadline_short = f"{int(end[4:6])}/{int(end[6:])}"
+    intro = intro_box(inst, nope, hs, starting if starting > 0 else None, avg if avg > 0 else None, inst_desc, selling_point)
+    intro += selling_tags(hs, nope, edu_label, deadline_short)
 
-    # ★ 인트로 — 긴급형 후킹
-    headline = f"{tenure}{hs} {r(str(nope) + '명')}" if nope > 0 else f"{tenure}{hs}"
-    acbg_hook = "학력 안 보고, " if "학력무관" in acbg else ""
-    region_hook = "전국 배치에, " if len(regions(job)) >= 10 else ""
-    intro = (p(f"{acbg_hook}{region_hook}{headline} — 이 조건이 동시에 되는 공기업 공채가 떴어요.")
-             + p(f"접수는 {r(md_w(end))}에 닫혀요. 이번 공고 놓치면 다음 공채까지 최소 6개월이에요.")
-             + p("지원 자격부터 빠르게 확인해보세요."))
-
-    # H2 1 개요
-    s1 = (h2(1, toc_items[0])
+    # ★ H2-1 채용 개요 (+ 연봉 테이블 + NCS 태그 병합)
+    sec_n = 1
+    s1 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"이번 공고는 {inst}의 「{title}」이에요. 핵심 정보를 표로 정리했어요.")
+          + salary_table(sal)
           + table(["항목", "내용"], [
               ["기관", inst], ["공고명", title], ["고용형태", ", ".join(hl) or "공고 참조"],
               ["모집인원", r(nope_text(job)) if nope else nope_text(job)], ["경력구분", se],
               ["직무분야", ncs_text(job)], ["근무지역", region_text(job)],
               ["대체인력 여부", "대체인력 채용" if repl else "해당 없음"]], ["30%", "70%"])
+          + ncs_tags(nl)
           + p("그런데 가장 중요한 건 모집 분야별 세부 인원이에요. 분야마다 뽑는 인원과 근무지가 나뉘어 있어서, 내가 지원할 분야를 먼저 골라야 해요.")
           + p("생각보다 선택지가 많아서 놀라시는 분이 많아요. 모집 분야부터 확인해보세요.")
           + cta("모집 분야 보기", src))
 
-    # H2 2 일정
+    # H2-2 접수 일정
+    sec_n += 1
     total = (ymd(end) - ymd(bg)).days
-    s2 = (h2(2, toc_items[1])
+    s2 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"접수는 {md(bg)}에 시작해서 {md_w(end)}에 끝나요. 전체 접수 기간은 {total}일이에요.")
           + table(["구분", "일정"], [
               ["접수 시작", dot(bg)], ["접수 마감", r(dot(end) + f"({WEEK[ymd(end).weekday()]})")],
@@ -238,8 +399,9 @@ def build_html(job, src, related=None):
           + p("신청 안 하면 그대로 지나가는 기회예요. 접수창부터 미리 열어두세요.")
           + cta("접수창 열기", src))
 
-    # H2 3 자격
-    s3 = (h2(3, toc_items[2])
+    # H2-3 지원 자격
+    sec_n += 1
+    s3 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"공고 데이터 기준으로 학력 조건은 「{acbg}」, 경력 구분은 「{se}」이에요.")
           + table(["항목", "기준"], [
               ["학력", acbg], ["경력", se],
@@ -251,41 +413,26 @@ def build_html(job, src, related=None):
           + p("이 조건 보고 포기하시는 분 많은데, 막상 원문을 보면 해당되는 경우가 훨씬 많아요.")
           + cta("지원 자격 보기", src))
 
-    # ★ H2 4 보수 수준 (연봉 JSON 연동)
-    sal = _find_salary(inst)
-    if sal:
-        avg_val = f"약 {sal['avg']:,}만원"
-        sal_rows = [["직원 평균보수", r(avg_val)]]
-        if sal.get("entry") and sal["entry"] > 0:
-            sal_rows.append(["신입 초봉 (추정)", f"약 {sal['entry']:,}만원"])
-        sal_intro = f"{inst}의 알리오 공개 데이터 기준 보수 수준을 정리했어요."
-    else:
-        sal_rows = [["직원 평균보수", "공개 데이터 확인 중"]]
-        sal_intro = f"{inst}의 보수 수준은 아직 공개 데이터에서 확인하지 못했어요."
-    s4 = (h2(4, toc_items[3])
-          + p(sal_intro)
-          + table(["구분", "금액"], sal_rows, ["40%", "60%"])
-          + box("blue", "📌 참고하세요", "위 금액은 공개 데이터 기준 전 직원 평균이에요. 신입 초봉과는 차이가 있으며, 실제 보수는 직급·직무·성과에 따라 달라져요.")
-          + p("그런데 가장 중요한 건 실제 수령액이에요. 기본급 외에 성과급·수당·복리후생이 더해지면 체감 연봉이 달라져요.")
-          + p("생각보다 금액이 커서 놀라시는 분이 많아요. 실제 처우부터 확인해보세요.")
-          + cta("처우 확인하기", src))
+    # ★ H2-4 고용형태 (비정규직일 때만)
+    s4 = ""
+    if not is_regular:
+        sec_n += 1
+        s4 = hire_type_section(sec_n, hl)
 
-    # H2 5 전형
-    s5 = (h2(5, toc_items[4])
+    # ★ H2 전형 절차 (화살표 ▼)
+    sec_n += 1
+    s5 = (h2(sec_n, toc_items[sec_n - 1])
           + p("공공기관 채용은 보통 서류, 필기, 면접 순서로 진행돼요. 다만 직무와 고용형태에 따라 필기 없이 서류와 면접만 보는 공고도 있어요.")
-          + table(["단계", "일반적인 내용"], [
-              ["서류전형", "입사지원서·자기소개서, 자격 요건 확인"],
-              ["필기전형", "NCS 직업기초능력·직무수행능력 등 (공고마다 다름)"],
-              ["면접전형", "직무 역량·인성 면접 (1~2회)"],
-              ["최종 합격", "신원 조회·채용 신체검사 후 임용"]], ["30%", "70%"])
-          + box("green", "💡 알아두세요", "위 표는 공공기관 채용의 일반적인 흐름이에요. 이 공고의 실제 전형 단계와 배점은 원문 공고가 기준이에요.")
+          + arrow_steps_html(dot(bg), dot(end))
+          + box("green", "💡 알아두세요", "위 흐름은 공공기관 채용의 일반적인 절차예요. 이 공고의 실제 전형 단계와 배점은 원문 공고가 기준이에요.")
           + p("그런데 가장 중요한 건 이 공고에 필기가 있느냐예요. 필기 유무에 따라 준비 기간이 완전히 달라져요.")
           + p("전형은 보통 3~4단계인데, 첫 단계에서 가장 많이 떨어져요. 전형 절차부터 확인해보세요.")
           + cta("전형 절차 보기", src))
 
-    # H2 6 선배 포인트
+    # H2 선배 합격 포인트
+    sec_n += 1
     tip = NCS_TIPS.get(ncs_main, DEFAULT_TIP)
-    s6 = (h2(6, toc_items[5])
+    s6 = (h2(sec_n, toc_items[sec_n - 1])
           + p("공공기관에 합격한 선배들이 공통으로 꼽는 준비 포인트가 있어요. 특정 기관의 비법이라기보다 어느 공고에나 통하는 기본기예요.")
           + p(f"첫째, 직무에 맞는 준비가 먼저예요. {tip}")
           + p("둘째, 블라인드 채용 규칙을 지켜야 해요. 공공기관은 출신 학교나 가족관계 같은 인적 정보를 요구하지 않는 블라인드 채용을 운영해요. 자기소개서에 학교명 등을 적으면 불이익을 받을 수 있어요.")
@@ -298,9 +445,10 @@ def build_html(job, src, related=None):
           + p("'나도 준비가 될까' 싶으셨나요? 문항부터 한 번 확인하면 준비할 분량이 바로 보여요.")
           + cta("지원서 준비하기", src))
 
-    # H2 7 함께 보면 좋은 공고
+    # H2 함께 보면 좋은 공고
+    sec_n += 1
     rel_rows = [[clean_inst(j["instNm"]), hire_short(j), dot(j["pbancEndYmd"])[5:]] for j in (related or [])[:3]]
-    s7 = (h2(7, toc_items[6])
+    s7 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"같은 {ncs_main or '분야'} 분야에서 지금 접수 중인 공고도 함께 보세요. 여러 곳을 같이 준비하면 자기소개서와 필기 준비를 겹쳐 쓸 수 있어요.")
           + (table(["기관", "고용형태", "마감"], rel_rows, ["45%", "30%", "25%"]) if rel_rows else "")
           + p("전국에서 접수 중인 공고를 마감임박순으로 모아두었어요. 지역별로 걸러서 내 조건에 맞는 공고를 찾아보세요.")
@@ -309,8 +457,10 @@ def build_html(job, src, related=None):
     # FAQ
     if hl and hl[0] == "정규직":
         q3 = ("초봉이 얼마나 되나요?", f"공개 데이터 기준으로 공기업 정규직 초봉은 기관마다 달라요. {inst}의 정확한 처우는 원문 공고와 채용 안내에서 확인하세요.")
-    elif hl and hl[0].startswith("청년인턴"):
-        q3 = ("청년인턴은 누가 지원할 수 있나요?", "청년인턴은 보통 청년 연령 기준을 두고 선발해요. 연령 기준과 인턴 기간은 원문 공고를 확인하세요.")
+    elif hl and ("채용형" in hl[0] or "인턴" in hl[0]):
+        q3 = ("채용형 인턴은 정규직 전환이 되나요?", "대부분의 공공기관 채용형 인턴은 정규직 전환을 전제로 해요. 전환율과 평가 기준은 원문 공고를 확인하세요.")
+    elif hl and "무기계약직" in hl[0]:
+        q3 = ("무기계약직은 정년 보장이 되나요?", "무기계약직은 계약 기간의 정함이 없어서 정년까지 근무할 수 있어요. 다만 승진 체계는 정규직과 다를 수 있어요.")
     else:
         q3 = ("계약 기간이 끝나면 어떻게 되나요?", "기관 사정과 평가에 따라 재계약하거나 종료돼요. 연장·전환 가능 여부는 원문 공고에 적힌 기준을 확인하세요.")
     faqs = [
@@ -322,14 +472,31 @@ def build_html(job, src, related=None):
          else "이 공고는 경력 모집이에요. 인정되는 경력의 범위와 기간은 원문 공고에서 확인하세요."),
     ]
 
-    # ★ body 조립 — 인트로CTA와 H2#1 사이 광고 제거
+    # ★ body 조립
+    # 광고 배치: 목차 위 + 목차 아래 + 각 H2 위 + FAQ 위 + 면책 위
+    sections = [s1, s2, s3]
+    if not is_regular:
+        sections.append(s4)  # 고용형태 (비정규직만)
+    sections.extend([s5, s6, s7])
+
+    # H2 섹션들 사이에 광고 삽입
+    sections_with_ads = ""
+    for sec in sections:
+        sections_with_ads += AD + sec
+
+    tenure = ""
+    if any(h in ("정규직", "무기계약직") for h in hl):
+        tenure = "정년 보장 "
+    elif any("채용형" in h for h in hl):
+        tenure = "정규직 전환 "
+
     body = (AD + toc(toc_items) + AD
-            + intro + cta("지금 지원하기", src)
-            + s1 + AD + s2 + AD + s3 + AD + s4 + AD + s5 + AD + s6 + AD + s7
+            + intro
+            + cta("채용공고 바로가기", src)  # ★ 첫 번째 CTA만 변경
+            + sections_with_ads
             + AD
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
-            # ★ 결론 멘트 강화
             + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job)} — 이런 공채는 자주 안 열려요.")
             + cta("지금 바로 지원하기", src)
             + AD
