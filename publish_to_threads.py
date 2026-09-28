@@ -577,15 +577,16 @@ def _homepages(inst, job):
 
 
 def make_card(im):
-    """흰 배경 가로형 로고 카드 (가로:세로 1.8~4.2, 로고가 꽉 차게)"""
+    """흰 배경 가로형 로고 카드 — 쓰레드 피드에서 납작하고 꽉 차게 (레퍼런스: aT·질병관리청 스타일)"""
     from PIL import Image, ImageChops
     im = im.convert("RGBA")
     flat = Image.new("RGBA", im.size, (255, 255, 255, 255)); flat.alpha_composite(im)
     box = ImageChops.difference(flat.convert("RGB"), Image.new("RGB", im.size, "white")).getbbox()
     if box: im = im.crop(box)
     w, h = im.size
-    ratio = min(max(w / h, 1.8), 4.2)
-    cw, ch = CARD_W, int(CARD_W / ratio)
+    ratio = min(max(w / h * 1.12, 3.2), 5.0)          # 가로:세로 3.2~5.0 (피드에서 납작하게)
+    cw = int(min(CARD_W, max(720, w * 3 / 0.86)))     # 원본의 3배 이상은 키우지 않음
+    ch = int(cw / ratio)
     s = min(cw * 0.86 / w, ch * 0.78 / h)
     im = im.resize((max(1, int(w * s)), max(1, int(h * s))), Image.LANCZOS)
     card = Image.new("RGBA", (cw, ch), (255, 255, 255, 255))
@@ -998,7 +999,7 @@ def main():
     md = (f"### {'🧪 DRY RUN' if DRY_RUN else '✅ 발행'} — {inst} (D-{d_left}) · {tier_label}\n"
           f"조합: {' / '.join(combo[:3])}\n\n로고: {logo_msg}\n\n```\n{result['text']}\n```\n")
     if logo_url:
-        md += f"\n![logo]({logo_url})\n"
+        md += f'\n<img src="{logo_url}" width="420">\n'
     if comment:
         md += f"첫 댓글:\n```\n{comment}\n```\n"
 
