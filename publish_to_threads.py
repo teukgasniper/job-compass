@@ -999,7 +999,7 @@ def main():
     md = (f"### {'🧪 DRY RUN' if DRY_RUN else '✅ 발행'} — {inst} (D-{d_left}) · {tier_label}\n"
           f"조합: {' / '.join(combo[:3])}\n\n로고: {logo_msg}\n\n```\n{result['text']}\n```\n")
     if logo_url:
-        md += f'\n<img src="{logo_url}" width="420">\n'
+        md += f'\n<img src="{logo_url}" width="420">\n\n'
     if comment:
         md += f"첫 댓글:\n```\n{comment}\n```\n"
 
