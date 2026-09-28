@@ -7,6 +7,9 @@
 [2026-09-28 수정] 클린아이 API 통합 — 지방공기업·출자출연기관 채용공고 수집
                   3자 중복 소거 (잡알리오 → 클린아이 → 나라일터)
                   원문 URL 자동 추출 (ACCUSATION·JOB_SEEK_ETC에서 외부 URL 파싱)
+                  [저녁] 원문 링크 인식 강화 — https 없는 도메인 인식, 이메일 도메인 제외,
+                  홈페이지 접수인데 주소 없으면 클린아이 상세에서 기관 홈페이지 읽기,
+                  이메일·우편·방문 접수만 클린아이 상세 유지
 [2026-09-24 수정] 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 수집
                   임원급 제외 — 비상임이사·사장공모 등 일반 취준생 대상 아닌 공고 차단
                   나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
@@ -239,20 +242,82 @@ def collect_alio():
 # ─────────────────────────────────────────────────────────────
 # 2. 클린아이 수집 (지방공기업·출자출연기관)
 # ─────────────────────────────────────────────────────────────
+# 도메인 인식: https 없는 맨 도메인(guc.hubst.co.kr)도 잡고, 이메일 안의 도메인(abc@xx.or.kr)은 무시
+_URL_RE = re.compile(
+    r'(?<![@\w.\-])'
+    r'((?:https?://)?(?:[A-Za-z0-9\-]+\.)+(?:kr|com|net|org|io|me|biz|info)'
+    r'(?::\d+)?(?:/[A-Za-z0-9\-._~/?#=&%+:]*)?)'
+    r'(?![A-Za-z0-9\-@])'
+)
+_URL_EXCLUDE = ("cleaneye.go.kr",)
+# 접수방법에 이 말이 있으면 '온라인 접수' → 기관 홈페이지로 보낼 가치가 있음
+_ONLINE_WORDS = ("홈페이지", "온라인", "인터넷", "채용사이트", "채용 사이트", "채용시스템",
+                 "인크루트", "사람인", "잡코리아", "커리어", "전자접수", "웹")
+_DETAIL_FETCH_MAX = 40          # 1회 실행당 상세페이지 조회 상한
+_detail_fetch_count = 0
+
+
+def _find_urls(text):
+    if not text or text.strip() in ("-", ""):
+        return []
+    urls = []
+    for m in _URL_RE.finditer(text):
+        u = m.group(1).rstrip(".,)>]}")
+        if any(ex in u for ex in _URL_EXCLUDE):
+            continue
+        if not u.lower().startswith("http"):
+            u = "https://" + u
+        urls.append(u)
+    return urls
+
+
+def _fetch_homepage_from_detail(detail_url):
+    """클린아이 상세페이지에서 기관 홈페이지(fn_UrlLink) 주소 읽기. 실패하면 ''."""
+    global _detail_fetch_count
+    if not detail_url or _detail_fetch_count >= _DETAIL_FETCH_MAX:
+        return ""
+    _detail_fetch_count += 1
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(detail_url, headers={"User-Agent": HEADERS["User-Agent"]})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                page = r.read().decode("utf-8", "ignore")
+            m = re.search(r"fn_UrlLink\(\s*'([^']+)'", page)
+            time.sleep(0.5)
+            if not m:
+                return ""
+            home = m.group(1).strip()
+            if not home.lower().startswith("http"):
+                home = "https://" + home
+            return "" if any(ex in home for ex in _URL_EXCLUDE) else home
+        except Exception as e:
+            if attempt == 2:
+                print(f"[클린아이] 상세페이지 조회 실패 {detail_url}: {e}")
+            time.sleep(2)
+    return ""
+
+
 def extract_original_url(item):
-    """ACCUSATION·JOB_SEEK_ETC·EXHIBIT에서 외부 원문 URL 추출. 없으면 클린아이 상세 페이지."""
-    candidates = []
-    for field in ("ACCUSATION", "JOB_SEEK_ETC", "EXHIBIT"):
-        text = item.get(field, "")
-        if text and text != "-":
-            urls = re.findall(r'https?://[^\s,\)\]>}]+', text)
-            candidates.extend(urls)
+    """원문 링크 결정 순서
+    1) 접수방법(ACCUSATION) → 기타(JOB_SEEK_ETC) → 제출서류(EXHIBIT) → 전형방법(JUDGE_METHOD)에서 주소 찾기
+       (https 없는 맨 도메인 포함, 이메일 도메인 제외)
+    2) 접수방법이 '홈페이지·온라인' 접수인데 주소가 없으면 → 클린아이 상세페이지에서 기관 홈페이지 주소 읽기
+    3) 그래도 없으면(이메일·우편·방문 접수 등) → 클린아이 상세페이지 (공고문 첨부파일이 여기 있음)
+    반환: (url, 종류)  종류 = 원문 / 홈페이지 / 클린아이
+    """
+    detail = item.get("URL", "")
+    for field in ("ACCUSATION", "JOB_SEEK_ETC", "EXHIBIT", "JUDGE_METHOD"):
+        urls = _find_urls(item.get(field, ""))
+        if urls:
+            return urls[0], "원문"
 
-    for url in candidates:
-        if "cleaneye.go.kr" not in url:
-            return url.rstrip(")>]}")
+    accusation = item.get("ACCUSATION", "") or ""
+    if any(w in accusation for w in _ONLINE_WORDS):
+        home = _fetch_homepage_from_detail(detail)
+        if home:
+            return home, "홈페이지"
 
-    return item.get("URL", "")
+    return detail, "클린아이"
 
 
 def cleaneye_to_alio_format(item):
@@ -274,7 +339,7 @@ def cleaneye_to_alio_format(item):
     licenses = [item.get(f"ENT_LICENSE{i}", "") for i in range(1, 5)]
     licenses = [l for l in licenses if l and l != "-"]
 
-    src_url = extract_original_url(item)
+    src_url, src_kind = extract_original_url(item)
 
     return {
         "recrutPblntSn": f"CE-{item.get('NO', '')}",
@@ -301,6 +366,7 @@ def cleaneye_to_alio_format(item):
         "entGb": item.get("ENT_GB", ""),
         "entKind": item.get("ENT_KIND", ""),
         "careerType": career_type,
+        "srcKind": src_kind,          # 원문 / 홈페이지 / 클린아이
         "_source": "cleaneye",
     }
 
@@ -374,6 +440,11 @@ def collect_cleaneye():
             continue
 
     print(f"[클린아이] 수집 완료: {len(all_items)}건")
+    kinds = {}
+    for x in all_items:
+        kinds[x.get("srcKind", "?")] = kinds.get(x.get("srcKind", "?"), 0) + 1
+    print(f"  원문 링크 — 원문 {kinds.get('원문', 0)} / 기관 홈페이지 {kinds.get('홈페이지', 0)} / "
+          f"클린아이 상세 {kinds.get('클린아이', 0)} (상세페이지 조회 {_detail_fetch_count}회)")
     print(f"  제외 — 마감: {n_excluded['status']} / 제목: {n_excluded['title']} / "
           f"의사직: {n_excluded['doctor']} / 임원급: {n_excluded['executive']} / "
           f"고용형태: {n_excluded['quality']} / 대체인력: {n_excluded['substitute']}")
