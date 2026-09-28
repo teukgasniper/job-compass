@@ -252,7 +252,7 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 - 기관 고유 소재로 쓴다. 기관이 하는 일·만드는 것·위치·산업 특성을 훅과 클로저에 녹여서 다른 기관에 복붙 불가능해야 함.
 
 [포맷]
-- 훅: 최대 2줄. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명 넣지 않음. 모집 인원은 넣어도 됨.
+- 훅: 최대 2줄. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말(예: '철도공단', '에너지공단') 절대 넣지 않음 — 하는 일로 돌려 말함(예: '기차 선로 까는 데'). 모집 인원은 넣어도 됨.
 - 리스트: 정확히 5개. 1번은 반드시 '기관 정식명칭'을 작은따옴표로 감싸 시작 + 핵심 팩트(인원·고용형태). 
   필수 팩트: 고용형태, 학력조건, 마감일(보통 5번). 각 항목 짧게 한 줄.
 - 클로저: 1줄. 과장 OK. 훅과 스토리가 이어지게 (예: "보여줬음" → "같이 넣겠다고 함"). 
@@ -391,7 +391,7 @@ def call_claude(system, user, model):
     return "".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
 
 
-def parse_and_validate(raw: str, emoji: str):
+def parse_and_validate(raw: str, emoji: str, inst: str = ""):
     clean = re.sub(r"```(json)?", "", raw).strip()
     m = re.search(r"\{.*\}", clean, re.S)
     if not m:
@@ -409,6 +409,13 @@ def parse_and_validate(raw: str, emoji: str):
         return None, "훅 줄 수 오류"
     if not hook.startswith(emoji):
         return None, f"훅 이모지 오류 (필요: {emoji})"
+    if inst:
+        full = norm_key(inst)
+        short = re.sub(r"^(한국|국가|국립|재단법인|대한)", "", full)
+        hook_k = norm_key(hook)
+        for v in {full, short}:
+            if len(v) >= 3 and v in hook_k:
+                return None, f"훅에 기관명('{v}') 들어감 — 기관명은 리스트 1번에만. 훅에서는 하는 일로 돌려 말할 것"
     if re.search(r"(그곳|그 곳|하는 곳|하던 곳|던 그|알고 보니|알고보니|이 공단이|이 기관이|이 공사가|이 재단이|거기였음|곳이었음|거였음)", hook):
         return None, "생활 연결형 훅 (기관을 설명하는 수식어·'알고 보니' 구조) — 인물의 대화·반응 속에서 기관을 재정의할 것"
     if len(items) != 5 or any(not x for x in items):
@@ -431,7 +438,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
     for attempt in range(3):
         u = user if not err else user + f"\n\n[이전 출력 오류: {err}] 규격을 다시 지켜서 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
-        result, err = parse_and_validate(raw, combo[3])
+        result, err = parse_and_validate(raw, combo[3], inst)
         if result:
             return result
         print(f"[warn] 생성 {attempt+1}회차 검증 실패: {err}")
