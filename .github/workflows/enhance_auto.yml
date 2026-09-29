@@ -1,0 +1,81 @@
+name: 본문 자동 보강 (조회수 기준)
+
+on:
+  schedule:
+    - cron: "37 */6 * * *"   # 6시간마다 (하루 4번)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "테스트만 (글 수정 안 하고 결과만 보기)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: enhance-posts        # 수동 보강(enhance.yml)과 동시에 안 돌게
+  cancel-in-progress: false
+
+jobs:
+  auto-enhance:
+    runs-on: ubuntu-latest
+    # 예약 실행은 Variables 의 AUTO_ENHANCE 가 'on' 일 때만 (수동 실행은 항상 가능)
+    if: github.event_name == 'workflow_dispatch' || vars.AUTO_ENHANCE == 'on'
+    env:
+      ENHANCE_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pypdf pyhwp pypdfium2 pillow
+
+      - name: 조회수 수집 + 보강 대상 선정
+        id: views
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          GA4_CLIENT_SECRET: ${{ secrets.GA4_CLIENT_SECRET }}
+          GA4_REFRESH_TOKEN: ${{ secrets.GA4_REFRESH_TOKEN }}
+          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
+          AUTO_ENHANCE_MIN_VIEWS: ${{ vars.AUTO_ENHANCE_MIN_VIEWS }}
+          AUTO_ENHANCE_PER_RUN: ${{ vars.AUTO_ENHANCE_PER_RUN }}
+        run: python fetch_views.py
+
+      - name: 본문 보강
+        if: steps.views.outputs.ids != ''
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          ENHANCE_IDS: ${{ steps.views.outputs.ids }}
+        run: python enhance_posts.py
+
+      - name: 테스트 결과 내려받기용 저장
+        if: env.ENHANCE_DRY_RUN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-enhance-preview
+          path: preview/
+          if-no-files-found: ignore
+
+      - name: 기록 저장
+        if: env.ENHANCE_DRY_RUN != 'true'
+        run: |
+          git config user.name "job-compass-bot"
+          git config user.email "actions@users.noreply.github.com"
+          for p in views.json enhanced_posts.json enhance_tried.json; do
+            [ -e "$p" ] && git add "$p"
+          done
+          if git diff --cached --quiet; then
+            echo "기록 변경 없음"; exit 0
+          fi
+          git commit -m "자동 보강 기록 $(date -u +'%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 5
+          done
+          exit 1
