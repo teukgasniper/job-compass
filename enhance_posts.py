@@ -17,7 +17,7 @@
   ENHANCE_IDS="304839,305413" python enhance_posts.py   (GitHub Actions 입력용)
 
 필요한 Secrets: CLAUDE_API_KEY, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID
-필요한 패키지: pypdf, pyhwp
+필요한 패키지: pypdf, pyhwp, pypdfium2, pillow
 기록: enhanced_posts.json (공고번호 → 보강 시각·추출 데이터)
 """
 import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.error
@@ -68,6 +68,33 @@ def text_from_pdf(data):
     return "\n".join(f"[p{i + 1}] " + (pg.extract_text() or "") for i, pg in enumerate(r.pages))
 
 
+MAX_TILES = 20          # 이미지 조각 상한 (조각 1개 약 1,900토큰 → 20개면 약 $0.08)
+TILE_W, TILE_H = 1300, 1100
+
+
+def images_from_pdf(data):
+    """글자가 없는 PDF(포스터·스캔)를 가로 1300px로 렌더링해 세로로 잘라 JPEG base64 목록으로.
+    통째로 보내면 자동 축소돼 글씨가 뭉개지므로 잘라서 보낸다 (60px 겹치게)"""
+    import base64, pypdfium2 as pdfium
+    pdf = pdfium.PdfDocument(data)
+    tiles = []
+    for pg in pdf:
+        w, _ = pg.get_size()
+        im = pg.render(scale=TILE_W / w).to_pil().convert("RGB")
+        y = 0
+        while y < im.height and len(tiles) < MAX_TILES:
+            part = im.crop((0, y, im.width, min(im.height, y + TILE_H)))
+            if part.height > 80:
+                buf = io.BytesIO()
+                part.save(buf, "JPEG", quality=85)
+                tiles.append(base64.b64encode(buf.getvalue()).decode())
+            y += TILE_H - 60
+        if len(tiles) >= MAX_TILES:
+            print(f"  [공고문] 이미지 조각 상한 {MAX_TILES}개에서 자름")
+            break
+    return tiles
+
+
 def text_from_hwp(data):
     """hwp5html로 변환 (hwp5txt는 표를 빼먹어서 인원·일정이 사라짐)"""
     with tempfile.TemporaryDirectory() as d:
@@ -109,12 +136,15 @@ def text_from_file(name, data):
     return ""
 
 
-def get_notice_text(job):
+def get_notice(job):
+    """반환: (텍스트, 이미지조각목록, 파일명 또는 실패사유)
+    글자를 뽑을 수 있으면 텍스트, 글자 없는 PDF(포스터·스캔)면 이미지 조각"""
     if job.get("_source", "alio") != "alio":
-        return "", "알리오 공고만 지원 (클린아이·나라일터는 추후)"
+        return "", [], "알리오 공고만 지원 (클린아이·나라일터는 추후)"
     files = alio_notice_files(job["recrutPblntSn"])
     if not files:
-        return "", "공고문 첨부 없음"
+        return "", [], "공고문 첨부 없음"
+    image_pdf = None
     for url, name in files:
         try:
             data, _ = http_get(url)
@@ -123,8 +153,17 @@ def get_notice_text(job):
             print(f"  [공고문] {name} 읽기 실패: {e}")
             continue
         if len(text) >= 500:
-            return text[:MAX_DOC_CHARS], name
-    return "", f"공고문 텍스트 추출 실패 ({', '.join(n for _, n in files)})"
+            return text[:MAX_DOC_CHARS], [], name
+        if data[:4] == b"%PDF" and image_pdf is None:
+            image_pdf = (name, data)
+    if image_pdf:
+        try:
+            tiles = images_from_pdf(image_pdf[1])
+            if tiles:
+                return "", tiles, f"{image_pdf[0]} (글자 없는 PDF → 이미지 {len(tiles)}조각)"
+        except Exception as e:
+            print(f"  [공고문] 이미지 변환 실패: {e}")
+    return "", [], f"공고문 텍스트 추출 실패 ({', '.join(n for _, n in files)})"
 
 
 # ───────── 2. Claude로 핵심 정보 추출 ─────────
@@ -172,7 +211,7 @@ SCHEMA = """아래 형식으로 출력해. 해당 정보가 공고문에 없으�
 
 
 def call_claude(user, model=CLAUDE_MODEL):
-    body = json.dumps({"model": model, "max_tokens": 4000, "temperature": 0, "system": SYSTEM,
+    body = json.dumps({"model": model, "max_tokens": 4000, "system": SYSTEM,
                        "messages": [{"role": "user", "content": user}]}).encode()
     req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=body, method="POST", headers={
         "x-api-key": os.environ["CLAUDE_API_KEY"], "anthropic-version": "2023-06-01", "content-type": "application/json"})
@@ -191,10 +230,15 @@ def call_claude(user, model=CLAUDE_MODEL):
     return "".join(b.get("text", "") for b in d["content"] if b.get("type") == "text")
 
 
-def extract(job, doc):
-    user = (f"기관: {clean_inst(job['instNm'])}\n공고명: {job['recrutPbancTtl']}\n"
-            f"API 모집인원: {job.get('recrutNope')}명 / 고용형태: {job.get('hireTypeNmLst')}\n\n"
-            f"{SCHEMA}\n\n<공고문>\n{doc}\n</공고문>")
+def extract(job, doc, tiles=None):
+    head = (f"기관: {clean_inst(job['instNm'])}\n공고명: {job['recrutPbancTtl']}\n"
+            f"API 모집인원: {job.get('recrutNope')}명 / 고용형태: {job.get('hireTypeNmLst')}\n\n{SCHEMA}\n\n")
+    if tiles:
+        user = [{"type": "text", "text": head + f"공고문은 글자 없는 이미지라 위에서 아래 순서로 {len(tiles)}조각으로 잘라 보내. "
+                 "조각 경계에서 표가 이어질 수 있고, 위아래가 조금 겹쳐 있으니 중복으로 세지 마. 이미지에서 읽히는 내용만 써."}]
+        user += [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": t}} for t in tiles]
+    else:
+        user = head + f"<공고문>\n{doc}\n</공고문>"
     raw = call_claude(user)
     m = re.search(r"\{.*\}", re.sub(r"```(json)?", "", raw), re.S)
     if not m:
@@ -243,11 +287,11 @@ def main():
             print(f"  건너뜀: {state[sn]['at']}에 이미 보강했어요 (--force로 다시 가능)"); continue
         print(f"  {clean_inst(job['instNm'])} | {post.get('url', '')}")
         try:
-            doc, src_name = get_notice_text(job)
-            if not doc:
+            doc, tiles, src_name = get_notice(job)
+            if not doc and not tiles:
                 print(f"  건너뜀: {src_name}"); continue
-            print(f"  공고문: {src_name} ({len(doc):,}자)")
-            data, useful = extract(job, doc)
+            print(f"  공고문: {src_name}" + (f" ({len(doc):,}자)" if doc else ""))
+            data, useful = extract(job, doc, tiles)
             print(f"  추출: {', '.join(useful)}")
         except Exception as e:
             print(f"  실패: {e}"); continue
