@@ -1,0 +1,65 @@
+name: 본문 보강 (hiring03)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "보강할 공고번호 (여러 개는 쉼표로, 예: 305413,305397)"
+        required: true
+      dry_run:
+        description: "테스트만 (글 수정 안 하고 결과만 보기)"
+        type: boolean
+        default: true
+      force:
+        description: "이미 보강한 글도 다시 보강"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: enhance-posts
+  cancel-in-progress: false
+
+jobs:
+  enhance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pypdf pyhwp
+
+      - name: 본문 보강
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          ENHANCE_IDS: ${{ inputs.ids }}
+          ENHANCE_DRY_RUN: ${{ inputs.dry_run }}
+          ENHANCE_FORCE: ${{ inputs.force }}
+        run: python enhance_posts.py
+
+      - name: 테스트 결과 내려받기용 저장
+        if: ${{ inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: enhanced-preview
+          path: preview/
+          if-no-files-found: ignore
+
+      - name: 보강 기록 저장
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "job-compass-bot"
+          git config user.email "actions@users.noreply.github.com"
+          [ -f enhanced_posts.json ] || exit 0
+          git add enhanced_posts.json
+          git diff --cached --quiet || git commit -m "본문 보강 기록 $(date -u +'%Y-%m-%d %H:%M') UTC"
+          git pull --rebase origin main
+          git push
