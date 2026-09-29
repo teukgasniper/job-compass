@@ -22,7 +22,7 @@
 """
 import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.error
 from datetime import datetime
-from post_template import build_html, clean_inst, KST
+from post_template import build_html, clean_inst, crew_rows, KST
 from publish_to_blogger import access_token, api, related_jobs
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
@@ -178,9 +178,10 @@ SCHEMA = """아래 형식으로 출력해. 해당 정보가 공고문에 없으�
  "crew": {                                   // 모집 분야별 인원. 분야가 1개뿐이면 null
    "summary": "대졸수준 64명, 고졸수준 8명, 별정직 4명을 뽑아요.",   // 1문장, 해요체
    "columns": ["사무", "ICT", "기계"],          // 분야(열) 최대 8개. 많으면 공고문의 큰 분류로 묶기
-   "rows": [{"label": "대졸(일반)", "values": [10, null, 15]}],   // 행 최대 10개, 값 순서=columns, 없는 칸 null
+   "rows": [{"label": "대졸(일반)", "values": [10, null, 15]}],   // 행 최대 10개, 값 순서=columns, 없는 칸 null. 총계·합계·소계 행은 넣지 말 것 (코드가 계산)
    "note": "별정직 4명(기술담당원 1, 후생담당원 2, 보건관리원 1) 별도"   // 표에 못 넣은 인원 설명, 없으면 null
  },
+ "restriction": "취업지원대상자(보훈) 또는 장애인만 지원할 수 있어요.",   // 공고 전체가 특정 대상만 지원 가능할 때만 1문장 해요체 (보훈·장애 전용, 지역인재 전용, 고졸 전용 등). 일부 분야만 제한이거나 제한 없으면 null
  "steps": [                                  // 전형 순서대로. 중간 발표일은 notice로 단계 사이에 끼움
    {"type": "step", "title": "1단계 — 서류심사", "date": null, "desc": "외국어성적(50점) + 자격증 가점(최대 50점)", "note": "30배수 선발"},
    {"type": "notice", "label": "필기 대상자 발표", "date": "10월 7일(수)"},
@@ -245,13 +246,13 @@ def extract(job, doc, tiles=None):
         raise ValueError("JSON 없음")
     data = json.loads(m.group(0))
     # 최소 검증: 쓸 만한 정보가 하나라도 있어야 함
-    useful = [k for k in ("crew", "language", "written") if data.get(k)]
+    useful = [k for k in ("crew", "language", "written", "restriction") if data.get(k)]
     if len([s for s in data.get("steps") or [] if s.get("type") != "notice"]) >= 2:
         useful.append("steps")
     if not useful:
         raise ValueError("추출된 정보 없음")
     crew = data.get("crew") or {}
-    total = sum(v for x in crew.get("rows") or [] for v in (x.get("values") or []) if isinstance(v, int))
+    total = sum(v for x in crew_rows(crew) for v in (x.get("values") or []) if isinstance(v, int))
     if total and job.get("recrutNope") and total != job["recrutNope"]:
         print(f"  [참고] 표 합계 {total}명 ≠ API 모집인원 {job['recrutNope']}명 (별정직·별도 전형일 수 있음)")
     return data, useful

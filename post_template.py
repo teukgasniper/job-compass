@@ -250,10 +250,17 @@ def _hl(text, highlight):
     h = _e(highlight) if highlight else ""
     return t.replace(h, f'<span style="{_RED}">{h}</span>', 1) if h and h in t else t
 
+_TOTAL_LABEL = re.compile(r"^(총\s*계|합\s*계|소\s*계|계|전\s*체|총\s*원|총\s*인원)$")
+
+def crew_rows(crew):
+    """합계·총계 행은 빼고 반환 (합계는 코드가 직접 계산하므로 중복 방지)"""
+    return [x for x in (crew.get("rows") or [])
+            if x.get("label") and not _TOTAL_LABEL.match(re.sub(r"[()\[\]\s]", "", str(x["label"])))]
+
 def enh_crew_section(crew):
     """H2 sec1b — 모집 분야별 세부 인원 (광고 없음: 하위 섹션)"""
     cols = [c for c in (crew.get("columns") or []) if str(c).strip()][:8]
-    rows = [x for x in (crew.get("rows") or []) if x.get("label")][:10]
+    rows = crew_rows(crew)[:10]
     if not cols or not rows:
         return ""
     wide = len(cols) >= 4
@@ -551,7 +558,11 @@ def build_html(job, src, related=None, enh=None):
         points.append("대규모 공채")
     if len(regions(job)) >= 10:
         points.append("전국 배치")
-    selling_point = ", ".join(points) + " — 누구나 지원 가능합니다." if points else ""
+    restriction = (enh or {}).get("restriction") or ""       # 보강 데이터: 지원 대상 제한 (보훈·장애 전용 등)
+    if restriction:
+        selling_point = (", ".join(points) + f" — 단, {_e(restriction)}") if points else f"단, {_e(restriction)}"
+    else:
+        selling_point = ", ".join(points) + " — 누구나 지원 가능합니다." if points else ""
 
     # ★ 목차 구성 (정규직 H2 6개 / 비정규직 H2 7개)
     if is_regular:
@@ -617,6 +628,7 @@ def build_html(job, src, related=None, enh=None):
           + table(["항목", "기준"], [
               ["학력", acbg], ["경력", se],
               ["직무분야", ncs_text(job)], ["대체인력", "예(휴직자 등 공석 대체)" if repl else "아니오"]], ["35%", "65%"])
+          + (box("red", "⚠️ 지원 대상 제한", _e(restriction)) if restriction else "")
           + (box("blue", "📌 핵심 포인트", "학력무관 공고라도 자격증·면허·어학 같은 필수 요건이 따로 붙을 수 있어요. 지원 전에 원문 공고의 응시 자격 칸을 꼭 확인하세요.")
              if "학력무관" in acbg else
              box("blue", "📌 핵심 포인트", "학력 요건이 있는 공고예요. 졸업 예정자 인정 여부와 전공 제한이 있는지 원문 공고에서 확인하세요."))
