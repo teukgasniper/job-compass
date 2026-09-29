@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pypdf pyhwp
+      - run: pip install pypdf pyhwp pypdfium2 pillow
 
       - name: 본문 보강
         env:
