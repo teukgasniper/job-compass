@@ -961,12 +961,69 @@ def summary(md: str):
             f.write(md + "\n")
 
 
+# ─────────────────────────── 실제 쓰레드 기준 자동 동기화 (중복 방지 안전장치) ───────────────────────────
+def sync_from_threads(state: dict, jobs: list) -> int:
+    """
+    발행 기록 파일이 누락돼도 중복 발행이 안 되게, 매 회차 시작 때
+    계정에 실제로 올라가 있는 글을 Threads API로 읽어서 기록에 없는 글을 자동으로 채워 넣는다.
+    - 본문 리스트 1번의 '기관 정식명칭' + 'N명' 으로 어떤 공고인지 찾음
+    - 같은 기관 공고가 여러 개면 인원수로 구분, 그래도 애매하면 건드리지 않음 (다른 부서 공고는 계속 발행 가능)
+    반환: 새로 채워 넣은 건수
+    """
+    uid, token = os.environ.get("THREADS_USER_ID"), os.environ.get("THREADS_TOKEN")
+    if not uid or not token:
+        return 0
+    try:
+        r = requests.get(f"{THREADS_API}/{uid}/threads",
+                         params={"fields": "id,text,timestamp", "limit": 50, "access_token": token}, timeout=30)
+        items = r.json().get("data", []) if r.ok else []
+    except Exception as e:
+        print(f"[warn] 쓰레드 동기화 실패 (이번 회차는 기존 기록만 사용): {e}")
+        return 0
+
+    known = {str(p.get("thread_id")) for p in state["posts"] if p.get("thread_id")}
+    added = 0
+    for it in items:
+        tid, text = str(it.get("id")), it.get("text") or ""
+        if tid in known:
+            continue
+        m = re.search(r"^\s*1\.\s*'([^']+)'(.*)$", text, re.M)
+        if not m:
+            continue  # 첫 댓글·기타 글
+        inst_k = norm_key(norm_inst(m.group(1)))
+        cands = [j for j in jobs
+                 if inst_k and (inst_k in norm_key(norm_inst(j.get("instNm"))) or norm_key(norm_inst(j.get("instNm"))) in inst_k)]
+        if len(cands) > 1:
+            n = re.search(r"(\d+)\s*명", m.group(2))
+            if n:
+                cands = [j for j in cands if str(j.get("recrutNope") or "") == n.group(1)]
+        if len(cands) != 1:
+            continue  # 어떤 공고인지 확실하지 않으면 건드리지 않음
+        j = cands[0]
+        try:
+            at = dt.datetime.strptime(it["timestamp"][:19], "%Y-%m-%dT%H:%M:%S").replace(
+                tzinfo=dt.timezone.utc).astimezone(KST).strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            at = ""
+        hook = "\n".join(text.split("\n\n")[0].split("\n")[:2])
+        state["posts"].append({
+            "id": j["recrutPblntSn"], "instNm": norm_inst(j["instNm"]), "title": j["recrutPbancTtl"],
+            "combo_idx": None, "hook": hook, "tier": 0, "thread_id": tid, "at": at, "synced": True,
+        })
+        added += 1
+    if added:
+        state["posts"].sort(key=lambda p: p.get("at") or "")
+        print(f"쓰레드 동기화: 기록에 없던 발행글 {added}건 자동 복구")
+    return added
+
+
 # ─────────────────────────── main ───────────────────────────
 def main():
     today = dt.datetime.now(KST).date()
     jobs = requests.get(JOBS_URL, timeout=30).json()["result"]
     posts = requests.get(POSTS_URL, timeout=30).json()
     state = load_state()
+    sync_from_threads(state, jobs)
 
     job, tier, n_cands = pick_job(jobs, posts, state, today)
     if not job:
