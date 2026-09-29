@@ -227,6 +227,125 @@ def offered_salary_table(offered):
             f'<tbody><tr><td style="{td_s}"><span style="color:#EF4444; font-weight:bold;">{offered}</span></td></tr></tbody></table></div>'
             f'<p style="font-size:13px; color:#9CA3AF; margin:0 0 16px; text-align:right;">출처: 클린아이 지방공공기관 채용정보 (기관 등록값)</p>')
 
+# ───────── 보강 블록 (조회수 50회 돌파 → enhance_posts.py가 enh 데이터를 넘김) ─────────
+# 디자인 기준: 02번 채팅 한국남부발전 보강본 (kospo-v2-enhanced.html)
+import html as _html
+_TH = 'background:#F1F5F9; color:#1e293b; padding:12px 10px; border:1px solid #E2E8F0; font-size:15px; text-align:center;'
+_TD = 'padding:12px 10px; border:1px solid #E2E8F0; font-size:15px; line-height:1.55; word-break:keep-all; vertical-align:middle;'
+_RED = 'color:#EF4444; font-weight:bold;'
+
+def _e(v):
+    """Claude가 준 문자열은 항상 이스케이프해서 넣는다"""
+    return _html.escape(str(v if v is not None else "").strip())
+
+def _num(v):
+    try:
+        return int(str(v).replace(",", "").replace("명", "").strip())
+    except Exception:
+        return None
+
+def _hl(text, highlight):
+    """문장 안의 강조 구절 1곳만 빨간색 (이스케이프 후 치환)"""
+    t = _e(text)
+    h = _e(highlight) if highlight else ""
+    return t.replace(h, f'<span style="{_RED}">{h}</span>', 1) if h and h in t else t
+
+def enh_crew_section(crew):
+    """H2 sec1b — 모집 분야별 세부 인원 (광고 없음: 하위 섹션)"""
+    cols = [c for c in (crew.get("columns") or []) if str(c).strip()][:8]
+    rows = [x for x in (crew.get("rows") or []) if x.get("label")][:10]
+    if not cols or not rows:
+        return ""
+    wide = len(cols) >= 4
+    first_w = 20 if wide else 40
+    other_w = (100 - first_w) // len(cols)
+    head = f'<th style="{_TH} width:{first_w}%;">구분</th>' + "".join(
+        f'<th style="{_TH} width:{other_w}%;">{_e(c)}</th>' for c in cols)
+    body = ""
+    for x in rows:
+        vals = (list(x.get("values") or []) + [None] * len(cols))[:len(cols)]
+        cells = "".join(f'<td style="{_TD} text-align:center;">{_e(v) if v not in (None, "", 0, "0") else "-"}</td>' for v in vals)
+        body += f'<tr><td style="{_TD} font-weight:bold;">{_e(x["label"])}</td>{cells}</tr>'
+    # 합계 줄: 행이 2개 이상이고 숫자로 더할 수 있으면 자동 계산 (Claude 계산을 믿지 않음)
+    if len(rows) >= 2:
+        sums = []
+        for i in range(len(cols)):
+            nums = [_num((list(x.get("values") or []) + [None] * len(cols))[i]) for x in rows]
+            sums.append(sum(n for n in nums if n) if any(nums) else None)
+        if any(sums):
+            cells = "".join(f'<td style="{_TD} text-align:center; font-weight:bold;">{s if s else "-"}</td>' for s in sums)
+            body += f'<tr style="background:#F8FAFC;"><td style="{_TD} font-weight:bold;">합계</td>{cells}</tr>'
+    out = (h2("1b", "모집 분야별 세부 인원")
+           + (p(_e(crew["summary"])) if crew.get("summary") else "")
+           + f'<div style="overflow-x:auto; margin:18px 0 22px;"><table style="width:100%; border-collapse:collapse; background:#fff;{" min-width:500px;" if len(cols) >= 6 else ""}">'
+           + f'<thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>')
+    if crew.get("note"):
+        out += f'<p style="font-size:14px; color:#6B7280; margin:0 0 16px;">※ {_e(crew["note"])}</p>'
+    return out
+
+def enh_arrow_steps(steps):
+    """날짜가 들어간 전형 화살표 — step / notice(중간 발표, 점선 박스) / final"""
+    items = [s for s in (steps or []) if s.get("title") or s.get("label")]
+    if len([s for s in items if s.get("type") != "notice"]) < 2:
+        return ""
+    out = '<div style="max-width:400px; margin:20px auto;">'
+    for i, s in enumerate(items):
+        kind = s.get("type") or "step"
+        is_last = i == len(items) - 1
+        if kind == "notice":
+            out += ('<div style="background:#FFF7ED; border:1px dashed #F97316; border-radius:8px; padding:8px 14px; text-align:center; margin:0 auto; max-width:280px;">'
+                    f'<p style="margin:0; font-size:13px; color:#9A3412;">📋 {_e(s.get("label"))}: <b>{_e(s.get("date"))}</b></p></div>')
+        else:
+            final = kind == "final"
+            bg, bd, tc = ("#F0FDF4", "#22C55E", "#166534") if final else ("#EFF6FF", "#3B82F6", "#1E3A8A")
+            title = ("🎉 " if final else "") + _e(s.get("title"))
+            out += f'<div style="background:{bg}; border:2px solid {bd}; border-radius:12px; padding:16px 18px; text-align:center;">'
+            out += f'<p style="margin:0; font-size:16px; font-weight:bold; color:{tc};">{title}</p>'
+            if s.get("date"):
+                out += f'<p style="margin:4px 0 0; font-size:14px; color:#EF4444; font-weight:bold;">📅 {_e(s["date"])}</p>'
+            if s.get("desc"):
+                out += f'<p style="margin:4px 0 0; font-size:14px; color:#374151;">{_e(s["desc"])}</p>'
+            if s.get("note"):
+                out += f'<p style="margin:4px 0 0; font-size:13px; color:#6B7280;">{_e(s["note"])}</p>'
+            out += '</div>'
+        if not is_last:
+            nxt = items[i + 1].get("type")
+            color = "#22C55E" if nxt == "final" else "#3B82F6"
+            pad = "4px" if kind == "notice" or nxt == "notice" else "6px"
+            out += f'<div style="text-align:center; padding:{pad} 0;"><span style="font-size:24px; color:{color}; font-weight:bold;">▼</span></div>'
+    return out + '</div>'
+
+def enh_language_box(lang):
+    if not lang or not lang.get("text"):
+        return ""
+    return box("blue", "📋 " + _e(lang.get("title") or "어학 기준"), _hl(lang["text"], lang.get("highlight")))
+
+def enh_written_section(w):
+    """H2 sec5b — 필기전형 과목·문항수 상세"""
+    subs = [s for s in (w.get("subjects") or []) if s.get("name")][:8]
+    if not subs:
+        return ""
+    body = ""
+    for s in subs:
+        cnt = _e(s.get("count")) if s.get("count") not in (None, "", 0) else "-"
+        cnt_html = f'<span style="{_RED}">{cnt}</span>' if cnt != "-" else "-"
+        scope = _e(s.get("scope") or "-")
+        if s.get("note"):
+            scope += f'<br><span style="color:#7C3AED; font-weight:bold;">★ {_e(s["note"])}</span>'
+        ncs_badge = ('<br><span style="display:inline-block; margin-top:4px; background:#DCFCE7; color:#166534; '
+                     'font-size:12px; font-weight:bold; padding:2px 8px; border-radius:10px;">NCS</span>') if s.get("ncs") is True else ""
+        body += (f'<tr><td style="{_TD} font-weight:bold;">{_e(s["name"]).replace("(", "<br>(", 1)}{ncs_badge}</td>'
+                 f'<td style="{_TD} text-align:center;">{cnt_html}</td><td style="{_TD}">{scope}</td></tr>')
+    out = (h2("5b", "필기전형 과목·문항수 상세")
+           + (p(_hl(w["summary"], w.get("highlight"))) if w.get("summary") else "")
+           + '<div style="overflow-x:auto; margin:18px 0 22px;"><table style="width:100%; border-collapse:collapse; background:#fff;">'
+           + f'<thead><tr><th style="{_TH} width:30%;">과목</th><th style="{_TH} width:15%;">문항수</th><th style="{_TH} width:55%;">출제 범위</th></tr></thead>'
+           + f'<tbody>{body}</tbody></table></div>')
+    tip = w.get("callout") or {}
+    if tip.get("text"):
+        out += box("blue", _e(tip.get("title") or "💡 참고하세요"), _e(tip["text"]))
+    return out
+
 def salary_table(sal):
     """연봉 테이블 (H2-1 안에 삽입)"""
     if not sal:
@@ -397,7 +516,7 @@ def make_labels(job):
     return out[:6]
 
 # ───────── 본문 ─────────
-def build_html(job, src, related=None):
+def build_html(job, src, related=None, enh=None):
     inst = clean_inst(job["instNm"])
     title = clean_title(job["recrutPbancTtl"])
     hl = hire_list(job)
@@ -474,7 +593,8 @@ def build_html(job, src, related=None):
           + ncs_tags(nl)
           + p("그런데 가장 중요한 건 모집 분야별 세부 인원이에요. 분야마다 뽑는 인원과 근무지가 나뉘어 있어서, 내가 지원할 분야를 먼저 골라야 해요.")
           + p("생각보다 선택지가 많아서 놀라시는 분이 많아요. 모집 분야부터 확인해보세요.")
-          + cta("모집 분야 보기", src))
+          + cta("모집 분야 보기", src)
+          + (enh_crew_section(enh["crew"]) if enh and enh.get("crew") else ""))
 
     # H2-2 접수 일정
     sec_n += 1
@@ -523,6 +643,13 @@ def build_html(job, src, related=None):
                    + arrow_steps_html(dot(bg), dot(end))
                    + box("green", "💡 알아두세요", "위 흐름은 공공기관 채용의 일반적인 절차예요. 이 공고의 실제 전형 단계와 배점은 원문 공고가 기준이에요.")
                    + p("그런데 가장 중요한 건 이 공고에 필기가 있느냐예요. 필기 유무에 따라 준비 기간이 완전히 달라져요."))
+    enh_steps = enh_arrow_steps(enh.get("steps")) if enh else ""
+    if enh_steps:
+        s5_head = (p(f"원문 공고문 기준으로 {inst} 이번 채용의 전형 단계와 일정을 정리했어요.")
+                   + enh_steps
+                   + box("green", "💡 알아두세요", "일정과 배점은 원문 공고문 기준이에요. 기관 사정에 따라 바뀔 수 있으니 채용 홈페이지 공지를 함께 확인하세요."))
+    if enh:
+        s5_head += enh_language_box(enh.get("language")) + (enh_written_section(enh["written"]) if enh.get("written") else "")
     s5 = (h2(sec_n, toc_items[sec_n - 1])
           + s5_head
           + p("전형은 보통 3~4단계인데, 첫 단계에서 가장 많이 떨어져요. 전형 절차부터 확인해보세요.")
