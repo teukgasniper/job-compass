@@ -1409,5 +1409,242 @@
     "callout": null
    }
   }
+ },
+ "305390": {
+  "at": "2026-10-01 03:53",
+  "url": "https://hiring03.ddolbestory.com/2026/09/snuh-305390.html",
+  "source": "2026년 하반기 장애인 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "사무직 1명, 단시간운영기능직 15명을 뽑아요.",
+    "columns": [
+     "사무직",
+     "단시간운영기능직"
+    ],
+    "rows": [
+     {
+      "label": "홍보팀",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "영상의학과",
+      "values": [
+       null,
+       2
+      ]
+     },
+     {
+      "label": "약제부",
+      "values": [
+       null,
+       1
+      ]
+     },
+     {
+      "label": "총무과",
+      "values": [
+       null,
+       2
+      ]
+     },
+     {
+      "label": "원무과",
+      "values": [
+       null,
+       6
+      ]
+     },
+     {
+      "label": "간호부문",
+      "values": [
+       null,
+       3
+      ]
+     },
+     {
+      "label": "정보보호팀",
+      "values": [
+       null,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": "본 채용은 장애인만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 21일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접",
+     "date": "10월 22일~23일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "실무면접 합격자 발표",
+     "date": "11월 5일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종면접",
+     "date": "11월 11일~12일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "최종면접 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 신체검사 및 임용후보자 등록",
+     "date": "11월 19일~12월 3일",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305397": {
+  "at": "2026-10-01 03:53",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-305397.html",
+  "source": "1. 2026년도 제3차 직원 정기채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "본원 일반직 7명과 지역장애아동·발달장애인지원센터 78명 등 총 85명을 뽑아요.",
+    "columns": [
+     "본원(일반)",
+     "본원(학위제한)",
+     "센터장",
+     "팀장",
+     "발달장애인지원(팀원)",
+     "운영지원(팀원)",
+     "장애아동지원(팀원)"
+    ],
+    "rows": [
+     {
+      "label": "일반",
+      "values": [
+       4,
+       null,
+       2,
+       3,
+       34,
+       3,
+       23
+      ]
+     },
+     {
+      "label": "제한(학위)",
+      "values": [
+       null,
+       3,
+       null,
+       null,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "제한(장애)",
+      "values": [
+       null,
+       null,
+       null,
+       null,
+       11,
+       2,
+       null
+      ]
+     }
+    ],
+    "note": "장애아동지원(팀원)은 2급 15명, 3급 8명을 합한 수치예요."
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 28일~30일",
+     "desc": "직무관련 교육·자격, 경력, 역량기술서 등 평가",
+     "note": "10배수 선정"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 결과발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 14일(토)",
+     "desc": "직업기초능력평가(의사소통, 문제해결, 자기개발 등)",
+     "note": "10배수 선정"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 결과발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "12월 1일~4일",
+     "desc": "심층면접(다대다 또는 다대일)",
+     "note": "1배수 선정"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 23일(수)",
+     "desc": "신규임용은 2027년 1월 4일이에요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 직업기초능력평가로 보며, 의사소통·문제해결·자기개발·직업윤리·조직이해 영역을 평가해요.",
+    "highlight": "직업기초능력평가",
+    "subjects": [
+     {
+      "name": "직업기초능력평가",
+      "count": null,
+      "scope": "의사소통, 문제해결, 자기개발, 직업윤리, 조직이해",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
