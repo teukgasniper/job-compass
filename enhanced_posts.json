@@ -866,5 +866,342 @@
     "callout": null
    }
   }
+ },
+ "305277": {
+  "at": "2026-09-30 15:54",
+  "url": "https://hiring03.ddolbestory.com/2026/09/bohun-305277.html",
+  "source": "(공고문) 한국보훈복지의료공단 2027년 보훈병원 간호직 통합 공개채용.pdf (글자 없는 PDF → 이미지 15조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "중앙 157명, 부산 35명, 광주 65명, 대구 24명, 대전 50명, 인천 25명 등 총 356명을 뽑아요.",
+    "columns": [
+     "중앙",
+     "부산",
+     "광주",
+     "대구",
+     "대전",
+     "인천"
+    ],
+    "rows": [
+     {
+      "label": "면허취득예정자",
+      "values": [
+       106,
+       20,
+       46,
+       12,
+       25,
+       10
+      ]
+     },
+     {
+      "label": "면허소지자",
+      "values": [
+       51,
+       15,
+       19,
+       12,
+       25,
+       15
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 15일(목)",
+     "desc": "지원자격요건 충족자 전원 선발",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 대상자 발표",
+     "date": "10월 22일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 1일(일)",
+     "desc": "간호학 100문항, 4지선다, 100분",
+     "note": "3배수 선발(예정자 2.5배수)"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 온라인 인성·조직적합도 검사",
+     "date": "11월 6일~10일",
+     "desc": "면접시험 참고자료로 활용",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 대상자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접시험",
+     "date": "11월 30일~12월 11일",
+     "desc": "임상술기면접(60%)+인성면접(40%)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 21일(월)",
+     "desc": "필기60%+면접40% 합산 고득점순",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 간호학 100문항을 100분 동안 4지선다형으로 풀어요.",
+    "highlight": "100문항",
+    "subjects": [
+     {
+      "name": "간호학",
+      "count": "100문항",
+      "scope": "성인간호학30, 기본간호학20, 노인간호학15, 모성간호학10, 정신간호학10, 아동간호학5, 병태생리학5, 간호윤리전반5",
+      "note": "간호사 국가고시 수준",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305190": {
+  "at": "2026-09-30 15:54",
+  "url": "https://hiring03.ddolbestory.com/2026/09/kogas-tech-305190.html",
+  "source": "(한국가스기술공사) 2026년 하반기 신입직원 공개채용_공고문.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "6급2 43명, 7급 31명, 특정직(기술공통) 17명을 뽑아요.",
+    "columns": [
+     "6급2",
+     "7급",
+     "특정직"
+    ],
+    "rows": [
+     {
+      "label": "기계",
+      "values": [
+       20,
+       16,
+       null
+      ]
+     },
+     {
+      "label": "전기",
+      "values": [
+       18,
+       15,
+       null
+      ]
+     },
+     {
+      "label": "토목",
+      "values": [
+       5,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "기술공통",
+      "values": [
+       null,
+       null,
+       17
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "외국어성적(40점)+자격증(60점)",
+     "note": "20배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 대상자 발표",
+     "date": "10월 28일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 31일(토)",
+     "desc": "NCS직업공통능력+직무전공학술+인성검사(적부)",
+     "note": "2~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 대상자 발표",
+     "date": "11월 11일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 23일~27일",
+     "desc": "직업공통능력+직무수행능력 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 24일(목)",
+     "desc": "신체검사·신원조사 후 임용"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (6급2)",
+    "text": "6급2는 토익 700점 이상, 7급·특정직은 480점 이상이 필요하며 다양한 어학시험 점수를 환산해 인정해요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 NCS직업공통능력평가(50문항)+직무전공학술능력평가(50문항)+인성검사(적·부)로 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "NCS직업공통능력",
+      "count": "50문항",
+      "scope": "문제해결능력, 수리능력, 자원관리능력, 기술능력, 조직이해능력",
+      "note": "6급2 기준 출제",
+      "ncs": true
+     },
+     {
+      "name": "직무전공학술능력",
+      "count": "50문항",
+      "scope": "직무분야 산업기사 전공학술과목 수준(6급2 기준)",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": "적·부 판정, 부적합 시 면접 제외",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305181": {
+  "at": "2026-09-30 15:54",
+  "url": "https://hiring03.ddolbestory.com/2026/09/kdn-305181.html",
+  "source": "첨부1. 2026년 하반기 한전KDN 별정직 채용공고.pdf (글자 없는 PDF → 이미지 14조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "별정직 영선 1명, 미화 11명을 뽑아요.",
+    "columns": [
+     "영선",
+     "미화"
+    ],
+    "rows": [
+     {
+      "label": "별정직",
+      "values": [
+       1,
+       11
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 내 자격사항 검증에 따른 적격자 선발",
+     "note": "적격자 전원 합격"
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "10월 14일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 24일(토)",
+     "desc": "인성검사 + 직업기초능력평가(50문항/50분)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기 합격자 발표",
+     "date": "10월 30일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 종합면접전형",
+     "date": "11월 11일(수)",
+     "desc": "태도·사고방식·인성·직업기초능력 등 적합성 검증",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 신체검사전형",
+     "date": "11월 11일~12일",
+     "desc": "당사 지정기관에서 개인별 시행",
+     "note": "적격자만 통과"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 30일(월)",
+     "desc": "12월 7일(월) 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사와 직업기초능력평가로 봐요. 직업기초능력평가는 50문항이에요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "직업기초능력평가",
+      "count": "50문항/50분",
+      "scope": "수리능력, 의사소통능력, 문제해결능력, 정보능력, 직업윤리, 기술능력, 자원관리능력, 자기개발능력, 조직이해능력, 대인관계능력",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
