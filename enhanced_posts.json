@@ -2184,5 +2184,235 @@
     "callout": null
    }
   }
+ },
+ "305655": {
+  "at": "2026-10-02 03:52",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ex-305655.html",
+  "source": "2026년 한국도로공사 실무직(도로관리원) 채용 공고문[일반전형].pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 19일~20일",
+     "desc": "자격증(30)+역량기술서(10)+가점 합산 평가",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 22일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 체력전형·조직적합도검사",
+     "date": "10월 28일~29일",
+     "desc": "체력전형(60)+서류전형(40)+가점, JAT검사 동시 실시",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "체력전형 합격자 발표",
+     "date": "11월 5일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 11일~12일",
+     "desc": "블라인드 다대일 면접, 직무역량 중심 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 18일",
+     "desc": "11월 20일 배치 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305283": {
+  "at": "2026-10-02 03:52",
+  "url": "https://hiring03.ddolbestory.com/2026/09/kotra-305283.html",
+  "source": "2026년 하반기 KOTRA 공무직 채용 공고문.pdf (글자 없는 PDF → 이미지 13조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "장애인제한경쟁 사무 2명, 보훈제한경쟁 시설(경비) 2명, 공개경쟁채용 시설(경비) 2명과 시설(미화) 4명을 뽑아요.",
+    "columns": [
+     "사무",
+     "시설(경비)",
+     "시설(미화)"
+    ],
+    "rows": [
+     {
+      "label": "장애인제한경쟁",
+      "values": [
+       2,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "보훈제한경쟁",
+      "values": [
+       null,
+       2,
+       null
+      ]
+     },
+     {
+      "label": "공개경쟁채용",
+      "values": [
+       null,
+       2,
+       4
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "직무적합성 및 직무수행능력 평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 서류심사 합격자 발표",
+     "date": "10월 중"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 능력심사(최종전형)",
+     "date": "10월 말 예정",
+     "desc": "인성검사+NCS직업기초능력평가+역량면접",
+     "note": "사무직렬 기준"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 통보",
+     "date": "11월 중순",
+     "desc": "최종합격자에 한해 개별 통보 예정"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "사무직렬은 능력심사에서 NCS직업기초능력평가로 의사소통·문제해결능력을 평가해요.",
+    "highlight": "NCS직업기초능력평가(30%)",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력평가",
+      "count": "30%",
+      "scope": "의사소통능력, 문제해결능력",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305346": {
+  "at": "2026-10-02 03:52",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-305346.html",
+  "source": "붙임1. (제2026-8호) 신규직원(일반공무직 6급(갑)-장애) 채용 공고.pdf",
+  "parts": [
+   "written",
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": "「장애인고용촉진 및 직업재활법」에 따른 국가등록 장애인만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서 등 심사 후 가점 반영, 70점 이상 중 선발",
+     "note": "10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 16일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형 1차(인성검사)",
+     "date": "10월 20일(화)",
+     "desc": "온라인 인성검사, 성장가능성·조직적합성 평가",
+     "note": "40점 미만 불합격"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 1차 합격자 발표",
+     "date": "10월 21일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 필기전형 2차(역량평가)",
+     "date": "10월 24일(토)",
+     "desc": "NCS 5과목(50문항)과 직무수행능력평가(논술)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 2차 합격자 발표",
+     "date": "10월 27일(화)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "11월 2일(월)",
+     "desc": "심층 및 토의면접으로 직무역량·태도 평가",
+     "note": "70점 이상 중 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 4일(수)",
+     "desc": "신체검사·신원조사 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사와 직업공통능력평가(NCS), 직무수행능력평가(논술)로 봐요. NCS는 총 50문항이에요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "직업공통능력평가(NCS)",
+      "count": "50문항",
+      "scope": "의사소통, 문제해결, 수리능력, 자기관리, 디지털능력",
+      "note": "4지선다, 1과목당 10문항",
+      "ncs": true
+     },
+     {
+      "name": "직무수행능력평가(논술)",
+      "count": null,
+      "scope": "보건, 복지, 교육 등 기관 사업 관련",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
