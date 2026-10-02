@@ -32,6 +32,43 @@ def _find_salary(inst_name):
             return v
     return None
 
+# DART 직원 평균 연봉 (민간 기업용 — dart_salary.py를 PC에서 연 1회 실행해 생성)
+_DART_PATH = os.path.join(os.path.dirname(__file__), "dart_salary.json")
+try:
+    with open(_DART_PATH, encoding="utf-8") as _f:
+        DART_DB = json.load(_f).get("companies", {})
+except Exception:
+    DART_DB = {}
+
+_LATIN = [("에이치에스", "HS"), ("엔에이치엔", "NHN"), ("에이치디", "HD"), ("에이치엘", "HL"), ("에이치엠엠", "HMM"),
+          ("에스케이", "SK"), ("엘지", "LG"), ("씨제이", "CJ"), ("디비", "DB"), ("엔에이치", "NH"), ("지에스", "GS"),
+          ("엘에스", "LS"), ("케이티", "KT"), ("케이비", "KB"), ("케이씨", "KC"), ("케이지", "KG"), ("비지에프", "BGF"),
+          ("에스엠", "SM"), ("에스디", "SD"), ("오씨아이", "OCI"), ("에쓰오일", "S-OIL"), ("제이티", "JT")]
+
+def _find_dart(inst_name):
+    """회사명 정확 일치만 (부분 일치 금지 — 다른 회사 연봉이 붙는 사고 방지)"""
+    n = re.sub(r"\(주\)|㈜|주식회사|\(유\)|유한회사|\s", "", inst_name or "").upper()
+    if n in DART_DB:
+        return DART_DB[n]
+    for ko, en in _LATIN:
+        if n.startswith(ko):
+            return DART_DB.get(en + n[len(ko):])
+    return None
+
+def dart_salary_table(d):
+    """민간 기업 연봉 표 — DART 사업보고서 직원 평균 (신입 초봉 아님을 명시)"""
+    if not d or not d.get("avg"):
+        return ""
+    th_s = 'background:#F1F5F9; color:#1e293b; padding:12px 10px; border:1px solid #E2E8F0; font-size:15px; text-align:center;'
+    td_s = 'padding:12px 10px; border:1px solid #E2E8F0; font-size:18px; line-height:1.55; word-break:keep-all; vertical-align:middle; text-align:center;'
+    ten = f'약 {d["tenure"]}년' if d.get("tenure") else "공시 없음"
+    return (f'<div style="overflow-x:auto; margin:18px 0 22px;">'
+            f'<table style="width:100%; border-collapse:collapse; background:#fff;">'
+            f'<thead><tr><th style="{th_s} width:50%;">직원 평균 연봉</th><th style="{th_s} width:50%;">평균 근속연수</th></tr></thead>'
+            f'<tbody><tr><td style="{td_s}"><span style="color:#EF4444; font-weight:bold;">약 {d["avg"]:,}만원</span></td>'
+            f'<td style="{td_s}"><span style="color:#EF4444; font-weight:bold;">{ten}</span></td></tr></tbody></table></div>'
+            f'<p style="font-size:13px; color:#9CA3AF; margin:0 0 16px; text-align:right;">출처: DART {d.get("year", "")}년 사업보고서 (전 직원 평균, 신입 초봉과 다름)</p>')
+
 KST = timezone(timedelta(hours=9))
 AD_CLIENT = "ca-pub-1043776171226680"
 AD_SLOT = "5492035216"
@@ -569,9 +606,10 @@ def build_html(job, src, related=None, enh=None):
     is_regular = any(h in ("정규직",) for h in hl)
 
     # ★ 연봉 데이터
-    sal = _find_salary(inst)
+    sal = None if priv else _find_salary(inst)           # 알리오 경영공시는 공공기관 전용
+    dart = _find_dart(job["instNm"]) if priv else None   # 민간: DART 사업보고서 평균 연봉
     starting = sal.get("entry", 0) if sal else 0
-    avg = sal.get("avg", 0) if sal else 0
+    avg = sal.get("avg", 0) if sal else (dart.get("avg", 0) if dart else 0)
     inst_desc = ""  # 기관 설명 (향후 확장 가능)
     offered = "" if avg else offered_salary(job)          # 알리오 연봉 없을 때만 클린아이 제시 연봉
     stages = parse_judge(job.get("judgeMethod"))          # 클린아이 전형방법 (없으면 [])
@@ -629,7 +667,7 @@ def build_html(job, src, related=None, enh=None):
     sec_n = 1
     s1 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"이번 공고는 {inst}의 「{title}」이에요. 핵심 정보를 표로 정리했어요.")
-          + (salary_table(sal) if sal else offered_salary_table(offered))
+          + (dart_salary_table(dart) if priv else (salary_table(sal) if sal else offered_salary_table(offered)))
           + table(["항목", "내용"], [
               [org, inst], ["공고명", title], ["고용형태", ", ".join(hl) or "공고 참조"],
               ["모집인원", r(nope_text(job)) if nope else nope_text(job)], ["경력구분", se],
@@ -752,7 +790,9 @@ def build_html(job, src, related=None, enh=None):
 
     # FAQ
     if priv and hl and hl[0] == "정규직":
-        q3 = ("연봉은 얼마나 되나요?", "공채속보 데이터에는 연봉이 따로 등록돼 있지 않아요. 회사 내규에 따르는 경우가 많으니 원문 공고와 채용 페이지의 처우 안내를 확인하세요.")
+        q3 = (("연봉은 얼마나 되나요?", f"DART {dart.get('year', '')}년 사업보고서 기준 {inst}의 직원 평균 연봉은 {r('약 ' + format(dart['avg'], ',') + '만원')}이에요. 전 직원 평균이라 신입 초봉은 이보다 낮아요. 정확한 처우는 원문 공고와 채용 페이지에서 확인하세요.")
+              if dart and dart.get("avg") else
+              ("연봉은 얼마나 되나요?", "공채속보 데이터에는 연봉이 따로 등록돼 있지 않아요. 회사 내규에 따르는 경우가 많으니 원문 공고와 채용 페이지의 처우 안내를 확인하세요."))
     elif priv and hl and "전환형" in hl[0]:
         q3 = ("정규직 전환형은 어떻게 되나요?", "일정 기간 근무한 뒤 평가를 거쳐 정규직으로 전환되는 방식이에요. 근무 기간과 전환 기준은 원문 공고에서 확인하세요.")
     elif hl and hl[0] == "정규직":
