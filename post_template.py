@@ -487,6 +487,11 @@ def hire_type_section(sec_num, hl):
             + p("이 공고의 정확한 고용 조건은 원문 공고에서 확인하세요."))
 
 
+def _detail_html(text):
+    """기업 등록 자유기재 내용 → 이스케이프 + 줄바꿈"""
+    return _e(text).replace("\n", "<br>")
+
+
 def work24_jobs_table(jobs):
     """공채속보 상세의 모집분야별 담당업무·자격 표 (최대 8행)"""
     if not jobs:
@@ -631,6 +636,8 @@ def build_html(job, src, related=None, enh=None):
     if len(regions(job)) >= 10:
         points.append("전국 배치")
     restriction = (enh or {}).get("restriction") or ""       # 보강 데이터: 지원 대상 제한 (보훈·장애 전용 등)
+    if priv and not restriction:
+        restriction = wk.get("restriction") or ""              # 공채속보 상세에서 감지한 지원 대상 제한
     if restriction:
         selling_point = (", ".join(points) + f" — 단, {_e(restriction)}") if points else f"단, {_e(restriction)}"
     else:
@@ -689,6 +696,11 @@ def build_html(job, src, related=None, enh=None):
               ["접수 시작", dot(bg)], ["접수 마감", r(dot(end) + f"({WEEK[ymd(end).weekday()]})")],
               ["남은 기간", f'<span class="jm-dday" data-end="{end[:4]}-{end[4:6]}-{end[6:]}T23:59:59+09:00" {RED}>{md(end)} 마감</span>']],
               ["35%", "65%"])
+          + ((p("접수 방법과 제출 서류는 기업이 고용24에 등록한 내용 그대로 정리했어요.")
+              + table(["구분", "내용"], [r_ for r_ in [["접수 방법", _detail_html(wk.get("method"))] if wk.get("method") else None,
+                                                    ["제출 서류", _detail_html(wk.get("docs"))] if wk.get("docs") else None] if r_],
+                      ["25%", "75%"]))
+             if priv and (wk.get("method") or wk.get("docs")) else "")
           + box("red", "⚠️ 주의하세요", "마감 시각은 기관마다 달라요. 오후 6시에 닫는 곳도 많으니 마감 당일이 아니라 하루 전 제출을 목표로 하세요.")
           + p("그런데 가장 중요한 건 지원서 작성 시간이에요. 자기소개서 문항과 증빙 서류를 챙기다 보면 생각보다 오래 걸려요.")
           + p("신청 안 하면 그대로 지나가는 기회예요. 접수창부터 미리 열어두세요.")
@@ -703,6 +715,10 @@ def build_html(job, src, related=None, enh=None):
               ["모집분야" if priv else "직무분야", ncs_text(job)]]
              + ([] if priv else [["대체인력", "예(휴직자 등 공석 대체)" if repl else "아니오"]]), ["35%", "65%"])
           + (box("red", "⚠️ 지원 대상 제한", _e(restriction)) if restriction else "")
+          + ((p("기업이 등록한 지원 자격을 그대로 옮겼어요.")
+              + "".join(box("blue", "📋 지원 자격 상세" if i == 0 else "📋 모집분야별 자격", _detail_html(t))
+                        for i, t in enumerate(([wk["common"]] if wk.get("common") else []) + wk.get("support", []))))
+             if priv and (wk.get("common") or wk.get("support")) else "")
           + (box("blue", "📌 핵심 포인트", "학력무관 공고라도 자격증·면허·어학 같은 필수 요건이 따로 붙을 수 있어요. 지원 전에 원문 공고의 응시 자격 칸을 꼭 확인하세요.")
              if "학력무관" in acbg else
              box("blue", "📌 핵심 포인트", "학력 요건이 있는 공고예요. 졸업 예정자 인정 여부와 전공 제한이 있는지 원문 공고에서 확인하세요."))
@@ -842,6 +858,7 @@ def build_html(job, src, related=None, enh=None):
             + cta("채용공고 바로가기", src)  # ★ 첫 번째 CTA만 변경
             + sections_with_ads
             + AD
+            + (box("green", "💡 유의사항 (기업 공지)", _detail_html(wk.get("notes"))) if priv and wk.get("notes") else "")
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
             + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job) if nope else '채용'} — 이런 공채는 자주 안 열려요.")

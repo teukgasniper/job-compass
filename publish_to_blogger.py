@@ -137,6 +137,26 @@ GROUP_ABBR = {
 def is_work24(job):
     return str(job.get("recrutPblntSn", "")).startswith("WK-")
 
+def _clean_detail(text, limit=500):
+    """상세 API 자유기재 칸 정리: 줄바꿈 통일, '자세한 사항은 홈페이지 참조' 류 줄 제거, 길이 제한"""
+    t = (text or "").replace("\r\n", "\n").replace("\r", "\n").replace("\u200b", "")
+    lines = []
+    for l in t.split("\n"):
+        l = l.strip()
+        if not l or re.search(r"자세한\s*사항은|상세\s*모집요강\s*참조|^※\s*$", l):
+            continue
+        lines.append(l)
+    t = "\n".join(lines).strip()
+    return t[:limit].rsplit("\n", 1)[0] + "\n…" if len(t) > limit else t
+
+
+# 지원 대상이 제한된 공고 (제목·지원자격·접수방법에서 감지) → 본문 빨간 경고 박스
+RESTRICT_RULES = [
+    (r"보훈|국가유공자|취업지원\s*대상자", "국가보훈 취업지원 대상자만 지원할 수 있는 보훈 전형이에요. 일반 지원자는 지원할 수 없어요"),
+    (r"장애인\s*(전형|채용|전용|만)|장애인\s*고용", "장애인 전형 공고예요. 지원 대상이 장애인으로 제한돼요"),
+]
+
+
 def enrich_work24(job):
     """고용24 공채속보 상세 API → 모집분야·담당업무·조건·전형단계를 job['_work24']에 담기"""
     if not is_work24(job) or not WORK24_KEY or job.get("_work24"):
@@ -161,8 +181,23 @@ def enrich_work24(job):
                 "edu": (el.findtext("empWantedEduNm") or "").replace("|", ", "),
                 "region": (el.findtext("workRegionNm") or "").replace("|", ", "),
             })
-        job["_work24"] = {"stages": stages if len(stages) >= 2 else [], "jobs": [j for j in jobs_ if j["name"]]}
-        print(f"  [공채속보] 보충 완료: {job['instNm']} | 분야 {len(job['_work24']['jobs'])}개 | 전형 {' → '.join(stages) or '-'}")
+        support = []
+        for el in root.findall(".//empRecrListInfo"):
+            t = _clean_detail(el.findtext("sptCertEtc"), 400)
+            if t and t not in support:
+                support.append(t)
+        common = _clean_detail(root.findtext(".//recrCommCont"))
+        docs = _clean_detail(root.findtext(".//empSubmitDocCont"), 300)
+        method = _clean_detail(root.findtext(".//empRcptMthdCont"), 400)
+        notes = _clean_detail(root.findtext(".//empnEtcCont"), 400)
+        hay = " ".join([job.get("recrutPbancTtl") or "", common, method] + support)
+        restriction = next((msg for pat, msg in RESTRICT_RULES if re.search(pat, hay)), "")
+        # 문의처(inqryCont)는 담당자 이름·전화번호가 들어 있어 본문에 넣지 않음
+        job["_work24"] = {"stages": stages if len(stages) >= 2 else [], "jobs": [j for j in jobs_ if j["name"]],
+                          "support": support[:3], "common": common, "docs": docs, "method": method,
+                          "notes": notes, "restriction": restriction}
+        print(f"  [공채속보] 보충 완료: {job['instNm']} | 분야 {len(job['_work24']['jobs'])}개 | 전형 {' → '.join(stages) or '-'}"
+              + (f" | ⚠️ 지원 제한: {restriction[:20]}…" if restriction else ""))
     except Exception as e:
         print(f"  [공채속보] {seq} 보충 실패: {e}")
     return job
