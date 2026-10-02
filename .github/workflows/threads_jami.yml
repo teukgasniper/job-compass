@@ -30,6 +30,7 @@ jobs:
           python-version: "3.11"
 
       - run: pip install requests beautifulsoup4 pillow cairosvg
+      - run: sudo apt-get install -y -qq fonts-nanum   # 로고 실패 시 기관명 텍스트 카드용 한글 폰트
 
       - name: 후킹글 생성 + 발행
         env:
@@ -47,7 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for p in threads_state logos logos_missing.txt; do
+          for p in threads_state logos logos_text logos_missing.txt; do
             [ -e "$p" ] && git add "$p"
           done
           if git diff --cached --quiet; then
