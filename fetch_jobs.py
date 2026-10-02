@@ -17,6 +17,7 @@
                   500건씩 + 90초 타임아웃 + 3회 재시도
 [2026-10-02 수정] 나라일터 504 대응 — 100건 페이지 × 100페이지, 연속 5페이지 실패 시 중단,
                   수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
+                  클린아이 시도별 3회 재시도 + 실패 시도 있으면 직전 클린아이 공고 재사용
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
@@ -373,24 +374,41 @@ def cleaneye_to_alio_format(item):
     }
 
 
+CLEANEYE_FAILED = 0   # 이번 실행에서 실패한 시도 수
+
+
 def collect_cleaneye():
     if not CLEANEYE_KEY:
         print("[클린아이] CLEANEYE_API_KEY 없음 → 건너뜀")
         return []
 
+    global CLEANEYE_FAILED
     all_items = []
     n_excluded = {"status": 0, "title": 0, "doctor": 0, "executive": 0, "quality": 0, "substitute": 0}
 
     for sido_cd in SIDO_CODES:
         try:
             q = urllib.parse.urlencode({"serviceKey": CLEANEYE_KEY, "sidoCd": sido_cd, "type": "xml"}, safe="%")
-            xml_data = get_xml(f"{CLEANEYE_ENDPOINT}?{q}", 30)
-            root = ET.fromstring(xml_data)
+            # [2026-10-02 추가] 시도별 3회 재시도
+            root = None
+            for attempt in range(3):
+                try:
+                    root = ET.fromstring(get_xml(f"{CLEANEYE_ENDPOINT}?{q}", 30))
+                    break
+                except Exception as e:
+                    print(f"[클린아이] {sido_cd} 시도 {attempt+1}/3 실패: {e}")
+                    if attempt < 2:
+                        time.sleep(5 * (attempt + 1))
+            if root is None:
+                CLEANEYE_FAILED += 1
+                continue
 
             result_code = root.findtext(".//resultCode", "")
             if result_code != "0":
                 result_msg = root.findtext(".//resultMsg", "")
                 print(f"[클린아이] {sido_cd} 오류: {result_code} - {result_msg}")
+                if "NOTEXISTDATA" not in result_msg:   # 데이터 없음(정상)은 실패로 안 셈
+                    CLEANEYE_FAILED += 1
                 continue
 
             items = root.findall(".//item")
@@ -439,6 +457,7 @@ def collect_cleaneye():
 
         except Exception as e:
             print(f"[클린아이] {sido_cd} 실패: {e}")
+            CLEANEYE_FAILED += 1
             continue
 
     print(f"[클린아이] 수집 완료: {len(all_items)}건")
@@ -652,20 +671,37 @@ cleaneye_items = collect_cleaneye()
 gojobs_items = collect_gojobs()
 merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items)
 
-# [2026-10-02 추가] 나라일터 수집 실패 시 직전 jobs.json의 나라일터 공고 재사용 (마감 안 된 것만)
-if not gojobs_items:
+# [2026-10-02 추가] 수집 실패 시 직전 jobs.json 공고 재사용 (마감 전 + 이번 결과와 중복 아닌 것만)
+_prev_cache = None
+
+
+def reuse_previous(source, label, merged):
+    global _prev_cache
     try:
-        prev = get_json("https://teukgasniper.github.io/job-compass/jobs.json", 30)
+        if _prev_cache is None:
+            _prev_cache = get_json("https://teukgasniper.github.io/job-compass/jobs.json", 30).get("result", [])
         today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
-        have = {x.get("recrutPblntSn") for x in merged}
-        reused = [x for x in prev.get("result", [])
-                  if x.get("_source") == "gojobs"
-                  and (x.get("pbancEndYmd") or "") >= today_str
-                  and x.get("recrutPblntSn") not in have]
+        have_id = {x.get("recrutPblntSn") for x in merged}
+        have_key = {dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) for x in merged}
+        reused = []
+        for x in _prev_cache:
+            if x.get("_source") != source or (x.get("pbancEndYmd") or "") < today_str:
+                continue
+            if x.get("recrutPblntSn") in have_id:
+                continue
+            if dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) in have_key:
+                continue
+            reused.append(x)
         merged.extend(reused)
-        print(f"[나라일터] 이번 수집 실패 → 직전 데이터 {len(reused)}건 재사용")
+        print(f"[{label}] 수집 실패 있음 → 직전 데이터 {len(reused)}건 재사용")
     except Exception as e:
-        print(f"[나라일터] 직전 데이터 재사용 실패: {e}")
+        print(f"[{label}] 직전 데이터 재사용 실패: {e}")
+
+
+if CLEANEYE_KEY and CLEANEYE_FAILED > 0:
+    reuse_previous("cleaneye", "클린아이", merged)
+if GOJOBS_KEY and not gojobs_items:
+    reuse_previous("gojobs", "나라일터", merged)
 
 # ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
 before = len(merged)
