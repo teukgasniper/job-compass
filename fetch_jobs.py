@@ -15,6 +15,8 @@
                   나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
                   중복 소거 + 특수직·아르바이트급 제외 + 합격자 발표 제외
                   500건씩 + 90초 타임아웃 + 3회 재시도
+[2026-10-02 수정] 나라일터 504 대응 — 100건 페이지 × 100페이지, 연속 5페이지 실패 시 중단,
+                  수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
@@ -461,7 +463,7 @@ def fetch_gojobs_page(page, per_page):
     q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}, safe="%")
     for attempt in range(3):
         try:
-            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 90)
+            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 60)
             root = ET.fromstring(xml_data)
             err = root.findtext(".//errMsg")
             if err:
@@ -475,7 +477,7 @@ def fetch_gojobs_page(page, per_page):
         except Exception as e:
             print(f"[나라일터] page {page} 시도 {attempt+1}/3 실패: {e}")
             if attempt < 2:
-                time.sleep(3)
+                time.sleep(5 * (attempt + 1))
     print(f"[나라일터] page {page} 3회 모두 실패 → 건너뜀")
     return []
 
@@ -501,19 +503,29 @@ def collect_gojobs():
         print(f"[나라일터] 전체 건수 확인 실패: {e}")
         return []
 
-    per_page = 500
+    # [2026-10-02 수정] 500건 페이지가 504 Gateway Timeout → 100건 페이지로 쪼개서 요청
+    # 최근 공고 약 10,000건(100건 × 100페이지) 범위 유지
+    per_page = 100
     last_page = (total + per_page - 1) // per_page
-    start_page = max(1, last_page - 19)
+    start_page = max(1, last_page - 99)
 
     items = []
     success_count = 0
+    fail_streak = 0
     for page in range(start_page, last_page + 1):
         batch = fetch_gojobs_page(page, per_page)
         if batch:
             items.extend(batch)
             success_count += 1
+            fail_streak = 0
             print(f"[나라일터] page {page}/{last_page} 수집 ({len(batch)}건)")
-        time.sleep(1)
+        else:
+            fail_streak += 1
+            # [2026-10-02 추가] 연속 5페이지 실패 = 서버 장애로 판단 → 중단 (실행 시간 폭주 방지)
+            if fail_streak >= 5:
+                print(f"[나라일터] 연속 {fail_streak}페이지 실패 → 수집 중단")
+                break
+        time.sleep(0.5)
 
     print(f"[나라일터] 수집 완료: {len(items)}건 ({success_count}/{last_page - start_page + 1} 페이지 성공)")
 
@@ -639,6 +651,21 @@ alio_items = collect_alio()
 cleaneye_items = collect_cleaneye()
 gojobs_items = collect_gojobs()
 merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items)
+
+# [2026-10-02 추가] 나라일터 수집 실패 시 직전 jobs.json의 나라일터 공고 재사용 (마감 안 된 것만)
+if not gojobs_items:
+    try:
+        prev = get_json("https://teukgasniper.github.io/job-compass/jobs.json", 30)
+        today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
+        have = {x.get("recrutPblntSn") for x in merged}
+        reused = [x for x in prev.get("result", [])
+                  if x.get("_source") == "gojobs"
+                  and (x.get("pbancEndYmd") or "") >= today_str
+                  and x.get("recrutPblntSn") not in have]
+        merged.extend(reused)
+        print(f"[나라일터] 이번 수집 실패 → 직전 데이터 {len(reused)}건 재사용")
+    except Exception as e:
+        print(f"[나라일터] 직전 데이터 재사용 실패: {e}")
 
 # ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
 before = len(merged)
