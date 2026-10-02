@@ -419,7 +419,9 @@ JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이
 
 규칙:
 - type이 funny인데 funny가 7점 미만이면 total에서 15점을 뺀다 (어설프게 웃긴 글은 담백한 글보다 나쁘다).
-- 제외 패턴(점심시간 동료, vs 비교, 데이터 빈칸, 숫자 포장, 절차 디테일, 대학 보냈냐 무시형)이 보이면 total 0.
+- 제외 패턴은 **훅과 클로저에만** 적용한다. 훅·클로저에 점심시간 동료, vs 비교, 데이터 빈칸, 숫자 포장("10개 중 1개"류),
+  절차 디테일(등기우편·수입인지처럼 접수 절차를 소재로 삼음), 대학 보냈냐 무시형이 보이면 total 0.
+- 리스트 5개는 팩트 칸이다. 리스트에 전형 단계·연봉·인원·마감일 같은 숫자와 절차 정보가 있는 건 정상이며 감점하지 않는다.
 - total = relate + curious + fresh (+ funny, funny 타입만) 에서 규칙 적용.
 
 설명 없이 JSON만: {"scores": [{"i": 0, "relate": 0, "curious": 0, "fresh": 0, "funny": null, "total": 0, "why": "한 줄"}], "best": 0}
@@ -607,7 +609,7 @@ def judge(cands, recent_hooks):
 
 def generate(job, inst, d_left, combo, post_text, recent_hooks):
     user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks)
-    errs = []
+    errs, fallback = [], []          # fallback: 규격은 통과했지만 채점 0점이었던 후보 (최후 수단)
     for attempt in range(3):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
@@ -626,12 +628,18 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
         if valid:
             best, sc = judge(valid, recent_hooks) if len(valid) > 1 else (0, None)
             if sc is not None and (sc.get("total") or 0) <= 0:
+                raw = sum(sc.get(k) or 0 for k in ("relate", "curious", "fresh"))
+                fallback.append((raw, valid[best]))
                 errs.append("채점 0점 (제외 패턴)")
                 print(f"[warn] {attempt+1}회차 최고점 후보도 0점 — 재생성")
                 continue
             print(f"선택: [{best}] {valid[best]['type']} / {valid[best]['cat']} (통과 후보 {len(valid)}개)")
             return valid[best]
         print(f"[warn] 생성 {attempt+1}회차 통과 후보 없음: {errs}")
+    if fallback:   # 3번 다 0점이어도 코드 규격 검사는 통과한 후보 → 채점 세부점수가 가장 높은 것으로 발행 (회차 통째로 날리지 않음)
+        raw, pick = max(fallback, key=lambda t: t[0])
+        print(f"[warn] 채점 0점만 나와 규격 통과 후보 중 세부점수 최고({raw}점)로 진행")
+        return pick
     raise RuntimeError(f"후킹글 생성 실패: {errs}")
 
 
