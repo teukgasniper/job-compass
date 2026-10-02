@@ -2,7 +2,7 @@ name: 채용공고 업데이트
 
 on:
   schedule:
-    - cron: "0 */4 * * *"   # 4시간마다 (UTC 기준)
+    - cron: "23 */4 * * *"  # 4시간마다 23분 (UTC 기준, 정각은 GitHub 예약 실행이 자주 빠져서 피함)
   workflow_dispatch:         # 수동 실행 버튼
 
 permissions:
