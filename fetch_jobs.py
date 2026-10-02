@@ -18,6 +18,7 @@
 [2026-10-02 추가] 고용24 공채속보 통합 — 대기업·중견기업 공채 (정규직 포함 공고만, 공공 성격 제외)
                   bizType 필드(대기업/중견기업) → 블로그 '대기업·중견기업' 탭용, logoUrl 추가
                   상세 API로 학력·경력·근무지역·모집분야 보충, 실패 시 직전 데이터 재사용
+[2026-10-02 수정] 나라일터 제목 검색어 방식 — 깊은 페이지 타임아웃 해결 (검색어 14개의 최신 페이지만 수집)
 [2026-10-02 수정] 공채속보 상세 캐시 — 24시간 안에 받은 상세는 재사용, 새·수정 공고만 조회
 [2026-10-02 수정] 나라일터 504 대응 — 100건 페이지 × 100페이지, 연속 5페이지 실패 시 중단,
                   수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
@@ -485,75 +486,73 @@ def collect_cleaneye():
 GOJOBS_BASE = "https://apis.data.go.kr/1760000/PblJobService/getList"
 
 
-def fetch_gojobs_page(page, per_page):
-    q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}, safe="%")
+# [2026-10-02] 나라일터는 공고를 오래된 순으로만 주고, 필터 없이 맨 끝(최신) 페이지를 요청하면
+#   서버가 60초 안에 응답을 못 함(SERVICETIMEOUT). 정렬·날짜 조건은 지원하지 않고 '제목 검색(title)'만 작동.
+#   → 제목 검색어 여러 개로 건수를 줄여서 각 검색어의 최신 페이지만 받아 합친다.
+#   검색어는 2026-10-02 실측으로 고름 (전체 177건 중 이 14개로 거의 전부 커버, 기여 0인 검색어는 뺌)
+NARA_KEYWORDS = ["2026", "공무직", "직원", "모집", "재공고", "경력경쟁", "연구원", "신규",
+                 "정규직", "청원경찰", "선발", "실무", "운영", "공무원"]
+NARA_PAGES_PER_KW = 3          # 검색어당 최신 페이지 최대 3개(300건)
+NARA_LOOKBACK_DAYS = 45        # 이보다 오래 전 등록된 공고가 나오면 그 검색어는 더 안 내려감
+NARA_FAILED = 0                # 실패한 검색어 수 (있으면 직전 카드 재사용)
+
+
+def fetch_gojobs_page(page, per_page, title=None):
+    params = {"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}
+    if title:
+        params["title"] = title
+    q = urllib.parse.urlencode(params, safe="%")
     for attempt in range(2):
         try:
-            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 40)
-            root = ET.fromstring(xml_data)
+            root = ET.fromstring(get_xml(f"{GOJOBS_BASE}?{q}", 58))
             err = root.findtext(".//errMsg")
             if err:
-                print(f"[나라일터] page {page} API 에러: {err}")
-                return []
-            items = []
-            for item in root.findall(".//item"):
-                fields = {child.tag: child.text for child in item}
-                items.append(fields)
-            return items
+                raise RuntimeError(err)
+            total = int(root.findtext(".//totalCount") or 0)
+            return total, [{child.tag: child.text for child in item} for item in root.findall(".//item")]
         except Exception as e:
-            print(f"[나라일터] page {page} 시도 {attempt+1}/2 실패: {e}")
+            print(f"[나라일터] '{title}' page {page} 시도 {attempt+1}/2 실패: {e}")
             if attempt < 1:
                 time.sleep(5)
-    print(f"[나라일터] page {page} 2회 모두 실패 → 건너뜀")
-    return []
+    return None, None
 
 
 def collect_gojobs():
+    global NARA_FAILED
     if not GOJOBS_KEY:
         print("[나라일터] GOJOBS_API_KEY 없음 → 건너뜀")
         return []
 
-    today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
-
-    try:
-        q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": 1, "pageNo": 1}, safe="%")
-        xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 30)
-        root = ET.fromstring(xml_data)
-        err = root.findtext(".//errMsg")
-        if err:
-            print(f"[나라일터] API 에러: {err}")
-            return []
-        total = int(root.findtext(".//totalCount") or 0)
-        print(f"[나라일터] 전체 건수: {total:,}")
-    except Exception as e:
-        print(f"[나라일터] 전체 건수 확인 실패: {e}")
-        return []
-
-    # [2026-10-02 수정] 500건 페이지가 504 Gateway Timeout → 100건 페이지로 쪼개서 요청
-    # 최근 공고 약 10,000건(100건 × 100페이지) 범위 유지
+    now = datetime.now(timezone(timedelta(hours=9)))
+    today_str = now.strftime("%Y%m%d")
+    oldest = (now - timedelta(days=NARA_LOOKBACK_DAYS)).strftime("%Y%m%d")
     per_page = 100
-    last_page = (total + per_page - 1) // per_page
-    start_page = max(1, last_page - 99)
+    by_idx, t0 = {}, time.time()
 
-    items = []
-    success_count = 0
-    fail_streak = 0
-    for page in range(start_page, last_page + 1):
-        batch = fetch_gojobs_page(page, per_page)
-        if batch:
-            items.extend(batch)
-            success_count += 1
-            fail_streak = 0
-            print(f"[나라일터] page {page}/{last_page} 수집 ({len(batch)}건)")
-        else:
-            fail_streak += 1
-            # [2026-10-02 추가] 연속 5페이지 실패 = 서버 장애로 판단 → 중단 (실행 시간 폭주 방지)
-            if fail_streak >= 2:   # 깊은 페이지는 서버가 응답을 못 함 → 빨리 포기 (실행 시간·충돌 방지)
-                print(f"[나라일터] 연속 {fail_streak}페이지 실패 → 수집 중단")
+    for kw in NARA_KEYWORDS:
+        total, _ = fetch_gojobs_page(1, 1, kw)
+        if total is None:
+            NARA_FAILED += 1
+            continue
+        last_page = (total + per_page - 1) // per_page
+        got, t1 = 0, time.time()
+        for page in range(last_page, max(0, last_page - NARA_PAGES_PER_KW), -1):
+            _, batch = fetch_gojobs_page(page, per_page, kw)
+            if batch is None:
+                NARA_FAILED += 1
                 break
-        time.sleep(0.5)
+            for x in batch:
+                if x.get("idx"):
+                    by_idx[x["idx"]] = x
+            got += len(batch)
+            regs = [x.get("regdate") or "" for x in batch if x.get("regdate")]
+            if not regs or min(regs) < oldest:
+                break
+            time.sleep(0.3)
+        print(f"[나라일터] '{kw}': 전체 {total:,}건 중 최신 {got}건 ({int(time.time()-t1)}초)")
 
-    print(f"[나라일터] 수집 완료: {len(items)}건 ({success_count}/{last_page - start_page + 1} 페이지 성공)")
+    items = list(by_idx.values())
+    print(f"[나라일터] 수집 완료: {len(items)}건 (검색어 {len(NARA_KEYWORDS)}개, 실패 {NARA_FAILED}회, {int(time.time()-t0)}초)")
 
     ongoing = []
     for x in items:
@@ -924,7 +923,7 @@ def reuse_previous(source, label, merged):
 
 if CLEANEYE_KEY and CLEANEYE_FAILED > 0:
     reuse_previous("cleaneye", "클린아이", merged)
-if GOJOBS_KEY and not gojobs_items:
+if GOJOBS_KEY and (not gojobs_items or NARA_FAILED):   # 일부 검색어만 실패해도 빠진 카드는 직전 데이터로
     reuse_previous("gojobs", "나라일터", merged)
 if WORK24_KEY and (GONGCHAE_FAILED or not gongchae_items):
     reuse_previous("work24", "공채속보", merged)
