@@ -475,7 +475,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     return "\n".join(lines)
 
 
-def call_claude(system, user, model, max_tokens=4000):
+def call_claude(system, user, model, max_tokens=16000):
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -492,8 +492,11 @@ def call_claude(system, user, model, max_tokens=4000):
         return call_claude(system, user, FALLBACK_MODEL, max_tokens)
     r.raise_for_status()
     res = r.json()
+    kinds = [b.get("type") for b in res.get("content", [])]
     if res.get("stop_reason") == "max_tokens":
-        print(f"[warn] 응답이 길이 제한({max_tokens})에서 잘림")
+        print(f"[warn] 응답이 길이 제한({max_tokens})에서 잘림 — 블록: {kinds}")
+    if "text" not in kinds:
+        print(f"[warn] 글 본문 없이 끝난 응답 — 블록: {kinds}, 사용 토큰: {res.get('usage')}")
     return "".join(b.get("text", "") for b in res["content"] if b.get("type") == "text")
 
 
@@ -511,6 +514,9 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
 def validate_candidate(d: dict, inst: str = ""):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
+    if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
+        emo = (d.get("emoji") or "").strip()
+        hook = (emo if emo in ("📍", "⚠️", "⚠") else "📍") + hook   # 이모지를 따로 준 경우 훅 앞에 붙임
     items = [re.sub(r"^\s*\d+[\.\)]\s*", "", str(x)).strip() for x in (d.get("items") or [])]
     closer = (d.get("closer") or "").strip()
 
