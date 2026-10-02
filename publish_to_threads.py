@@ -1095,7 +1095,7 @@ def text_card_url(inst):
 
 def resolve_logo(inst, job, state):
     url, msg = _resolve_logo(inst, job, state)
-    if url or not USE_LOGO:
+    if url or not USE_LOGO or "성공" in msg:      # 로고를 구했으면(DRY_RUN 포함) 텍스트 카드 불필요
         return url, msg
     t = text_card_url(inst)                       # [v3.5] 로고 실패 → 기관명 텍스트 카드
     if t and not t.startswith("(DRY"):
