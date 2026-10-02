@@ -67,7 +67,7 @@ def fetch_views():
         }, headers={"Authorization": f"Bearer {token}"})
         rows = res.get("rows", [])
         for r in rows:
-            m = re.search(r"-(\d{5,7})\.html", r["dimensionValues"][0]["value"])
+            m = re.search(r"-(?:[a-z]{2})?(\d{5,7})(?:_\d+)?\.html", r["dimensionValues"][0]["value"], re.I)  # wk·gj 접두 퍼머링크도 인식
             if m:
                 views[m.group(1)] = views.get(m.group(1), 0) + int(r["metricValues"][0]["value"])
         offset += len(rows)
