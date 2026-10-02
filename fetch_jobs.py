@@ -1,4 +1,4 @@
-"""잡알리오 + 클린아이 + 나라일터 채용공고 수집 → jobs.json (4시간마다 GitHub Actions에서 실행)
+"""잡알리오 + 클린아이 + 나라일터 + 공채속보 채용공고 수집 → jobs.json (4시간마다 GitHub Actions에서 실행)
 잡알리오: 1순위 공공데이터포털 직접 연결 / 2순위 구글 Apps Script 중계
 클린아이: 지방공기업·출자출연기관 (시도별 순회 수집)
 나라일터: 인사혁신처 공공취업정보 조회 서비스 (중앙부처·지자체·교육청 포함)
@@ -15,6 +15,9 @@
                   나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
                   중복 소거 + 특수직·아르바이트급 제외 + 합격자 발표 제외
                   500건씩 + 90초 타임아웃 + 3회 재시도
+[2026-10-02 추가] 고용24 공채속보 통합 — 대기업·중견기업 공채 (정규직 포함 공고만, 공공 성격 제외)
+                  bizType 필드(대기업/중견기업) → 블로그 '대기업·중견기업' 탭용, logoUrl 추가
+                  상세 API로 학력·경력·근무지역·모집분야 보충, 실패 시 직전 데이터 재사용
 [2026-10-02 수정] 나라일터 504 대응 — 100건 페이지 × 100페이지, 연속 5페이지 실패 시 중단,
                   수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
                   클린아이 시도별 3회 재시도 + 실패 시도 있으면 직전 클린아이 공고 재사용
@@ -29,6 +32,7 @@ RELAY_URL = os.environ.get("RELAY_URL", "").strip()
 RELAY_TOKEN = os.environ.get("RELAY_TOKEN", "").strip()
 GOJOBS_KEY = os.environ.get("GOJOBS_API_KEY", "").strip()
 CLEANEYE_KEY = os.environ.get("CLEANEYE_API_KEY", "").strip()
+WORK24_KEY = os.environ.get("WORK24_GONGCHAE_KEY", "").strip()
 
 if not KEY and not RELAY_URL:
     sys.exit("ALIO_API_KEY 또는 RELAY_URL 이 필요합니다.")
@@ -155,6 +159,8 @@ def is_quality_post(x):
         return True
     if x.get("_source") == "cleaneye":
         return True  # 클린아이는 collect 단계에서 이미 필터됨
+    if x.get("_source") == "work24":
+        return True  # 공채속보도 collect 단계에서 정규직 포함 공고만 남김
     ht = x.get("hireTypeNmLst") or ""
     types = [h.strip() for h in ht.split(",")]
     return any(t in ("정규직", "무기계약직") or "채용형" in t for t in types)
@@ -600,8 +606,179 @@ def gojobs_to_alio_format(gj):
     }
 
 
+
 # ─────────────────────────────────────────────────────────────
-# 4. 중복 소거 (잡알리오 1순위 → 클린아이 2순위 → 나라일터 3순위)
+# 4. 고용24 공채속보 수집 (대기업·중견기업 공채) [2026-10-02 추가]
+# ─────────────────────────────────────────────────────────────
+WORK24_LIST = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210L21.do"
+WORK24_DETAIL = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210D21.do"
+WORK24_DETAIL_MAX = 300      # 1회 실행당 상세 조회 상한
+GONGCHAE_FAILED = False      # 목록 수집 실패 여부 (실패 시 직전 데이터 재사용)
+
+# 기업구분이 빈칸일 때 대기업으로 볼 그룹명 (공채속보는 한글 표기: 에스케이, 엘지 등)
+BIG_GROUPS = [
+    "삼성", "현대", "기아", "에스케이", "SK", "엘지", "LG", "롯데", "한화", "포스코",
+    "지에스", "GS", "씨제이", "CJ", "신세계", "이마트", "두산", "효성", "에이치에스효성",
+    "엘에스", "LS", "디비", "DB", "에이치디", "HD", "코오롱", "호반", "셀트리온", "카카오",
+    "네이버", "쿠팡", "한진", "대한항공", "아시아나", "금호", "케이티", "KT", "부영", "중흥",
+    "대우", "아모레", "농심", "오리온", "동원", "한국타이어", "한국앤컴퍼니", "에쓰오일", "S-OIL",
+    "하나은행", "하나카드", "하나증권", "신한", "케이비", "KB", "국민은행", "우리은행", "우리카드",
+    "엔에이치", "NH", "농협", "미래에셋", "한국투자", "교보", "삼정회계", "부산은행", "경남은행",
+    "아워홈", "대한전선", "넥슨", "엔씨소프트", "넷마블", "에스엠엔터테인먼트", "하이브",
+]
+# 공공 성격 (잡알리오·클린아이·나라일터가 담당) → 공채속보에서는 제외
+PUBLIC_WORDS = ["공사", "공단", "재단", "진흥원", "연구원", "관리원", "평가원", "인재원",
+                "공제회", "중앙회", "협회", "지원협회", "교육원", "위원회"]
+GONGCHAE_TITLE_EXCLUDE = ["체험형", "합격자", "취소", "연기", "정정", "대체인력", "단기", "아르바이트"]
+
+
+def gongchae_biz_type(x):
+    """대기업 / 중견기업 / 공공 판정"""
+    cls = (x.get("coClcdNm") or "").strip()
+    name = x.get("empBusiNm") or ""
+    if cls in ("공공기관", "공기업"):
+        return "공공"
+    if cls == "대기업":
+        return "대기업"
+    if any(w in name for w in PUBLIC_WORDS):
+        return "공공"
+    if name.startswith("엔에이치엔"):          # NHN 계열 ≠ NH농협
+        return "중견기업"
+    if any(name.startswith(g) for g in BIG_GROUPS):   # 앞글자 일치만 (한국엔에스케이 오탐 방지)
+        return "대기업"
+    return "중견기업"
+
+
+def fetch_gongchae_page(page):
+    q = urllib.parse.urlencode({"authKey": WORK24_KEY, "callTp": "L", "returnType": "XML",
+                                "startPage": page, "display": 100})
+    for attempt in range(3):
+        try:
+            root = ET.fromstring(get_xml(f"{WORK24_LIST}?{q}", 40))
+            err = root.findtext(".//e") or root.findtext(".//errMsg")
+            if err:
+                raise RuntimeError(err)
+            total = int(root.findtext("total") or 0)
+            items = [{c.tag: (c.text or "") for c in it} for it in root.findall("dhsOpenEmpInfo")]
+            return total, items
+        except Exception as e:
+            print(f"[공채속보] page {page} 시도 {attempt+1}/3 실패: {e}")
+            if attempt < 2:
+                time.sleep(5 * (attempt + 1))
+    return None, None
+
+
+def fetch_gongchae_detail(seqno):
+    """상세: 학력·경력·근무지역·모집분야 (실패하면 빈 dict)"""
+    q = urllib.parse.urlencode({"authKey": WORK24_KEY, "callTp": "D", "returnType": "XML",
+                                "empSeqno": seqno})
+    for attempt in range(2):
+        try:
+            root = ET.fromstring(get_xml(f"{WORK24_DETAIL}?{q}", 20))
+            edu, career, region, fields = [], [], [], []
+            for r in root.findall(".//empRecrListInfo"):
+                for v, bucket in ((r.findtext("empWantedEduNm"), edu),
+                                  (r.findtext("empWantedCareerNm"), career),
+                                  (r.findtext("workRegionNm"), region),
+                                  (r.findtext("empRecrNm"), fields)):
+                    for part in (v or "").replace(",", "|").split("|"):
+                        part = part.strip()
+                        if part and part not in bucket:
+                            bucket.append(part)
+            return {"edu": edu, "career": career, "region": region, "fields": fields,
+                    "homepage": root.findtext("empWantedHomepg") or ""}
+        except Exception:
+            time.sleep(2)
+    return {}
+
+
+def _career_to_alio(career):
+    has_new = any("신입" in c for c in career)
+    has_exp = any(c.startswith("경력") and "무관" not in c for c in career)
+    if any("무관" in c for c in career) or (has_new and has_exp):
+        return "신입+경력"
+    if has_new:
+        return "신입"
+    if has_exp:
+        return "경력"
+    return ""
+
+
+def collect_gongchae():
+    global GONGCHAE_FAILED
+    if not WORK24_KEY:
+        print("[공채속보] WORK24_GONGCHAE_KEY 없음 → 건너뜀")
+        return []
+
+    today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
+    raw, page = [], 1
+    while True:
+        total, items = fetch_gongchae_page(page)
+        if items is None:
+            GONGCHAE_FAILED = True
+            break
+        raw += items
+        if len(items) < 100 or len(raw) >= total or page >= 10:
+            break
+        page += 1
+        time.sleep(0.5)
+    print(f"[공채속보] 목록 수집: {len(raw)}건")
+
+    n = {"마감": 0, "고용형태": 0, "제목": 0, "공공": 0, "의사·임원": 0}
+    kept = []
+    for x in raw:
+        title = x.get("empWantedTitle", "")
+        if (x.get("empWantedEndt") or "") < today_str:
+            n["마감"] += 1; continue
+        if "정규직" not in (x.get("empWantedTypeNm") or ""):   # 정규직·정규직전환형 포함 공고만
+            n["고용형태"] += 1; continue
+        if any(k in title for k in GONGCHAE_TITLE_EXCLUDE):
+            n["제목"] += 1; continue
+        if any(k in title for k in DOCTOR_KEYWORDS) or any(k in title for k in EXECUTIVE_KEYWORDS):
+            n["의사·임원"] += 1; continue
+        biz = gongchae_biz_type(x)
+        if biz == "공공":
+            n["공공"] += 1; continue
+        x["_biz"] = biz
+        kept.append(x)
+
+    out, detail_cnt = [], 0
+    for x in kept:
+        d = {}
+        if detail_cnt < WORK24_DETAIL_MAX:
+            d = fetch_gongchae_detail(x.get("empSeqno", ""))
+            detail_cnt += 1
+            time.sleep(0.3)
+        types = [t for t in (x.get("empWantedTypeNm") or "").split("|") if t and t != "기타"]
+        src = x.get("empWantedHomepgDetail") or x.get("empWantedMobileUrl") or d.get("homepage") \
+              or f"https://www.work24.go.kr/wk/a/b/1500/retriveDtlEmpSrchList.do?empSeqno={x.get('empSeqno','')}"
+        out.append({
+            "recrutPblntSn": f"WK-{x.get('empSeqno', '')}",
+            "instNm": x.get("empBusiNm", ""),
+            "recrutPbancTtl": x.get("empWantedTitle", ""),
+            "hireTypeNmLst": ",".join(types),
+            "workRgnNmLst": ",".join(d.get("region", [])),
+            "recrutSeNm": _career_to_alio(d.get("career", [])),
+            "recrutNope": 0,
+            "pbancBgngYmd": x.get("empWantedStdt", ""),
+            "pbancEndYmd": x.get("empWantedEndt", ""),
+            "srcUrl": src,
+            "acbgCondNmLst": ",".join(d.get("edu", [])),
+            "replmprYn": "N",
+            "ongoingYn": "Y",
+            "ncsCdNmLst": ",".join(d.get("fields", [])[:5]),
+            "bizType": x["_biz"],                       # 대기업 / 중견기업 → '대기업·중견기업' 탭
+            "logoUrl": x.get("regLogImgNm", ""),
+            "_source": "work24",
+        })
+
+    big = sum(1 for x in out if x["bizType"] == "대기업")
+    print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big}) · 상세조회 {detail_cnt}회")
+    print(f"  제외 — " + " / ".join(f"{k}: {v}" for k, v in n.items()))
+    return out
+
+# ─────────────────────────────────────────────────────────────
+# 5. 중복 소거 (잡알리오 1순위 → 클린아이 2순위 → 나라일터 3순위)
 # ─────────────────────────────────────────────────────────────
 def normalize_inst(name):
     name = re.sub(r'\(주\)|\(재\)|\(사\)|\(학\)', '', name)
@@ -618,7 +795,7 @@ def dedup_key(inst, title):
     return f"{normalize_inst(inst)}|{normalize_title(title)}"
 
 
-def merge_and_dedup(alio_items, cleaneye_items, gojobs_items):
+def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=()):
     seen = set()
     merged = []
 
@@ -654,7 +831,18 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items):
         else:
             gj_skipped += 1
 
-    print(f"[병합] 잡알리오 {len(alio_items)}건 + 클린아이 {ce_added}건(중복 {ce_skipped}) + 나라일터 {gj_added}건(중복 {gj_skipped})")
+    # 4순위: 공채속보 (대기업·중견기업)
+    wk_added, wk_skipped = 0, 0
+    for x in gongchae_items:
+        key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
+        if key not in seen:
+            seen.add(key)
+            merged.append(x)
+            wk_added += 1
+        else:
+            wk_skipped += 1
+
+    print(f"[병합] 잡알리오 {len(alio_items)}건 + 클린아이 {ce_added}건(중복 {ce_skipped}) + 나라일터 {gj_added}건(중복 {gj_skipped}) + 공채속보 {wk_added}건(중복 {wk_skipped})")
     print(f"[병합] 최종 합계: {len(merged)}건")
     return merged
 
@@ -669,7 +857,8 @@ print("=" * 50)
 alio_items = collect_alio()
 cleaneye_items = collect_cleaneye()
 gojobs_items = collect_gojobs()
-merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items)
+gongchae_items = collect_gongchae()
+merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items)
 
 # [2026-10-02 추가] 수집 실패 시 직전 jobs.json 공고 재사용 (마감 전 + 이번 결과와 중복 아닌 것만)
 _prev_cache = None
@@ -702,6 +891,8 @@ if CLEANEYE_KEY and CLEANEYE_FAILED > 0:
     reuse_previous("cleaneye", "클린아이", merged)
 if GOJOBS_KEY and not gojobs_items:
     reuse_previous("gojobs", "나라일터", merged)
+if WORK24_KEY and (GONGCHAE_FAILED or not gongchae_items):
+    reuse_previous("work24", "공채속보", merged)
 
 # ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
 before = len(merged)
