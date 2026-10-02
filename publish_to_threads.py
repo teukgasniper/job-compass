@@ -16,6 +16,7 @@
   CLAUDE_MODEL     기본 claude-sonnet-5
   JITTER_MAX_MIN   발행 전 랜덤 대기 최대 분 (예약 실행 시 자연스럽게)
   USE_LOGO         기본 on — 글 하단에 기관 로고 카드(logos/기관명.png) 첨부, off면 글만
+  MIN_GAP_MIN      기본 60 — 마지막 발행(수동 포함) 후 이 시간(분)이 안 지났으면 발행하지 않고 건너뜀
 
 [2026-09-29 수정] v3.4 후킹 스타일 적용 — 유형별 비중(인물 30%/비인물 70%) + 제외 패턴 8종 + 센스 있는 오해 원칙
 [2026-10-02 수정] v3.5 — 웃길 거면 확실하게, 아니면 담백하게 / 제외 패턴 15종 / 후보 4개 생성 → AI 채점 → 1개 발행
@@ -38,6 +39,7 @@ COMMENT_TEXT = os.environ.get("COMMENT_TEXT", "").strip() or "👆 프로필 링
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
+MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
 REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
@@ -473,7 +475,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     return "\n".join(lines)
 
 
-def call_claude(system, user, model):
+def call_claude(system, user, model, max_tokens=4000):
     r = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -481,15 +483,18 @@ def call_claude(system, user, model):
             "anthropic-version": "2023-06-01",
             "content-type": "application/json",
         },
-        json={"model": model, "max_tokens": 1000, "system": system,
+        json={"model": model, "max_tokens": max_tokens, "system": system,
               "messages": [{"role": "user", "content": user}]},
         timeout=120,
     )
     if r.status_code == 404 and model != FALLBACK_MODEL:
         print(f"[warn] 모델 {model} 없음 → {FALLBACK_MODEL}로 재시도")
-        return call_claude(system, user, FALLBACK_MODEL)
+        return call_claude(system, user, FALLBACK_MODEL, max_tokens)
     r.raise_for_status()
-    return "".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
+    res = r.json()
+    if res.get("stop_reason") == "max_tokens":
+        print(f"[warn] 응답이 길이 제한({max_tokens})에서 잘림")
+    return "".join(b.get("text", "") for b in res["content"] if b.get("type") == "text")
 
 
 BANNED_HOOK = [
@@ -554,13 +559,20 @@ def validate_candidate(d: dict, inst: str = ""):
 def parse_candidates(raw: str):
     clean = re.sub(r"```(json)?", "", raw).strip()
     m = re.search(r"\{.*\}", clean, re.S)
-    if not m:
-        return []
-    try:
-        d = json.loads(m.group(0))
-    except Exception:
-        return []
-    return d.get("candidates") or ([d] if d.get("hook") else [])
+    if m:
+        try:
+            d = json.loads(m.group(0))
+            return d.get("candidates") or ([d] if d.get("hook") else [])
+        except Exception:
+            pass
+    # 응답이 중간에 잘렸어도 완성된 후보 객체는 하나씩 살린다
+    out = []
+    for mm in re.finditer(r"\{[^{}]*\"hook\"[^{}]*\}", clean, re.S):
+        try:
+            out.append(json.loads(mm.group(0)))
+        except Exception:
+            continue
+    return out
 
 
 def judge(cands, recent_hooks):
@@ -590,7 +602,11 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
         valid, errs = [], []
-        for c in parse_candidates(raw):
+        cands = parse_candidates(raw)
+        if not cands:
+            errs.append("JSON 해석 실패")
+            print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
+        for c in cands:
             r, err = validate_candidate(c, inst)
             if r:
                 valid.append(r)
@@ -1212,6 +1228,37 @@ def sync_from_threads(state: dict, jobs: list) -> int:
     return added
 
 
+def minutes_since_last_post(state: dict):
+    """이 계정의 마지막 발행 후 지난 분 — Threads API 기준(직접 올린 글 포함), 실패 시 기록 기준"""
+    now = dt.datetime.now(dt.timezone.utc)
+    uid, token = os.environ.get("THREADS_USER_ID"), os.environ.get("THREADS_TOKEN")
+    if uid and token:
+        try:
+            r = requests.get(f"{THREADS_API}/{uid}/threads",
+                             params={"fields": "timestamp", "limit": 1, "access_token": token}, timeout=30)
+            data = r.json().get("data", []) if r.ok else []
+            if data:
+                ts = dt.datetime.strptime(data[0]["timestamp"][:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=dt.timezone.utc)
+                return (now - ts).total_seconds() / 60
+        except Exception as e:
+            print(f"[warn] 마지막 발행 시각 조회 실패 → 기록으로 판단: {e}")
+    ats = [p.get("at") for p in state.get("posts", []) if p.get("at")]
+    if ats:
+        last = dt.datetime.strptime(max(ats), "%Y-%m-%d %H:%M").replace(tzinfo=KST)
+        return (now - last).total_seconds() / 60
+    return None
+
+
+def too_soon(state: dict, where: str) -> bool:
+    gap = minutes_since_last_post(state)
+    if gap is not None and gap < MIN_GAP_MIN:
+        left = int(MIN_GAP_MIN - gap) + 1
+        print(f"[건너뜀] 마지막 발행 후 {int(gap)}분 — 최소 간격 {MIN_GAP_MIN}분 ({where}). {left}분 뒤부터 가능")
+        summary(f"### ⏭️ 건너뜀\n마지막 발행 후 {int(gap)}분 — 최소 {MIN_GAP_MIN}분 간격 규칙 ({left}분 뒤부터 가능)")
+        return True
+    return False
+
+
 # ─────────────────────────── main ───────────────────────────
 def main():
     today = dt.datetime.now(KST).date()
@@ -1219,6 +1266,8 @@ def main():
     posts = requests.get(POSTS_URL, timeout=30).json()
     state = load_state()
     sync_from_threads(state, jobs)
+    if not DRY_RUN and too_soon(state, "시작 전"):   # 생성 비용도 아끼려고 먼저 확인
+        return
 
     job, tier, n_cands = pick_job(jobs, posts, state, today)
     if not job:
@@ -1264,6 +1313,8 @@ def main():
         wait = random.randint(0, JITTER_MAX_MIN * 60)
         print(f"랜덤 대기 {wait // 60}분 {wait % 60}초")
         time.sleep(wait)
+    if too_soon(state, "발행 직전"):               # 대기하는 사이 수동 발행이 끼어든 경우
+        return
 
     try:
         thread_id = threads_post(result["text"], image_url=logo_url)
