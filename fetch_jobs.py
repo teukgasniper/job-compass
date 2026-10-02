@@ -18,6 +18,7 @@
 [2026-10-02 추가] 고용24 공채속보 통합 — 대기업·중견기업 공채 (정규직 포함 공고만, 공공 성격 제외)
                   bizType 필드(대기업/중견기업) → 블로그 '대기업·중견기업' 탭용, logoUrl 추가
                   상세 API로 학력·경력·근무지역·모집분야 보충, 실패 시 직전 데이터 재사용
+[2026-10-02 수정] 공채속보 상세 캐시 — 24시간 안에 받은 상세는 재사용, 새·수정 공고만 조회
 [2026-10-02 수정] 나라일터 504 대응 — 100건 페이지 × 100페이지, 연속 5페이지 실패 시 중단,
                   수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
                   클린아이 시도별 3회 재시도 + 실패 시도 있으면 직전 클린아이 공고 재사용
@@ -742,11 +743,44 @@ def collect_gongchae():
         x["_biz"] = biz
         kept.append(x)
 
-    out, detail_cnt = [], 0
+    # [2026-10-02] 상세 조회 캐시 — 직전 jobs.json에 같은 공고(제목·마감일 동일)가 있고 24시간 안에 받은 상세면 재사용
+    #              새 공고·수정된 공고·24시간 지난 공고만 상세 조회 (매 실행 229회 → 새 공고만)
+    now_kst = datetime.now(timezone(timedelta(hours=9)))
+    prev = {}
+    try:
+        for p_ in get_json("https://teukgasniper.github.io/job-compass/jobs.json", 30).get("result", []):
+            if p_.get("_source") == "work24" and p_.get("_detailAt"):
+                prev[p_["recrutPblntSn"]] = p_
+    except Exception as e:
+        print(f"[공채속보] 직전 데이터 불러오기 실패 → 전부 새로 조회: {e}")
+
+    def cached_detail(x):
+        p_ = prev.get(f"WK-{x.get('empSeqno', '')}")
+        if not p_ or p_.get("recrutPbancTtl") != x.get("empWantedTitle") or p_.get("pbancEndYmd") != x.get("empWantedEndt"):
+            return None                                   # 처음 보는 공고 또는 제목·마감일이 바뀐 공고
+        try:
+            age_h = (now_kst - datetime.strptime(p_["_detailAt"], "%Y-%m-%d %H:%M").replace(
+                tzinfo=timezone(timedelta(hours=9)))).total_seconds() / 3600
+        except Exception:
+            return None
+        if age_h >= 24:
+            return None                                   # 하루 지난 상세는 다시 받아 수정사항 반영
+        return p_
+
+    out, detail_cnt, reuse_cnt, t0 = [], 0, 0, time.time()
     for x in kept:
-        d = {}
-        if detail_cnt < WORK24_DETAIL_MAX:
+        d, p_ = {}, cached_detail(x)
+        if p_:
+            d = {"region": [r for r in (p_.get("workRgnNmLst") or "").split(",") if r],
+                 "career_alio": p_.get("recrutSeNm") or "",
+                 "edu": [e for e in (p_.get("acbgCondNmLst") or "").split(",") if e],
+                 "fields": [f for f in (p_.get("ncsCdNmLst") or "").split(",") if f],
+                 "homepage": "", "_at": p_["_detailAt"]}
+            reuse_cnt += 1
+        elif detail_cnt < WORK24_DETAIL_MAX:
             d = fetch_gongchae_detail(x.get("empSeqno", ""))
+            if d:
+                d["_at"] = now_kst.strftime("%Y-%m-%d %H:%M")
             detail_cnt += 1
             time.sleep(0.3)
         types = [t for t in (x.get("empWantedTypeNm") or "").split("|") if t and t != "기타"]
@@ -758,7 +792,7 @@ def collect_gongchae():
             "recrutPbancTtl": x.get("empWantedTitle", ""),
             "hireTypeNmLst": ",".join(types),
             "workRgnNmLst": ",".join(d.get("region", [])),
-            "recrutSeNm": _career_to_alio(d.get("career", [])),
+            "recrutSeNm": d.get("career_alio") if "career_alio" in d else _career_to_alio(d.get("career", [])),
             "recrutNope": 0,
             "pbancBgngYmd": x.get("empWantedStdt", ""),
             "pbancEndYmd": x.get("empWantedEndt", ""),
@@ -769,11 +803,12 @@ def collect_gongchae():
             "ncsCdNmLst": ",".join(d.get("fields", [])[:5]),
             "bizType": x["_biz"],                       # 대기업 / 중견기업 → '대기업·중견기업' 탭
             "logoUrl": x.get("regLogImgNm", ""),
+            "_detailAt": d.get("_at", ""),               # 상세 정보 받은 시각 (캐시 판단용)
             "_source": "work24",
         })
 
     big = sum(1 for x in out if x["bizType"] == "대기업")
-    print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big}) · 상세조회 {detail_cnt}회")
+    print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big}) · 상세조회 {detail_cnt}회 + 재사용 {reuse_cnt}건 · {int(time.time()-t0)}초")
     print(f"  제외 — " + " / ".join(f"{k}: {v}" for k, v in n.items()))
     return out
 
