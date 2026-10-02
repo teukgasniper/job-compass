@@ -134,18 +134,23 @@ def intro_box(inst, total_count, hire_type, starting_salary, avg_salary, inst_de
             f'아래에서 모집 분야, 전형 일정, 시험 과목까지 한 번에 확인하세요.</p>'
             f'</div>')
 
-def selling_tags(hire_type, total_count, edu_label, deadline_short):
+def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True):
     """셀링포인트 태그 (인트로 박스 아래)"""
     tag_style = 'display:inline-block; background:#DBEAFE; color:#1E40AF; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     deadline_style = 'display:inline-block; background:#FEF3C7; color:#92400E; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     tags = f'<span style="{tag_style}">✅ {hire_type} {total_count}명</span>' if total_count > 0 else f'<span style="{tag_style}">✅ {hire_type}</span>'
     tags += f' <span style="{tag_style}">✅ {edu_label}</span>'
-    tags += f' <span style="{tag_style}">✅ 블라인드 채용</span>'
+    if blind:
+        tags += f' <span style="{tag_style}">✅ 블라인드 채용</span>'
     tags += f' <span style="{deadline_style}">⏰ {deadline_short} 마감</span>'
     return f'<div style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px;">{tags}</div>'
 
 # ───────── 클린아이 제시 연봉 / 전형방법 ─────────
-SOURCE_NAME = {"alio": "잡알리오", "cleaneye": "클린아이", "gojobs": "나라일터"}
+SOURCE_NAME = {"alio": "잡알리오", "cleaneye": "클린아이", "gojobs": "나라일터", "work24": "고용24 공채속보"}
+
+def is_private(job):
+    """민간 기업 공고(고용24 공채속보) 여부 — 공공기관 전용 문구를 바꿔 쓰기 위함"""
+    return job.get("_source") == "work24"
 
 def offered_salary(job):
     """클린아이 YEARINCOME → '4,000만원 이상'. 값이 없거나 숫자가 없으면 ''."""
@@ -445,6 +450,21 @@ def hire_type_section(sec_num, hl):
             + p("이 공고의 정확한 고용 조건은 원문 공고에서 확인하세요."))
 
 
+def work24_jobs_table(jobs):
+    """공채속보 상세의 모집분야별 담당업무·자격 표 (최대 8행)"""
+    if not jobs:
+        return ""
+    rows = []
+    for j in jobs[:8]:
+        work = _e((j.get("work") or "").strip())[:120] or "원문 공고 참조"
+        cond = " · ".join(x for x in [j.get("career"), j.get("edu"), j.get("region")] if x) or "원문 공고 참조"
+        rows.append([_e(j.get("name") or "-"), work.replace("\n", "<br>"), _e(cond)])
+    more = (f'<p style="font-size:14px; color:#9CA3AF; margin:0 0 16px; text-align:right;">외 {len(jobs) - 8}개 분야는 원문 공고에서 확인하세요.</p>'
+            if len(jobs) > 8 else "")
+    return (p("모집 분야별 담당업무와 지원 조건을 정리했어요. 기업이 고용24에 등록한 내용 기준이에요.")
+            + table(["모집분야", "담당업무", "조건"], rows, ["25%", "45%", "30%"]) + more)
+
+
 # ───────── 데이터 가공 ─────────
 def ymd(d): return datetime.strptime(d, "%Y%m%d").replace(tzinfo=KST)
 def dot(d): return f"{d[:4]}.{d[4:6]}.{d[6:]}"
@@ -507,6 +527,8 @@ def make_title(job):
     inst = clean_inst(job["instNm"])
     t = clean_title(job["recrutPbancTtl"])
     base = t if inst in t else f"{inst} {t}"
+    if is_private(job) and not (job.get("recrutNope") or 0):
+        return f"{base} | {hire_short(job)} 채용, {md(job['pbancEndYmd'])} 마감"
     return f"{base} | {hire_short(job)} {nope_text(job)}, {md(job['pbancEndYmd'])} 마감"
 
 def make_labels(job):
@@ -515,7 +537,10 @@ def make_labels(job):
     rg = regions(job)
     labels.append("전국" if len(rg) >= 10 else (rg[0] if rg else ""))
     nl = ncs_list(job)
-    if nl: labels.append(nl[0].replace(".", ""))
+    if is_private(job):
+        labels.append(job.get("bizType") or "민간기업")
+        labels.append("공채")
+    elif nl: labels.append(nl[0].replace(".", ""))
     seen, out = set(), []
     for l in labels:
         if l and l not in seen:
@@ -535,6 +560,10 @@ def build_html(job, src, related=None, enh=None):
     nl = [x.replace(".", "·") for x in ncs_list(job)]
     ncs_main = nl[0] if nl else ""
     nope = job.get("recrutNope") or 0
+    priv = is_private(job)
+    wk = job.get("_work24") or {}                         # 공채속보 상세 (publish 단계에서 보충)
+    org = "기업" if priv else "기관"
+    kind = "기업 공채" if priv else "공공기관"
 
     # ★ 정규직 여부 판단
     is_regular = any(h in ("정규직",) for h in hl)
@@ -546,8 +575,13 @@ def build_html(job, src, related=None, enh=None):
     inst_desc = ""  # 기관 설명 (향후 확장 가능)
     offered = "" if avg else offered_salary(job)          # 알리오 연봉 없을 때만 클린아이 제시 연봉
     stages = parse_judge(job.get("judgeMethod"))          # 클린아이 전형방법 (없으면 [])
+    if priv and wk.get("stages"):                          # 공채속보 전형 단계 (기업 등록값)
+        stages = [(n, "세부 내용은 원문 공고 확인") for n in wk["stages"]]
     has_written = any("필기" in n for n, _ in stages)
-    step_toc = f"전형 절차: {judge_chain(stages)}" if stages else "전형 절차: 공공기관 채용 흐름 한눈에 보기"
+    has_test = any(re.search(r"필기|인적성|적성|테스트|코딩|과제|ACT|GSAT|SKCT|HMAT", n) for n, _ in stages)
+    step_toc = f"전형 절차: {judge_chain(stages)}" if stages else f"전형 절차: {kind} 채용 흐름 한눈에 보기"
+    if priv:
+        step_toc = "전형 절차"                              # 민간: 단계명이 길어 목차·소제목은 짧게, 본문에서 풀어줌
     source_name = SOURCE_NAME.get(job.get("_source"), "잡알리오")
 
     # ★ 셀링포인트
@@ -567,21 +601,21 @@ def build_html(job, src, related=None, enh=None):
     # ★ 목차 구성 (정규직 H2 6개 / 비정규직 H2 7개)
     if is_regular:
         toc_items = [
-            f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
+            f"채용 개요: {inst} {hs} {nope_text(job) if (nope or not priv) else '공채'} 모집",
             f"접수 일정: {md(end)} 마감",
             f"지원 자격: {acbg.split(', ')[0]} · {se}",
             step_toc,
-            f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
+            f"선배들이 말하는 합격 포인트: {'직무별 준비법' if priv else (ncs_main or '공공기관') + ' 직무 준비법'}",
             "함께 보면 좋은 공고: 전국 채용 더 보기",
         ]
     else:
         toc_items = [
-            f"채용 개요: {inst} {hs} {nope_text(job)} 모집",
+            f"채용 개요: {inst} {hs} {nope_text(job) if (nope or not priv) else '공채'} 모집",
             f"접수 일정: {md(end)} 마감",
             f"지원 자격: {acbg.split(', ')[0]} · {se}",
             f"고용형태 알아보기: {hs}",
             step_toc,
-            f"선배들이 말하는 합격 포인트: {ncs_main or '공공기관'} 직무 준비법",
+            f"선배들이 말하는 합격 포인트: {'직무별 준비법' if priv else (ncs_main or '공공기관') + ' 직무 준비법'}",
             "함께 보면 좋은 공고: 전국 채용 더 보기",
         ]
 
@@ -589,7 +623,7 @@ def build_html(job, src, related=None, enh=None):
     edu_label = "학력무관" if "학력무관" in acbg else acbg.split(", ")[0]
     deadline_short = f"{int(end[4:6])}/{int(end[6:])}"
     intro = intro_box(inst, nope, hs, starting if starting > 0 else None, avg if avg > 0 else None, inst_desc, selling_point, offered)
-    intro += selling_tags(hs, nope, edu_label, deadline_short)
+    intro += selling_tags(hs, nope, edu_label, deadline_short, blind=not priv)
 
     # ★ H2-1 채용 개요 (+ 연봉 테이블 + NCS 태그 병합)
     sec_n = 1
@@ -597,11 +631,12 @@ def build_html(job, src, related=None, enh=None):
           + p(f"이번 공고는 {inst}의 「{title}」이에요. 핵심 정보를 표로 정리했어요.")
           + (salary_table(sal) if sal else offered_salary_table(offered))
           + table(["항목", "내용"], [
-              ["기관", inst], ["공고명", title], ["고용형태", ", ".join(hl) or "공고 참조"],
+              [org, inst], ["공고명", title], ["고용형태", ", ".join(hl) or "공고 참조"],
               ["모집인원", r(nope_text(job)) if nope else nope_text(job)], ["경력구분", se],
-              ["직무분야", ncs_text(job)], ["근무지역", region_text(job)],
-              ["대체인력 여부", "대체인력 채용" if repl else "해당 없음"]], ["30%", "70%"])
-          + ncs_tags(nl)
+              ["모집분야" if priv else "직무분야", ncs_text(job)], ["근무지역", region_text(job)]]
+             + ([] if priv else [["대체인력 여부", "대체인력 채용" if repl else "해당 없음"]]), ["30%", "70%"])
+          + ("" if priv else ncs_tags(nl))
+          + (work24_jobs_table(wk.get("jobs")) if priv else "")
           + p("그런데 가장 중요한 건 모집 분야별 세부 인원이에요. 분야마다 뽑는 인원과 근무지가 나뉘어 있어서, 내가 지원할 분야를 먼저 골라야 해요.")
           + p("생각보다 선택지가 많아서 놀라시는 분이 많아요. 모집 분야부터 확인해보세요.")
           + cta("모집 분야 보기", src)
@@ -627,7 +662,8 @@ def build_html(job, src, related=None, enh=None):
           + p(f"공고 데이터 기준으로 학력 조건은 「{acbg}」, 경력 구분은 「{se}」이에요.")
           + table(["항목", "기준"], [
               ["학력", acbg], ["경력", se],
-              ["직무분야", ncs_text(job)], ["대체인력", "예(휴직자 등 공석 대체)" if repl else "아니오"]], ["35%", "65%"])
+              ["모집분야" if priv else "직무분야", ncs_text(job)]]
+             + ([] if priv else [["대체인력", "예(휴직자 등 공석 대체)" if repl else "아니오"]]), ["35%", "65%"])
           + (box("red", "⚠️ 지원 대상 제한", _e(restriction)) if restriction else "")
           + (box("blue", "📌 핵심 포인트", "학력무관 공고라도 자격증·면허·어학 같은 필수 요건이 따로 붙을 수 있어요. 지원 전에 원문 공고의 응시 자격 칸을 꼭 확인하세요.")
              if "학력무관" in acbg else
@@ -645,11 +681,17 @@ def build_html(job, src, related=None, enh=None):
     # ★ H2 전형 절차 (화살표 ▼)
     sec_n += 1
     if stages:
-        s5_head = (p(f"이번 {inst} 공고는 {judge_chain(stages)} 순서로 진행돼요. 기관이 등록한 전형방법 기준이에요.")
+        s5_head = (p(f"이번 {inst} 공고는 {judge_chain(stages)} 순서로 진행돼요. {org}이 등록한 전형방법 기준이에요.")
                    + arrow_steps_from_judge(stages, dot(bg), dot(end))
-                   + box("green", "💡 알아두세요", "위 단계는 기관이 채용정보에 등록한 전형방법 기준이에요. 단계별 날짜와 배점은 원문 공고가 기준이에요.")
-                   + (p("이 공고는 필기가 있어요. 과목과 출제 범위에 따라 준비 기간이 완전히 달라져요.") if has_written else
+                   + box("green", "💡 알아두세요", f"위 단계는 {org}이 채용정보에 등록한 전형방법 기준이에요. 단계별 날짜와 배점은 원문 공고가 기준이에요.")
+                   + ((p("서류 다음에 테스트 전형이 있어요. 유형과 출제 범위에 따라 준비 기간이 완전히 달라지니 미리 확인하세요.") if has_test else
+                       p("등록된 전형에는 별도 테스트가 없어요. 그만큼 서류와 면접에서 갈리니 자기소개서와 면접 준비가 핵심이에요.")) if priv else
+                      p("이 공고는 필기가 있어요. 과목과 출제 범위에 따라 준비 기간이 완전히 달라져요.") if has_written else
                       p("등록된 전형방법에는 필기가 없어요. 그만큼 서류와 면접에서 갈리니 자기소개서와 면접 준비가 핵심이에요.")))
+    elif priv:
+        s5_head = (p("기업 공채는 보통 서류, 인적성검사나 직무 테스트, 면접 순서로 진행돼요. 회사와 직무에 따라 코딩테스트나 과제 전형이 붙기도 해요.")
+                   + box("green", "💡 알아두세요", "이 공고의 실제 전형 단계와 일정은 기업 채용 페이지의 원문 공고가 기준이에요.")
+                   + p("그런데 가장 중요한 건 서류 다음 단계가 무엇이냐예요. 인적성인지, 직무 테스트인지에 따라 준비 방법이 완전히 달라져요."))
     else:
         s5_head = (p("공공기관 채용은 보통 서류, 필기, 면접 순서로 진행돼요. 다만 직무와 고용형태에 따라 필기 없이 서류와 면접만 보는 공고도 있어요.")
                    + arrow_steps_html(dot(bg), dot(end))
@@ -670,6 +712,18 @@ def build_html(job, src, related=None, enh=None):
     # H2 선배 합격 포인트
     sec_n += 1
     tip = NCS_TIPS.get(ncs_main, DEFAULT_TIP)
+    s6_priv = (h2(sec_n, toc_items[sec_n - 1])
+          + p("기업 공채에 합격한 선배들이 공통으로 꼽는 준비 포인트가 있어요. 특정 회사의 비법이라기보다 어느 공고에나 통하는 기본기예요.")
+          + p("첫째, 모집 분야의 담당업무부터 읽어요. 공고에 적힌 업무 내용이 자기소개서와 면접 질문의 기준이 돼요.")
+          + p("둘째, 회사의 인재상과 최근 사업을 확인해요. 채용 홈페이지와 최근 기사에서 회사가 강조하는 키워드를 찾아 내 경험과 연결해보세요.")
+          + p("셋째, 서류 다음 전형을 미리 준비해요. 인적성검사, 직무 테스트, 코딩테스트는 서류 결과가 나온 뒤 준비하면 늦는 경우가 많아요.")
+          + table(["자주 하는 실수", "대처법"], [
+              ["모집 분야를 확인하지 않고 지원", "분야별 담당업무와 근무지를 먼저 확인"],
+              ["회사 이름만 바꾼 자기소개서", "회사 사업·인재상에 맞춰 문항별로 다시 작성"],
+              ["마감 당일 제출", "채용 사이트 접속이 몰리니 하루 전 제출"]], ["45%", "55%"])
+          + p("그런데 가장 중요한 건 이번 공고의 자기소개서 문항이에요. 문항과 글자 수는 채용 사이트에서만 확인할 수 있어요.")
+          + p("'나도 준비가 될까' 싶으셨나요? 문항부터 한 번 확인하면 준비할 분량이 바로 보여요.")
+          + cta("지원서 준비하기", src))
     s6 = (h2(sec_n, toc_items[sec_n - 1])
           + p("공공기관에 합격한 선배들이 공통으로 꼽는 준비 포인트가 있어요. 특정 기관의 비법이라기보다 어느 공고에나 통하는 기본기예요.")
           + p(f"첫째, 직무에 맞는 준비가 먼저예요. {tip}")
@@ -683,17 +737,25 @@ def build_html(job, src, related=None, enh=None):
           + p("'나도 준비가 될까' 싶으셨나요? 문항부터 한 번 확인하면 준비할 분량이 바로 보여요.")
           + cta("지원서 준비하기", src))
 
+    if priv:
+        s6 = s6_priv
+
     # H2 함께 보면 좋은 공고
     sec_n += 1
     rel_rows = [[clean_inst(j["instNm"]), hire_short(j), dot(j["pbancEndYmd"])[5:]] for j in (related or [])[:3]]
+    rel_label = (job.get("bizType") or "기업") if priv else (ncs_main or "분야")
     s7 = (h2(sec_n, toc_items[sec_n - 1])
-          + p(f"같은 {ncs_main or '분야'} 분야에서 지금 접수 중인 공고도 함께 보세요. 여러 곳을 같이 준비하면 자기소개서와 필기 준비를 겹쳐 쓸 수 있어요.")
-          + (table(["기관", "고용형태", "마감"], rel_rows, ["45%", "30%", "25%"]) if rel_rows else "")
+          + p(f"같은 {rel_label} {'공채' if priv else '분야'}에서 지금 접수 중인 공고도 함께 보세요. 여러 곳을 같이 준비하면 자기소개서와 {'인적성' if priv else '필기'} 준비를 겹쳐 쓸 수 있어요.")
+          + (table([org, "고용형태", "마감"], rel_rows, ["45%", "30%", "25%"]) if rel_rows else "")
           + p("전국에서 접수 중인 공고를 마감임박순으로 모아두었어요. 지역별로 걸러서 내 조건에 맞는 공고를 찾아보세요.")
           + cta("전국 공고 더 보기", HIRING))
 
     # FAQ
-    if hl and hl[0] == "정규직":
+    if priv and hl and hl[0] == "정규직":
+        q3 = ("연봉은 얼마나 되나요?", "공채속보 데이터에는 연봉이 따로 등록돼 있지 않아요. 회사 내규에 따르는 경우가 많으니 원문 공고와 채용 페이지의 처우 안내를 확인하세요.")
+    elif priv and hl and "전환형" in hl[0]:
+        q3 = ("정규직 전환형은 어떻게 되나요?", "일정 기간 근무한 뒤 평가를 거쳐 정규직으로 전환되는 방식이에요. 근무 기간과 전환 기준은 원문 공고에서 확인하세요.")
+    elif hl and hl[0] == "정규직":
         q3 = (("연봉은 얼마나 되나요?", f"기관이 등록한 제시 연봉은 {r(offered)}이에요. 직급·경력에 따라 달라지니 정확한 보수는 원문 공고에서 확인하세요.")
               if offered else
               ("초봉이 얼마나 되나요?", f"공개 데이터 기준으로 공기업 정규직 초봉은 기관마다 달라요. {inst}의 정확한 처우는 원문 공고와 채용 안내에서 확인하세요."))
@@ -707,7 +769,9 @@ def build_html(job, src, related=None, enh=None):
         ("마감 당일 몇 시까지 접수되나요?", f"마감일은 {r(md_w(end))}이에요. 마감 시각은 기관마다 달라서 원문 공고에서 꼭 확인하고, 하루 전 제출을 권해요."),
         ("학력 조건이 어떻게 되나요?", f"공고 데이터 기준 학력 조건은 「{acbg}」이에요. 전공이나 졸업 예정자 인정 여부는 원문 공고를 확인하세요."),
         q3,
-        ("다른 공공기관과 중복 지원할 수 있나요?", "공공기관은 같은 날 필기를 치르는 경우가 많고, 일부 기관은 중복 지원을 제한해요. 원문 공고의 유의사항을 확인하세요."),
+        (("다른 회사와 중복 지원할 수 있나요?", "다른 회사와는 대부분 중복 지원할 수 있어요. 다만 같은 그룹 계열사끼리는 중복 지원을 제한하는 경우가 있으니 원문 공고의 유의사항을 확인하세요.")
+         if priv else
+         ("다른 공공기관과 중복 지원할 수 있나요?", "공공기관은 같은 날 필기를 치르는 경우가 많고, 일부 기관은 중복 지원을 제한해요. 원문 공고의 유의사항을 확인하세요.")),
         ("경력이 없어도 지원할 수 있나요?", "신입 모집이면 경력 없이 지원할 수 있어요. 경력 모집은 인정 경력 기준이 따로 있으니 원문 공고를 확인하세요." if "신입" in se
          else "이 공고는 경력 모집이에요. 인정되는 경력의 범위와 기간은 원문 공고에서 확인하세요."),
     ]
@@ -725,7 +789,9 @@ def build_html(job, src, related=None, enh=None):
         sections_with_ads += AD + sec
 
     tenure = ""
-    if any(h in ("정규직", "무기계약직") for h in hl):
+    if priv:
+        tenure = ""
+    elif any(h in ("정규직", "무기계약직") for h in hl):
         tenure = "정년 보장 "
     elif any("채용형" in h for h in hl):
         tenure = "정규직 전환 "
@@ -737,11 +803,11 @@ def build_html(job, src, related=None, enh=None):
             + AD
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
-            + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job)} — 이런 공채는 자주 안 열려요.")
+            + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job) if nope else '채용'} — 이런 공채는 자주 안 열려요.")
             + cta("지금 바로 지원하기", src)
             + AD
             + '<div style="background:#F3F4F6; border-radius:10px; padding:16px 18px; margin:30px 0 10px; font-size:14px; color:#6B7280; line-height:1.65; word-break:keep-all;">'
-              '본 글은 공공기관 채용정보(' + source_name + ') 공개 데이터를 바탕으로 작성되었어요. 모집 분야, 자격 요건, 일정은 기관 사정에 따라 바뀔 수 있으니 지원 전 반드시 원문 공고를 확인하세요. 본 페이지는 채용 기관과 관계가 없는 정보 안내 페이지예요.</div>'
+              '본 글은 ' + ('' if priv else '공공기관 ') + '채용정보(' + source_name + ') 공개 데이터를 바탕으로 작성되었어요. 모집 분야, 자격 요건, 일정은 ' + org + ' 사정에 따라 바뀔 수 있으니 지원 전 반드시 원문 공고를 확인하세요. 본 페이지는 채용 ' + org + '과 관계가 없는 정보 안내 페이지예요.</div>'
             + '<script>(function(){var e=document.querySelectorAll(".jm-dday");for(var i=0;i<e.length;i++){var d=Math.ceil((new Date(e[i].getAttribute("data-end"))-new Date())/86400000)-1;e[i].textContent=d>0?("D-"+d+" (마감까지 "+d+"일)"):(d===0?"D-DAY (오늘 마감)":"접수 마감");}})();</script>')
 
     return ('<div style="max-width:720px; margin:0 auto; font-family:\'Pretendard\',\'Noto Sans KR\',-apple-system,sans-serif; color:#333;">'
