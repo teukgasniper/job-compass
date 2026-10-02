@@ -42,18 +42,14 @@ jobs:
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
           BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
-          PUBLISH_PER_RUN: ${{ vars.PUBLISH_PER_RUN || '5' }}          
+          PUBLISH_PER_RUN: ${{ vars.PUBLISH_PER_RUN || '5' }}
+          GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}            # 나라일터 상세 보충
         run: python publish_to_blogger.py
 
       - name: 저장소에 백업
         run: |
-          git config user.name "job-compass-bot"
-          git config user.email "actions@users.noreply.github.com"
           [ -f job_posts.json ] || echo '{}' > job_posts.json
-          git add jobs.json job_posts.json
-          git diff --cached --quiet || git commit -m "채용공고 업데이트 $(date -u +'%Y-%m-%d %H:%M') UTC"
-          git pull --rebase origin main
-          git push
+          python save_to_repo.py   # 실행 중 다른 커밋이 들어와도 충돌 없이 저장 (발행 기록 합치기)
 
       - name: 배포 파일 준비
         run: |
