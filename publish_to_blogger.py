@@ -8,9 +8,11 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 - 마감 2일 이내 공고는 건너뜀 / 마감된 글은 삭제하지 않음(축적)
 - 퍼머링크: 영문 제목으로 먼저 발행해 주소 고정 → 한글 제목으로 수정
 - 나라일터(GJ-) 공고: getItem API로 상세 정보 보충 후 발행
+- 공채속보(WK-) 공고 [2026-10-02]: 고용24 상세 API로 모집분야·담당업무·전형단계 보충 후 발행
+  퍼머링크 {그룹약칭}-wk{번호} 또는 wk-{번호}, 민간 기업용 문구로 작성 (post_template.is_private)
 
 로컬 미리보기: python publish_to_blogger.py --preview 3   (API 없이 preview/ 폴더에 HTML 생성)
-필요한 Secrets: BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID, GOJOBS_API_KEY
+필요한 Secrets: BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID, GOJOBS_API_KEY, WORK24_GONGCHAE_KEY
 """
 import json, os, sys, time, re, urllib.request, urllib.parse, urllib.error
 import xml.etree.ElementTree as ET
@@ -27,6 +29,7 @@ START_WAIT_MAX = 30 * 60      # 시작 전 0~30분 랜덤 대기
 GAP_MIN, GAP_MAX = 60, 300    # 글 사이 1~5분 랜덤 간격
 DOCTOR_WORDS = ["전임의", "전공의", "레지던트", "임상강사", "의사직", "의무직", "촉탁의"]
 GOJOBS_KEY = os.environ.get("GOJOBS_API_KEY", "").strip()
+WORK24_KEY = os.environ.get("WORK24_GONGCHAE_KEY", "").strip()
 
 # 주요 기관 영문 약칭 (퍼머링크용) — 없으면 job-번호
 ABBR = {
@@ -116,6 +119,55 @@ def enrich_gojobs(job):
         return job
 
 
+# ───────── 공채속보(WK-) 공고 상세 보충 ─────────
+WORK24_DETAIL_URL = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210D21.do"
+
+# 그룹 영문 약칭 (퍼머링크용) — 회사명이 이 이름으로 시작하면 {약칭}-wk번호
+GROUP_ABBR = {
+    "삼성": "samsung", "현대": "hyundai", "기아": "kia", "에스케이": "sk", "엘지": "lg", "롯데": "lotte",
+    "한화": "hanwha", "포스코": "posco", "지에스": "gs", "씨제이": "cj", "신세계": "shinsegae", "이마트": "emart",
+    "두산": "doosan", "에이치에스효성": "hyosung", "효성": "hyosung", "엘에스": "ls", "디비": "db",
+    "에이치디": "hd", "코오롱": "kolon", "호반": "hoban", "셀트리온": "celltrion", "카카오": "kakao",
+    "네이버": "naver", "쿠팡": "coupang", "대한항공": "koreanair", "아시아나": "asiana", "케이티": "kt",
+    "한국타이어": "hankooktire", "오리온": "orion", "농심": "nongshim", "동원": "dongwon", "아모레": "amore",
+    "미래에셋": "miraeasset", "신한": "shinhan", "하나": "hana", "케이비": "kb", "엔에이치": "nh",
+    "교보": "kyobo", "한국투자": "kis",
+}
+
+def is_work24(job):
+    return str(job.get("recrutPblntSn", "")).startswith("WK-")
+
+def enrich_work24(job):
+    """고용24 공채속보 상세 API → 모집분야·담당업무·조건·전형단계를 job['_work24']에 담기"""
+    if not is_work24(job) or not WORK24_KEY or job.get("_work24"):
+        return job
+    seq = str(job["recrutPblntSn"]).replace("WK-", "")
+    try:
+        q = urllib.parse.urlencode({"authKey": WORK24_KEY, "callTp": "D", "returnType": "XML", "empSeqno": seq})
+        req = urllib.request.Request(f"{WORK24_DETAIL_URL}?{q}", headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            root = ET.fromstring(r.read().decode("utf-8"))
+        stages = []
+        for el in root.findall(".//empSelsListInfo"):
+            n = (el.findtext("selsNm") or "").strip()
+            if n and n not in stages and n not in ("기타", "입사", "최종합격", "최종 합격", "합격자발표", "합격자 발표"):
+                stages.append(n)
+        jobs_ = []
+        for el in root.findall(".//empRecrListInfo"):
+            jobs_.append({
+                "name": (el.findtext("empRecrNm") or "").strip(),
+                "work": re.sub(r"\s*\r?\n\s*", "\n", (el.findtext("jobCont") or "").replace("\r", "\n")).strip(),
+                "career": (el.findtext("empWantedCareerNm") or "").replace("|", ", "),
+                "edu": (el.findtext("empWantedEduNm") or "").replace("|", ", "),
+                "region": (el.findtext("workRegionNm") or "").replace("|", ", "),
+            })
+        job["_work24"] = {"stages": stages if len(stages) >= 2 else [], "jobs": [j for j in jobs_ if j["name"]]}
+        print(f"  [공채속보] 보충 완료: {job['instNm']} | 분야 {len(job['_work24']['jobs'])}개 | 전형 {' → '.join(stages) or '-'}")
+    except Exception as e:
+        print(f"  [공채속보] {seq} 보충 실패: {e}")
+    return job
+
+
 def parse_contents(text):
     """공고 전문 텍스트에서 고용형태·인원·학력·경력 추출"""
     result = {}
@@ -162,6 +214,14 @@ def slug_for(job):
             if k in name:
                 return f"{v}-gj{idx}"
         return f"gj-{idx}"
+    # 공채속보 공고: {그룹약칭}-wk{번호} 또는 wk-{번호}
+    if sn.startswith("WK-"):
+        seq = sn.replace("WK-", "")
+        name = clean_inst(job["instNm"])
+        for k, v in sorted(GROUP_ABBR.items(), key=lambda kv: -len(kv[0])):
+            if name.startswith(k) and not name.startswith("엔에이치엔"):
+                return f"{v}-wk{seq}"
+        return f"wk-{seq}"
     # 잡알리오 공고: 기존 로직
     name = clean_inst(job["instNm"])
     for k, v in sorted(ABBR.items(), key=lambda kv: -len(kv[0])):
@@ -188,7 +248,7 @@ def score(job, now=None):
     now = now or datetime.now(KST)
     s = min(job.get("recrutNope") or 0, 100)                      # 모집인원 (최대 100점)
     name = clean_inst(job["instNm"])
-    if any(k in name for k in ABBR): s += 20                      # 브랜드 파워
+    if any(k in name for k in ABBR) or job.get("bizType") == "대기업": s += 20   # 브랜드 파워 (공기업 약칭 / 대기업)
     dl = days_left(job, now)
     if 1 <= dl <= 10: s += 15                                     # 마감 임박
     elif 11 <= dl <= 15: s += 5
@@ -203,6 +263,12 @@ def is_new(job, now):
         return False
 
 def related_jobs(job, jobs, now):
+    if is_work24(job):   # 민간 공고: 같은 구분(대기업/중견기업) 공채 중 점수 높은 순
+        cand = [j for j in jobs if is_work24(j) and j["recrutPblntSn"] != job["recrutPblntSn"]
+                and j.get("bizType") == job.get("bizType") and days_left(j, now) >= 1
+                and clean_inst(j["instNm"]) != clean_inst(job["instNm"])]
+        cand.sort(key=lambda j: -score(j))
+        return cand[:3]
     main = (ncs_list(job) or [""])[0]
     cand = [j for j in jobs if j["recrutPblntSn"] != job["recrutPblntSn"]
             and main and main in ncs_list(j) and days_left(j, now) >= 1
@@ -238,6 +304,8 @@ def publish(job, jobs, now, token):
     # 나라일터 공고면 발행 직전에 상세 정보 보충
     if is_gojobs(job):
         job = enrich_gojobs(job)
+    if is_work24(job):
+        job = enrich_work24(job)
 
     slug = slug_for(job)
     src = job.get("srcUrl") or "https://www.gojobs.go.kr"
@@ -275,6 +343,8 @@ def main():
             # 미리보기에서도 나라일터 보충 실행
             if is_gojobs(j):
                 j = enrich_gojobs(j)
+            if is_work24(j):
+                j = enrich_work24(j)
             path = f"preview/{slug_for(j)}.html"
             open(path, "w", encoding="utf-8").write(build_html(j, j.get("srcUrl", ""), related_jobs(j, jobs, now)))
             print(f"{path}\n  제목: {make_title(j)}\n  라벨: {make_labels(j)}")
@@ -303,7 +373,7 @@ def main():
             if info:
                 mapping[str(job["recrutPblntSn"])] = info
                 done += 1
-                src_tag = " [나라일터]" if is_gojobs(job) else ""
+                src_tag = " [나라일터]" if is_gojobs(job) else (" [공채속보]" if is_work24(job) else "")
                 print(f"[발행] {datetime.now(KST).strftime('%H:%M:%S')} {info['url']}  |  {info['title'][:40]}{src_tag}")
             if not JITTER:
                 time.sleep(3)
