@@ -321,6 +321,38 @@ def publish(job, jobs, now, token):
     return {"postId": post["id"], "url": post.get("url", ""), "title": title,
             "instNm": job["instNm"], "slug": slug, "published": now.strftime("%Y-%m-%d %H:%M")}
 
+def recover_mapping(token, jobs, mapping):
+    """[2026-10-02 추가] 발행은 됐는데 job_posts.json 저장이 실패한 글을 Blogger에서 찾아 매핑 복구
+    (저장 실패 후 같은 공고를 또 발행하는 중복 글 방지)"""
+    want = {}
+    for j in jobs:
+        sn = str(j["recrutPblntSn"])
+        if sn not in mapping:
+            want[slug_for(j)] = j
+    found, page_token, pages = 0, None, 0
+    while pages < 3:                                   # 최근 글 최대 300개 확인
+        q = "posts?maxResults=100&fetchBodies=false&status=live&orderBy=published"
+        if page_token:
+            q += "&pageToken=" + urllib.parse.quote(page_token)
+        res = api("GET", q, token) or {}
+        for post in res.get("items", []):
+            m = re.search(r"/([^/]+?)(?:_\d+)?\.html$", post.get("url", ""))
+            job = want.get(m.group(1)) if m else None
+            if job and str(job["recrutPblntSn"]) not in mapping:
+                mapping[str(job["recrutPblntSn"])] = {
+                    "postId": post["id"], "url": post["url"], "title": post.get("title", ""),
+                    "instNm": job["instNm"], "slug": m.group(1),
+                    "published": (post.get("published") or "")[:16].replace("T", " "), "recovered": True}
+                found += 1
+        page_token = res.get("nextPageToken")
+        pages += 1
+        if not page_token:
+            break
+    if found:
+        print(f"[복구] 저장 안 된 발행 기록 {found}개를 Blogger에서 찾아 매핑에 추가 (중복 발행 방지)")
+    return found
+
+
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
     todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)]
@@ -364,6 +396,9 @@ def main():
         print(f"[랜덤 대기] {wait // 60}분 {wait % 60}초 후 시작")
         time.sleep(wait)
     token = access_token()
+    if recover_mapping(token, jobs, mapping):
+        queue, n_hot, n_new = pick_queue(jobs, mapping, now)
+        json.dump(mapping, open(MAPPING_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     done = 0
     try:
         for i, job in enumerate(queue[:count]):

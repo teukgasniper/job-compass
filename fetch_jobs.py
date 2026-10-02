@@ -486,9 +486,9 @@ GOJOBS_BASE = "https://apis.data.go.kr/1760000/PblJobService/getList"
 
 def fetch_gojobs_page(page, per_page):
     q = urllib.parse.urlencode({"serviceKey": GOJOBS_KEY, "numOfRows": per_page, "pageNo": page}, safe="%")
-    for attempt in range(3):
+    for attempt in range(2):
         try:
-            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 60)
+            xml_data = get_xml(f"{GOJOBS_BASE}?{q}", 40)
             root = ET.fromstring(xml_data)
             err = root.findtext(".//errMsg")
             if err:
@@ -500,10 +500,10 @@ def fetch_gojobs_page(page, per_page):
                 items.append(fields)
             return items
         except Exception as e:
-            print(f"[나라일터] page {page} 시도 {attempt+1}/3 실패: {e}")
-            if attempt < 2:
-                time.sleep(5 * (attempt + 1))
-    print(f"[나라일터] page {page} 3회 모두 실패 → 건너뜀")
+            print(f"[나라일터] page {page} 시도 {attempt+1}/2 실패: {e}")
+            if attempt < 1:
+                time.sleep(5)
+    print(f"[나라일터] page {page} 2회 모두 실패 → 건너뜀")
     return []
 
 
@@ -547,7 +547,7 @@ def collect_gojobs():
         else:
             fail_streak += 1
             # [2026-10-02 추가] 연속 5페이지 실패 = 서버 장애로 판단 → 중단 (실행 시간 폭주 방지)
-            if fail_streak >= 5:
+            if fail_streak >= 2:   # 깊은 페이지는 서버가 응답을 못 함 → 빨리 포기 (실행 시간·충돌 방지)
                 print(f"[나라일터] 연속 {fail_streak}페이지 실패 → 수집 중단")
                 break
         time.sleep(0.5)
