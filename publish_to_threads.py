@@ -115,6 +115,10 @@ def eligible(job: dict, today: dt.date) -> bool:
     title = job.get("recrutPbancTtl") or ""
     if any(w in title for w in DOCTOR_WORDS):
         return False
+    # [2026-10-02] 지원 대상이 제한된 공고(보훈·장애인 전형)는 일반 취준생 수요가 적어 제외
+    # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title):
+        return False
     if dday(job.get("pbancEndYmd", ""), today) < 1:
         return False
     return True
