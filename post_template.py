@@ -825,8 +825,9 @@ def build_html(job, src, related=None, enh=None):
 
     # H2 섹션들 사이에 광고 삽입
     sections_with_ads = ""
-    for sec in sections:
-        sections_with_ads += AD + sec
+    for i, sec in enumerate(sections):
+        # [2026-10-02] 첫 소제목 위 광고 제거 — "채용공고 바로가기" 버튼 바로 아래라 실수 클릭 위험
+        sections_with_ads += (sec if i == 0 else AD + sec)
 
     tenure = ""
     if priv:
