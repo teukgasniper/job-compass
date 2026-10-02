@@ -18,6 +18,9 @@
   USE_LOGO         기본 on — 글 하단에 기관 로고 카드(logos/기관명.png) 첨부, off면 글만
 
 [2026-09-29 수정] v3.4 후킹 스타일 적용 — 유형별 비중(인물 30%/비인물 70%) + 제외 패턴 8종 + 센스 있는 오해 원칙
+[2026-10-02 수정] v3.5 — 웃길 거면 확실하게, 아니면 담백하게 / 제외 패턴 15종 / 후보 4개 생성 → AI 채점 → 1개 발행
+                  훅 줄당 26자 / 빈 값·1명 공고 제외 / 초봉 섞임 방지 / 최근 10개 훅·클로저 반복 금지
+                  민간 대기업·중견기업(공채속보) 공고 포함 / 로고 실패 시 기관명 텍스트 카드
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -79,9 +82,28 @@ def dday(end_ymd: str, today: dt.date) -> int:
     return (end - today).days
 
 
+EMPTY_VALS = ("", "공고 참조", "공고참조", "기타", "-", "0")
+HOOK_LINE_MAX = 26          # 훅 한 줄 최대 글자 수 (이모지 제외) — 화면상 2줄 안에 끝내기
+
+
+def is_private(job: dict) -> bool:
+    """고용24 공채속보 = 민간 대기업·중견기업 공고"""
+    return job.get("_source") == "work24"
+
+
+def has_value(v) -> bool:
+    return str(v if v is not None else "").strip() not in EMPTY_VALS
+
+
 def eligible(job: dict, today: dt.date) -> bool:
     if job.get("ongoingYn") != "Y":
         return False
+    # 빈 값 공고 제외 (리스트에 '공고 참조'가 들어가는 걸 원천 차단)
+    if not has_value(job.get("hireTypeNmLst")) or not has_value(job.get("acbgCondNmLst")):
+        return False
+    if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
+        if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
+            return False
     hire = job.get("hireTypeNmLst") or ""
     if not any(h in hire for h in GOOD_HIRE):
         return False
@@ -101,6 +123,8 @@ def score(job: dict, today: dt.date) -> float:
     inst = norm_inst(job.get("instNm"))
     if any(b in inst for b in BRANDS):
         s += 20
+    if is_private(job):                           # 민간: 인원 점수가 없으니 이름값으로 보정
+        s += 45 if job.get("bizType") == "대기업" else 15
     d = dday(job.get("pbancEndYmd", ""), today)
     if 1 <= d <= 10:
         s += 15
@@ -195,48 +219,67 @@ def fetch_post_text(post: dict) -> str:
         except Exception:
             return ""
     html = re.sub(r"(?is)<(script|style|ins|noscript)[^>]*>.*?</\1>", " ", html)
+    html = re.sub(r"(?is)</?(span|b|strong|em|a)\b[^>]*>", "", html)   # 강조 태그는 줄바꿈 없이 (문장 쪼개짐 방지)
     text = re.sub(r"(?s)<[^>]+>", "\n", html)
     text = re.sub(r"&nbsp;", " ", text)
     text = re.sub(r"&[a-z#0-9]+;", "", text)
     text = re.sub(r"[ \t]+", " ", text)
     text = re.sub(r"\n\s*\n+", "\n", text).strip()
-    return text[:4000]
+    return clean_post_text(text)[:4000]
 
 
-# ─────────────────────────── 후킹 유형 (지침서 v3.4 6장) ───────────────────────────
-# 카테고리: person(인물형 30%) / monologue(1인칭독백 20%) / fact(팩트충격 20%) / urgent(긴급 15%) / sniper(특가스나이퍼 15%)
+def clean_post_text(text: str) -> str:
+    """같은 기관 다른 공고 연봉(신입 초봉)·다른 기관 공고가 섞이지 않게 정리"""
+    # '함께 보면 좋은 공고' 본문 섹션부터 끝까지 제거 (목차에도 같은 문구가 있어 마지막 것 기준)
+    k = text.rfind("함께 보면 좋은 공고")
+    if k > len(text) // 3:
+        text = text[:k]
+    # 연봉 표: "신입 초봉 / 직원 평균 연봉 / 약 A / 약 B" → "직원 평균 연봉: 약 B"
+    text = re.sub(r"신입 초봉\n직원 평균 연봉\n[^\n]*\n([^\n]*)", r"직원 평균 연봉: \1", text)
+    # 인트로: "신입 초봉 약 4,300만원, " 제거
+    text = re.sub(r"신입 초봉 약 [\d,]+만원,?\s*", "", text)
+    text = "\n".join(l for l in text.split("\n") if "초봉" not in l)
+    return text
+
+
+# ─────────────────────────── 후킹 유형 (지침서 v3.5) ───────────────────────────
+# 카테고리: person(인물형 15%) / monologue(1인칭독백 35%) / fact(팩트충격 20%) / urgent(긴급 15%) / sniper(특가스나이퍼 15%)
+# [v3.5] 노잼 대부분이 인물형에서 나와 인물 30%→15%, 1인칭 독백 20%→35%
+#        점심시간 동료 장면·vs 비교 조합 삭제
 COMBOS = [
-    # 인물 대화형 30% — 반드시 "센스 있는 오해 + 리얼한 부정 반응 → 역전"
+    # 인물 대화형 15% — 진짜 있을 법한 오해 + 진짜 피식할 때만. 안 나오면 담백한 1인칭으로 대체
     {"cat": "person", "person": "부모님", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무를 일상 한 마디로 재정의 → 부모님의 진짜 오해(사기치지 말라, 무슨 직업이냐고) → 공고 보여줬더니 전환"},
+     "desc": "기관 업무를 일상 한 마디로 재정의 → 부모님의 진짜 오해(사기치지 말라고) → 공고 보여줬더니 전환. 피식 포인트가 없으면 쓰지 말 것"},
     {"cat": "person", "person": "여자친구", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무 한 마디 재정의 → 여자친구 진짜 오해(차일 뻔함, 미쳤냐고) → 공고 보여줬더니 전환"},
-    {"cat": "person", "person": "회사동료/친구", "structure": "동료가 넣었음→나도 발견", "emoji": "📍",
-     "desc": "동료가 점심에 지원서 제출 누르는 거 봤다 / 뭔지 봤더니 나도 조건 맞음"},
-    # 1인칭 독백형 20%
-    {"cat": "monologue", "person": "본인", "structure": "어차피 안 되겠지→역전", "emoji": "📍",
-     "desc": "어차피 안 되겠지 하고 넣었는데 서류 붙어버림 / 조건 보니 나도 가능"},
-    {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다 / 다짐·선언 / 발견", "emoji": "📍",
-     "desc": "조용히 넣었다 — N명이면 확률 있다 / 서울 포기하고 ○○ 가기로 했음 / 산책하다 관리사무소 봤는데 공기업이었음"},
-    # 팩트 충격형 20%
+     "desc": "기관 업무 한 마디 재정의 → 여자친구 진짜 오해(사기꾼이냐고 차일 뻔함) → 공고 보여줬더니 전환. 피식 포인트가 없으면 쓰지 말 것"},
+    # 1인칭 독백형 35% — 상황극 없이 감정 하나. 도로공사 베스트(15만 조회) 계열
+    {"cat": "monologue", "person": "본인", "structure": "포기→의외의 역전", "emoji": "📍",
+     "desc": "어차피 안 되겠지 싶어서 그냥 넣어봤는데 / 조건 다시 보니까 나도 되는 자리였음 — 업무 설명·상황극 없이 감정 하나만"},
+    {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다", "emoji": "📍",
+     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음 / 붙으면 그때 말하려고"},
+    {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍",
+     "desc": "이번엔 진짜 넣는다 / ○○ 포기하고 이거 하나만 파기로 했음 — 취준생 누구나 하는 결심"},
+    {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍",
+     "desc": "이 공고 마감 직전에 알았으면 진짜 억울할 뻔 / 작년에 이거 몰라서 못 넣었음"},
+    # 팩트 충격형 20% — 숫자를 포장하지 말고 그대로 세게
     {"cat": "fact", "person": "—", "structure": "숫자·규모 충격", "emoji": "📍",
-     "desc": "매출 N조짜리 공기업이 학력무관 / 자본금 N조에 서울 근무로 N명 / 역대 최대 N명인데 학력무관"},
-    {"cat": "fact", "person": "—", "structure": "근속·안정·조건 나열", "emoji": "📍",
-     "desc": "근속 N년이면 들어간 사람이 안 나온다는 뜻 / N년째 운영 중인 공기업이 역대 최대로 뽑음"},
+     "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지"},
+    {"cat": "fact", "person": "—", "structure": "조건 나열", "emoji": "📍",
+     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음"},
     # 긴급형 15%
     {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️",
-     "desc": "N명 학력무관인데 안 넣는 게 사기임 / 이 조건 보고도 안 넣으면 진짜 바보"},
+     "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰"},
     {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️",
-     "desc": "D-N이라 이번 주 안에 넣어야 됨 / 오후 3시에 접수 닫힘 — 6시까지인 줄 알고 놓치지 마"},
-    # 특가스나이퍼형 15%
+     "desc": "D-N이라 이번 주 안에 넣어야 됨 / 이번 주 지나면 끝"},
+    # 특가스나이퍼형 15% — 비교(vs) 금지, 읽는 사람 상황을 바로 저격
     {"cat": "sniper", "person": "—", "structure": "포기 방지 / 바보 손실", "emoji": "📍",
      "desc": "스펙 없어서 공기업 접은 사람 다시 펴 / 이거 안 넣는 게 손해가 아니라 바보임"},
     {"cat": "sniper", "person": "—", "structure": "상황 저격", "emoji": "📍",
-     "desc": "서울 월세 80 내면서 출퇴근 3시간 vs ○○에서 연봉 N만 정규직 / 취준생인데 이 공채 모르면~"},
+     "desc": "지방 사는 취준생인데 이거 모르면 손해 / 스펙 없는 신입이면 이건 꼭 봐 — A vs B 비교 금지"},
 ]
 
 # 유형별 가중치 (비중 반영)
-CAT_WEIGHTS = {"person": 30, "monologue": 20, "fact": 20, "urgent": 15, "sniper": 15}
+CAT_WEIGHTS = {"person": 15, "monologue": 35, "fact": 20, "urgent": 15, "sniper": 15}
 
 
 def pick_combo(state, d_left: int):
@@ -244,8 +287,8 @@ def pick_combo(state, d_left: int):
     recent_idxs = {p.get("combo_idx") for p in recent if p.get("combo_idx") is not None}
     recent_cats = [p.get("combo_cat") for p in recent[-2:] if p.get("combo_cat")]
 
-    # 최근 2건이 인물형이면 비인물형 강제
-    force_nonperson = all(c == "person" for c in recent_cats) and len(recent_cats) == 2
+    # 최근 2건 중 인물형이 하나라도 있으면 비인물형 강제 (인물 상황극 연속 금지)
+    force_nonperson = "person" in recent_cats
 
     pool = []
     for i, c in enumerate(COMBOS):
@@ -271,65 +314,53 @@ def pick_combo(state, d_left: int):
 # ─────────────────────────── Claude 프롬프트 (v3.4) ───────────────────────────
 SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작가다. 아래 규격을 100% 지킨다.
 
-[핵심 원칙]
-- 과장은 OK, 거짓은 NO. 훅·클로저는 자극적으로 과장 가능. 리스트 5개의 수치·조건은 반드시 제공된 [공고 데이터]/[본문 발췌]에 있는 팩트만.
-- 후킹은 항상 강력하게. 설명하지 말고 궁금하게. 읽고 "뭔데?"가 떠올라야 함.
-- 기관 고유 소재로 쓴다. 다른 기관에 복붙 불가능해야 함.
-- 클로저도 매번 다르게. 고정 문장 반복 금지.
+[최상위 원칙 — v3.5]
+- 웃길 거면 확실하게, 아니면 담백하게. 모든 글이 웃길 필요는 없다.
+  웃기는 컨셉을 쓸 거면 "실제로 있을 법한 장면 + 읽고 진짜 피식하는 포인트"가 둘 다 있어야 한다.
+  어설프게 웃기려다 실패한 글이 최악이다. 확신이 없으면 담백한 1인칭 감정 한 줄로 간다.
+- 공감 우선. 읽는 사람이 "내 얘기다" 느껴야 한다. 공고문 절차 디테일로 훅을 만들지 않는다.
+- 과장은 OK, 거짓은 NO. 훅·클로저는 과장 가능. 리스트 5개는 [공고 데이터]/[본문 발췌]에 있는 팩트만.
+- 훅은 화면상 2줄 안에 끝낸다: 최대 2줄, 한 줄 26자 이내(이모지 제외). 질질 끌지 않는다.
+- 클로저도 매번 다르게. 최근 글과 장면·인물·문장 구조가 겹치면 안 된다.
 
 [포맷]
-- 훅: 최대 2줄. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말 절대 넣지 않음.
-- 리스트: 정확히 5개. 1번은 반드시 '기관 정식명칭' 작은따옴표 + 핵심 팩트.
-  필수 팩트: 고용형태, 학력조건, 마감일. 각 항목 짧게 한 줄.
+- 훅: 최대 2줄, 줄당 26자 이내. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말 절대 넣지 않음.
+- 리스트: 정확히 5개. 1번은 반드시 '기관(기업) 정식명칭' 작은따옴표 + 핵심 팩트.
+  필수 팩트: 고용형태, 학력조건, 마감일. 지역 제한(거주·연고자 한정)이 있으면 반드시 명시. 각 항목 짧게 한 줄.
 - 클로저: 1줄. 과장 OK. 인물형이면 훅과 스토리 연결.
 - 반말 구어체. 링크·해시태그 금지. 훅 앞 이모지 외 이모지 금지.
 
-[제외 패턴 8종 — 절대 사용 금지]
+[제외 패턴 15종 — 절대 사용 금지]
 1. 질문유도형 ("~인지 알아?")
 2. 일상 스토리형 ("전화/신고했더니 공기업이었음")
-3. 생활 연결형 ("~할 때 신고하는 곳 → 그 기관이 사람 뽑음", "~하는 그곳", "알고 보니 이 공단이")
-4. 비교형 ("A vs B → 후자가 정규직")
-5. 어린 시절 연결형 ("기차 좋아하던 7살의 나한테 할 말 생김")
-6. 오해 없는 질문형 반응 ("LH냐?" → "SH공사" → "좋은 데네" — 진짜 오해 아니고 그냥 질문)
-7. 기관 업무 프로세스 설명형 ("신고하면→조사해서→퇴출시키는 곳" — 정보 전달이 됨)
-8. 정보 전달형 동료 멘트 ("~하는 공공기관 있대" — 동료가 기관을 설명해주는 구조)
+3. 생활 연결형 ("~할 때 신고하는 곳 → 그 기관이 사람 뽑음", "알고 보니 이 공단이")
+4. 비교형 ("A vs B", "서울 월세 80 vs 지방 연봉") — 상황 저격에서도 비교 금지
+5. 어린 시절 연결형 ("기차 좋아하던 7살의 나")
+6. 오해 없는 질문형 반응 ("LH냐?" → "좋은 데네")
+7. 기관 업무 프로세스 설명형 ("신고하면→조사해서→퇴출시키는 곳")
+8. 정보 전달형 동료 멘트 ("~하는 공공기관 있대")
+9. 잔소리·말장난 농담형 (아빠 "전기세 아끼라는 잔소리 하는 직업이 어딨냐고 웃음")
+10. "그거 하려고 대학 보냈냐" 무시 → 연봉 듣고 태도 바뀜 (보일러 기사, 사자 밥, 두꺼비집 출장직)
+11. 점심시간 동료 장면 (점심에 동료가 지원서 제출 누르는 거 봄) — 도입부로 금지
+12. 설명문 재정의 ("에너지 아끼는 거 관리하는 데", "땅 주인 가려주는 데", "병원 나무 다듬고 보일러 고치는 데")
+13. 절차 디테일형 (등기우편 접수, 수입인지 5천원)
+14. 데이터 빈칸 소재형 ("학력 조건 칸이 '공고 참조'라고만 써있음", "조건란에 아무것도 없음")
+15. 숫자 포장형 정보 ("우리나라 전기 10개 중 1개 만드는 공기업이")
 
-[인물 대화형 — 센스 있는 오해 원칙]
-인물형의 핵심은 "기관 업무를 일상 한 마디로 재정의했을 때 생기는 진짜 오해"다.
-오해가 클수록 반전이 세고, 반전이 셀수록 터진다.
-
-OK (진짜 오해 + 리얼한 부정 반응):
-- "나 돈 찍는 데 취직한다" → "사기치지 말라고" (조폐공사)
-- "나 돈 만드는 회사 간다" → "사기꾼이냐고 차일 뻔함" (조폐공사)
-- "우리 울산 갈까?" → "미쳤냐고" (에너지공단)
-- "나 에너지 쪽 취직한다" → "레드불이냐?" (에너지공단)
-- "나 김치 수출하는 공기업 간다" → "김치 공장이야?" (농수산식품유통공사)
-- "나 도시 만드는 공기업 간다" → "공사판이냐?" (김포도시공사)
-
-NG (오해 없는 일반 질문 → 밋밋한 긍정):
-- "LH냐?" → "SH공사" → "더 낫네" ❌
-- "어딘데?" → 설명 → "좋은 데네" ❌
-- "뭐하는 덴데?" → 설명 → "괜찮네" ❌
-
-[비인물형 — 이런 감각으로]
-팩트 충격: "매출 8조짜리 공기업이 학력무관으로 뽑고 있음"
-긴급: "66명 역대 최대인데 학력무관이면 안 넣는 게 사기임"
-특가스나이퍼: "스펙 없어서 공기업 접은 사람 다시 펴 — 학력 칸 자체가 없는 정규직 66명"
-1인칭 독백: "조용히 넣었다 — 66명이면 확률 있다고 봤음"
-상황 저격: "서울 월세 80 내면서 출퇴근 3시간 vs 김포에서 연봉 6,200만 정규직"
-
-[고정 클로저 금지 — 이 문장들 사용 금지]
-"세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음",
-"넘기려다 공고 열어본 사람이 붙는 거임", "말하고 싶으면 일단 넣어야 됨",
-"합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"
-
-[팩트 주의]
-- 고용형태가 여러 개면 데이터 그대로 반영.
-- 평균 연봉은 전 직원 평균이지 신입 초봉이 아님.
-- "필기 없음", "자소서 없음" 같은 표현은 데이터에 있을 때만.
-- 데이터에 없는 내용은 리스트에 넣지 않는다.
+[인물 대화형 — 쓸 거면 이 수준만]
+기관 업무를 일상 한 마디로 재정의했을 때 생기는 "진짜 오해 + 리얼한 부정 반응 → 역전".
+OK: "나 돈 찍는 데 취직한다" → "사기치지 말라고" (조폐공사) / "우리 울산 갈까?" → "미쳤냐고" (에너지공단)
+NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지 말장난, 무시하다 연봉 듣고 태도 바뀜.
 
 [검증된 베스트]
+(담백 — 1인칭 감정 하나, 조회 15만)
+📍어차피 안 되겠지 싶어서 그냥 넣어봤는데
+서류 붙고 조건 다시 보니까 나도 되는 자리였음
+1. '한국도로공사' 안전순찰원 43명 채용
+(…리스트 생략)
+포기하려던 자리가 정년 보장 무기계약직이었던 거임
+
+(웃김 — 진짜 오해, 조회 50만)
 📍엄마한테 "나 돈 찍는 데 취직한다" 했더니
 사기치지 말라고 하길래 공고 보여줬음
 1. '한국조폐공사' 57명 정규직 채용
@@ -339,6 +370,7 @@ NG (오해 없는 일반 질문 → 밋밋한 긍정):
 5. 10/2 마감 - 아직 열흘 남음
 공고 보더니 본인도 넣겠다고 함
 
+(경고 — 팩트가 셀 때 한 줄, 조회 39만)
 ⚠️취준생 심장 약하면 스크롤 멈춰
 1. '한국토지주택공사' 235명 정규직
 2. 서류에서 자소서 평가 아예 없앰
@@ -347,47 +379,68 @@ NG (오해 없는 일반 질문 → 밋밋한 긍정):
 5. 접수 9월 29일 마감
 자소서 없는 235명 공채는 다음에 없음
 
-📍조용히 넣었다 — 66명이면 확률 있다고 봤음
-1. '한국농수산식품유통공사' 66명 정규직
-2. K-Food 수출 + 농수산물 유통 전담
-3. 학력무관 — 고졸 전형 9명 별도
-4. 행정·농업·AI전산 등 6개 분야
-5. 마감 10/13 — 필기 11/1
-안 되면 말고 — 근데 되면 연봉 7,800만임
+[팩트 규칙]
+- 고용형태가 여러 개면 데이터 그대로 반영.
+- 연봉은 [공고 데이터]/[본문 발췌]에 있는 '직원 평균 연봉'·'공고 제시 연봉'만. 신입 초봉은 쓰지 않는다.
+  평균 연봉은 전 직원 평균이지 신입 초봉이 아님. 다른 공고·다른 기관 연봉을 끌어오지 않는다.
+- 빈 값('공고 참조', '기타')은 리스트에 쓰지 않는다. 다른 팩트로 채운다.
+- 업무협력직·업무직·공무직·영선·조경 등은 경비·시설·청소 직무일 수 있다 → 사무직처럼 쓰지 않는다.
+- "필기 없음", "자소서 없음" 같은 표현은 데이터에 있을 때만.
+- 민간 기업 공고([공고 데이터]에 '기업구분'이 있음)는 공기업이 아니다: '공기업', '정년 보장', '블라인드' 표현 금지.
+  인원 대신 모집분야·전형 단계·근무지·평균연봉(있을 때)으로 리스트를 채운다.
 
-📍스펙 없어서 공기업 접은 사람 다시 펴
-학력 칸 자체가 없는 정규직 66명
-1. '한국농수산식품유통공사' 66명 정규직
-2. 5급 57명 + 6급(고졸) 9명 — 역대 최대
-3. 행정·농업·AI전산·산업안전 등 6개 분야
-4. 전국 배치 — 평균연봉 약 7,800만
-5. 마감 10/13 — 필기 11/1
-포기하기엔 66자리가 너무 많음
+[고정 클로저 금지]
+"세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음", "넘기려다 공고 열어본 사람이 붙는 거임",
+"말하고 싶으면 일단 넣어야 됨", "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"
 
 [출력]
 설명 없이 JSON 객체 하나만 출력. 코드블록 금지.
-{"hook": "훅(줄바꿈은 \\n, 최대 2줄)", "items": ["1번 내용", "2번", "3번", "4번", "5번"], "closer": "클로저 1줄"}
-items 각 원소에는 번호("1.")를 붙이지 말 것.
+후보 4개를 서로 다른 방향으로 쓴다: 2개는 지정된 유형대로, 2개는 담백한 훅(웃기려 하지 않는 1인칭 감정·팩트·경고 중 지정 유형과 다른 것).
+{"candidates": [
+  {"type": "funny 또는 plain", "cat": "person|monologue|fact|urgent|sniper", "emoji": "📍 또는 ⚠️",
+   "hook": "훅(줄바꿈은 \\\\n, 최대 2줄)", "items": ["1번", "2번", "3번", "4번", "5번"], "closer": "클로저 1줄"}
+]}
+items 각 원소에는 번호("1.")를 붙이지 말 것. type은 웃기려고 쓴 훅이면 funny, 아니면 plain.
+"""
+
+JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이다. 후킹글 후보를 냉정하게 채점한다.
+
+채점 기준 (각 0~10):
+- relate: 취준생이 "내 얘기다" 느끼나
+- curious: 리스트를 끝까지 읽고 싶어지나
+- fresh: [최근 발행 훅·클로저]와 장면·인물·문장 구조가 안 겹치나
+- funny: type이 funny일 때만 — 실제로 있을 법한 장면인가 + 읽고 진짜 피식하나. 억지 상황극·말장난·무시하다 태도 바뀜·설명 같은 재정의는 0~3점
+
+규칙:
+- type이 funny인데 funny가 7점 미만이면 total에서 15점을 뺀다 (어설프게 웃긴 글은 담백한 글보다 나쁘다).
+- 제외 패턴(점심시간 동료, vs 비교, 데이터 빈칸, 숫자 포장, 절차 디테일, 대학 보냈냐 무시형)이 보이면 total 0.
+- total = relate + curious + fresh (+ funny, funny 타입만) 에서 규칙 적용.
+
+설명 없이 JSON만: {"scores": [{"i": 0, "relate": 0, "curious": 0, "fresh": 0, "funny": null, "total": 0, "why": "한 줄"}], "best": 0}
 """
 
 
 def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     end = dt.datetime.strptime(job["pbancEndYmd"], "%Y%m%d")
     data = {
-        "기관 정식명칭(리스트 1번에 '따옴표'로)": inst,
+        ("기업 정식명칭(리스트 1번에 '따옴표'로)" if is_private(job) else "기관 정식명칭(리스트 1번에 '따옴표'로)"): inst,
         "공고명": job.get("recrutPbancTtl"),
         "고용형태": job.get("hireTypeNmLst"),
         "신입/경력": job.get("recrutSeNm"),
         "모집인원": job.get("recrutNope"),
         "학력조건": job.get("acbgCondNmLst"),
         "근무지역": job.get("workRgnNmLst"),
-        "직무분야(NCS)": job.get("ncsCdNmLst"),
+        ("모집분야" if is_private(job) else "직무분야(NCS)"): job.get("ncsCdNmLst"),
         "마감일": f"{end.month}월 {end.day}일",
         "D-day": f"D-{d_left}",
     }
-    for k_src, k_out in (("yearIncome", "연봉(클린아이)"), ("judgeMethod", "전형방법(클린아이)")):
+    for k_src, k_out in (("yearIncome", "공고 제시 연봉(클린아이)"), ("judgeMethod", "전형방법(클린아이)")):
         if job.get(k_src):
             data[k_out] = job[k_src]
+    if is_private(job):
+        data["기업구분"] = f"민간 {job.get('bizType') or '기업'} (공기업 아님)"
+    # 빈 값('공고 참조', 0, '기타')은 아예 넘기지 않음 — 리스트·훅 소재로 쓰지 못하게
+    data = {k: v for k, v in data.items() if has_value(v)}
 
     lines = [
         "[이번 글의 유형]",
@@ -415,8 +468,8 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         post_text or "(없음)",
     ]
     if recent_hooks:
-        lines += ["", "[최근 발행한 훅 — 이것들과 문장·구조가 겹치면 안 됨]"] + [f"- {h}" for h in recent_hooks]
-    lines += ["", "위 규격대로 쓰레드 글 1개를 JSON으로 출력해."]
+        lines += ["", "[최근 발행한 훅 / 클로저 — 장면·인물·도입 상황·문장 구조가 겹치면 안 됨]"] + [f"- {h}" for h in recent_hooks]
+    lines += ["", "위 규격대로 후보 4개를 JSON으로 출력해."]
     return "\n".join(lines)
 
 
@@ -439,72 +492,123 @@ def call_claude(system, user, model):
     return "".join(b.get("text", "") for b in r.json()["content"] if b.get("type") == "text")
 
 
-def parse_and_validate(raw: str, combo: dict, inst: str = ""):
-    emoji = combo["emoji"]
-    clean = re.sub(r"```(json)?", "", raw).strip()
-    m = re.search(r"\{.*\}", clean, re.S)
-    if not m:
-        return None, "JSON 없음"
-    try:
-        d = json.loads(m.group(0))
-    except Exception as e:
-        return None, f"JSON 파싱 실패: {e}"
-    hook = (d.get("hook") or "").strip()
+BANNED_HOOK = [
+    (r"점심", "점심시간 장면"), (r"지원서\s*제출", "동료 지원서 장면"), (r"(?i)\bvs\b", "비교형(vs)"),
+    (r"대학\s*보냈", "'대학 보냈냐' 무시형"), (r"공고\s*참조|조건\s*칸|조건란|칸이\s*비|아무것도\s*없", "데이터 빈칸 소재"),
+    (r"\d+\s*개\s*중\s*\d+\s*개", "숫자 포장형"), (r"등기|수입인지|우체국", "절차 디테일"),
+    (r"잔소리", "잔소리 농담형"), (r"인지\s*알아\?", "질문유도형"),
+]
+BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음",
+                  "넘기려다 공고 열어본 사람이 붙는 거임", "말하고 싶으면 일단 넣어야 됨",
+                  "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
+
+
+def validate_candidate(d: dict, inst: str = ""):
+    """후보 1개 규격 검사 → (결과, 오류)"""
+    hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     items = [re.sub(r"^\s*\d+[\.\)]\s*", "", str(x)).strip() for x in (d.get("items") or [])]
     closer = (d.get("closer") or "").strip()
 
-    hook_lines = [l for l in hook.split("\n") if l.strip()]
+    hook_lines = [l.strip() for l in hook.split("\n") if l.strip()]
     if not hook_lines or len(hook_lines) > 2:
         return None, "훅 줄 수 오류"
-    if not hook.startswith(emoji):
-        return None, f"훅 이모지 오류 (필요: {emoji})"
+    if not (hook.startswith("📍") or hook.startswith("⚠")):
+        return None, "훅 이모지 없음"
+    for i, l in enumerate(hook_lines):
+        body_l = re.sub(r"^(📍|⚠️|⚠)", "", l).strip() if i == 0 else l
+        if len(body_l) > HOOK_LINE_MAX:
+            return None, f"훅 {i+1}줄이 {len(body_l)}자 (최대 {HOOK_LINE_MAX}자)"
     if inst:
         full = norm_key(inst)
         short = re.sub(r"^(한국|국가|국립|재단법인|대한)", "", full)
         hook_k = norm_key(hook)
         for v in {full, short}:
             if len(v) >= 3 and v in hook_k:
-                return None, f"훅에 기관명('{v}') 들어감 — 기관명은 리스트 1번에만"
-    # 생활 연결형 차단
+                return None, f"훅에 기관명('{v}') 들어감"
     if re.search(r"(그곳|그 곳|하는 곳|하던 곳|던 그|알고 보니|알고보니|이 공단이|이 기관이|이 공사가|이 재단이|거기였음|곳이었음|거였음)", hook):
-        return None, "생활 연결형 훅 차단"
-    # 비인물형인데 인물 대화체가 들어간 경우 차단
-    if combo["cat"] != "person" and re.search(r"(했더니|하길래|보여줬|보여드렸|말했더니|했는데$)", hook):
-        return None, "비인물형인데 인물 대화체(했더니/하길래/보여줬) 포함 — 재생성"
-    # 고정 클로저 차단
-    banned_closers = ["세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음",
-                      "넘기려다 공고 열어본 사람이 붙는 거임", "말하고 싶으면 일단 넣어야 됨",
-                      "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
-    if any(norm_key(bc) == norm_key(closer) for bc in banned_closers):
-        return None, "고정 클로저 사용 — 다른 클로저로 재생성"
+        return None, "생활 연결형"
+    for pat, name in BANNED_HOOK:
+        if re.search(pat, hook) or (name in ("데이터 빈칸 소재", "비교형(vs)") and re.search(pat, closer)):
+            return None, f"제외 패턴: {name}"
+    if d.get("cat") != "person" and re.search(r"(했더니|하길래|보여줬|보여드렸|말했더니)", hook):
+        return None, "비인물형인데 인물 대화체"
+    if any(norm_key(bc) == norm_key(closer) for bc in BANNED_CLOSERS):
+        return None, "고정 클로저"
     if len(items) != 5 or any(not x for x in items):
         return None, "리스트 5개 아님"
     if not re.match(r"^'[^']+'", items[0]):
         return None, "1번에 '기관명' 없음"
+    if any(re.search(r"공고\s*참조|^기타$|초봉", x) for x in items):
+        return None, "리스트에 빈 값·초봉"
     if not closer or "\n" in closer:
         return None, "클로저 오류"
-    body = hook + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
+    body = "\n".join(hook_lines) + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
     if re.search(r"https?://|#\S", body):
-        return None, "링크/해시태그 포함"
+        return None, "링크/해시태그"
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
-    return {"hook": hook, "items": items, "closer": closer, "text": body}, None
+    return {"hook": "\n".join(hook_lines), "items": items, "closer": closer, "text": body,
+            "type": d.get("type") or "plain", "cat": d.get("cat") or ""}, None
+
+
+def parse_candidates(raw: str):
+    clean = re.sub(r"```(json)?", "", raw).strip()
+    m = re.search(r"\{.*\}", clean, re.S)
+    if not m:
+        return []
+    try:
+        d = json.loads(m.group(0))
+    except Exception:
+        return []
+    return d.get("candidates") or ([d] if d.get("hook") else [])
+
+
+def judge(cands, recent_hooks):
+    """AI 편집장 채점 → (가장 좋은 후보 index, 점수). 실패하면 담백한 후보 우선"""
+    try:
+        listing = "\n\n".join(f"[{i}] type={c['type']}\n{c['text']}" for i, c in enumerate(cands))
+        user = ("[최근 발행 훅·클로저]\n" + "\n".join(f"- {h}" for h in recent_hooks) +
+                "\n\n[후보]\n" + listing + "\n\n채점해서 JSON으로.")
+        raw = call_claude(JUDGE_PROMPT, user, CLAUDE_MODEL)
+        m = re.search(r"\{.*\}", re.sub(r"```(json)?", "", raw), re.S)
+        res = json.loads(m.group(0))
+        scores = {int(x["i"]): x for x in res.get("scores", []) if "i" in x and 0 <= int(x["i"]) < len(cands)}
+        for i, x in sorted(scores.items()):
+            print(f"  채점 [{i}] {cands[i]['type']} total={x.get('total')} — {x.get('why', '')}")
+        best = max(scores, key=lambda i: (scores[i].get("total") or 0, cands[i]["type"] == "plain"))
+        return best, scores[best]
+    except Exception as e:
+        print(f"[warn] 채점 실패 → 담백한 후보 우선: {e}")
+        plain = [i for i, c in enumerate(cands) if c["type"] == "plain"]
+        return (plain or [0])[0], None
 
 
 def generate(job, inst, d_left, combo, post_text, recent_hooks):
     user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks)
-    err = None
+    errs = []
     for attempt in range(3):
-        u = user if not err else user + f"\n\n[이전 출력 오류: {err}] 규격을 다시 지켜서 출력해."
+        u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
-        result, err = parse_and_validate(raw, combo, inst)
-        if result:
-            return result
-        print(f"[warn] 생성 {attempt+1}회차 검증 실패: {err}")
-    raise RuntimeError(f"후킹글 생성 실패: {err}")
+        valid, errs = [], []
+        for c in parse_candidates(raw):
+            r, err = validate_candidate(c, inst)
+            if r:
+                valid.append(r)
+            else:
+                errs.append(err)
+                print(f"  [탈락] {err} | {(c.get('hook') or '').replace(chr(10), ' / ')[:60]}")
+        if valid:
+            best, sc = judge(valid, recent_hooks) if len(valid) > 1 else (0, None)
+            if sc is not None and (sc.get("total") or 0) <= 0:
+                errs.append("채점 0점 (제외 패턴)")
+                print(f"[warn] {attempt+1}회차 최고점 후보도 0점 — 재생성")
+                continue
+            print(f"선택: [{best}] {valid[best]['type']} / {valid[best]['cat']} (통과 후보 {len(valid)}개)")
+            return valid[best]
+        print(f"[warn] 생성 {attempt+1}회차 통과 후보 없음: {errs}")
+    raise RuntimeError(f"후킹글 생성 실패: {errs}")
 
 
-# ─────────────────────────── 기관 로고 카드 ───────────────────────────
 BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                             "(KHTML, like Gecko) Chrome/128.0 Safari/537.36",
               "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -920,7 +1024,64 @@ def raw_url(path, ref="main"):
     return f"https://raw.githubusercontent.com/{REPO}/{ref}/" + "/".join(quote(p) for p in path.split("/"))
 
 
+TEXT_CARD_DIR = "logos_text"
+FONT_CANDIDATES = ["/usr/share/fonts/truetype/nanum/NanumGothicExtraBold.ttf",
+                   "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
+                   "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"]
+
+
+def make_text_card(inst):
+    """로고를 못 구했을 때: 흰 바탕에 기관명만 크게 (로고 카드와 같은 가로 비율)"""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except Exception:
+        return None
+    font_path = next((f for f in FONT_CANDIDATES if os.path.exists(f)), None)
+    if not font_path:
+        print("[warn] 한글 폰트 없음 → 텍스트 카드 생략")
+        return None
+    W, H = 1440, 400
+    card = Image.new("RGB", (W, H), "white")
+    draw = ImageDraw.Draw(card)
+    size = 150
+    while size > 40:
+        font = ImageFont.truetype(font_path, size)
+        box = draw.textbbox((0, 0), inst, font=font)
+        if box[2] - box[0] <= W * 0.86:
+            break
+        size -= 6
+    tw, th = box[2] - box[0], box[3] - box[1]
+    draw.text(((W - tw) / 2 - box[0], (H - th) / 2 - box[1]), inst, font=font, fill=(30, 41, 89))
+    return card
+
+
+def text_card_url(inst):
+    """기관명 텍스트 카드 저장·업로드 → raw 주소 (logos/ 와 따로 둬서 진짜 로고 수집은 계속 시도)"""
+    path = os.path.join(TEXT_CARD_DIR, f"{inst}.png")
+    if not os.path.exists(path):
+        card = make_text_card(inst)
+        if card is None:
+            return None
+        if DRY_RUN:
+            return "(DRY_RUN — 텍스트 카드 생성만 확인)"
+        os.makedirs(TEXT_CARD_DIR, exist_ok=True)
+        card.save(path, optimize=True)
+        sha = git_push([path], f"logo(text): {inst} 기관명 카드")
+        return raw_url(path, sha) if sha else None
+    return raw_url(path)
+
+
 def resolve_logo(inst, job, state):
+    url, msg = _resolve_logo(inst, job, state)
+    if url or not USE_LOGO:
+        return url, msg
+    t = text_card_url(inst)                       # [v3.5] 로고 실패 → 기관명 텍스트 카드
+    if t and not t.startswith("(DRY"):
+        return t, msg + " → 기관명 텍스트 카드로 대체"
+    return None, msg + (" → 텍스트 카드 생성 가능(DRY_RUN)" if t else "")
+
+
+def _resolve_logo(inst, job, state):
     if not USE_LOGO:
         return None, "로고 사용 안 함"
     path = find_logo_file(inst)
@@ -1075,8 +1236,9 @@ def main():
 
     post_text = fetch_post_text(post) if post else ""
     same_job = [p for p in state["posts"] if str(p["id"]) == str(job["recrutPblntSn"])]
-    hook_src = state["posts"][-8:] + [p for p in same_job if p not in state["posts"][-8:]]
-    recent_hooks = [p["hook"].replace("\n", " / ") for p in hook_src if p.get("hook")]
+    hook_src = state["posts"][-10:] + [p for p in same_job if p not in state["posts"][-10:]]
+    recent_hooks = [p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else "")
+                    for p in hook_src if p.get("hook")]
     result = generate(job, inst, d_left, combo, post_text, recent_hooks)
     comment = build_comment(post, d_left)
     logo_url, logo_msg = resolve_logo(inst, job, state)
@@ -1087,7 +1249,7 @@ def main():
         print(f"[첫 댓글]\n{comment}")
 
     md = (f"### {'🧪 DRY RUN' if DRY_RUN else '✅ 발행'} — {inst} (D-{d_left}) · {tier_label}\n"
-          f"유형: {combo['cat']} / {combo['person']} / {combo['structure']}\n\n로고: {logo_msg}\n\n```\n{result['text']}\n```\n")
+          f"지정 유형: {combo['cat']} / {combo['structure']} → 선택: {result.get('type')} / {result.get('cat')}\n\n로고: {logo_msg}\n\n```\n{result['text']}\n```\n")
     if logo_url:
         md += f'\n<img src="{logo_url}" width="420">\n\n'
     if comment:
@@ -1124,7 +1286,8 @@ def main():
 
     state["posts"].append({
         "id": job["recrutPblntSn"], "instNm": inst, "title": job["recrutPbancTtl"],
-        "combo_idx": combo_idx, "combo_cat": combo["cat"], "hook": result["hook"],
+        "combo_idx": combo_idx, "combo_cat": result.get("cat") or combo["cat"], "hook": result["hook"],
+        "closer": result["closer"], "hook_type": result.get("type"),
         "tier": tier, "logo": bool(logo_url),
         "thread_id": thread_id, "comment_id": comment_id,
         "at": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
