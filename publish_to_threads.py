@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-쓰레드 자동발행 (지침서 v3.4 규격)
+쓰레드 자동발행 (지침서 v3.5 규격)
 흐름: jobs.json + job_posts.json → 본문 글 있는 공고 필터·스코어링 → 중복 소거
       → hiring03 본문에서 팩트 보강 → Claude(Sonnet) 후킹글 생성·검증
       → Threads 발행 → 첫 댓글(선택) → 사용 기록 저장
@@ -17,11 +17,15 @@
   JITTER_MAX_MIN   발행 전 랜덤 대기 최대 분 (예약 실행 시 자연스럽게)
   USE_LOGO         기본 on — 글 하단에 기관 로고 카드(logos/기관명.png) 첨부, off면 글만
   MIN_GAP_MIN      기본 60 — 마지막 발행(수동 포함) 후 이 시간(분)이 안 지났으면 발행하지 않고 건너뜀
+                   (예약 실행은 워크플로우에서 110 — 매시간 깨우고 2시간 간격 유지)
 
 [2026-09-29 수정] v3.4 후킹 스타일 적용 — 유형별 비중(인물 30%/비인물 70%) + 제외 패턴 8종 + 센스 있는 오해 원칙
 [2026-10-02 수정] v3.5 — 웃길 거면 확실하게, 아니면 담백하게 / 제외 패턴 15종 / 후보 4개 생성 → AI 채점 → 1개 발행
                   훅 줄당 26자 / 빈 값·1명 공고 제외 / 초봉 섞임 방지 / 최근 10개 훅·클로저 반복 금지
                   민간 대기업·중견기업(공채속보) 공고 포함 / 로고 실패 시 기관명 텍스트 카드
+[2026-10-03 수정] Claude API 일시 오류(429·5xx·529·타임아웃) 재시도 4회
+                  3회 모두 채점 0점·규격 탈락이면 억지 발행하지 않고 건너뜀 (다음 회차 재시도)
+                  로고 재시도 날짜 한국 시간 기준
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -482,21 +486,37 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
 
 
 def call_claude(system, user, model, max_tokens=16000):
-    r = requests.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": os.environ["CLAUDE_API_KEY"],
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-        json={"model": model, "max_tokens": max_tokens, "system": system,
-              "messages": [{"role": "user", "content": user}]},
-        timeout=120,
-    )
-    if r.status_code == 404 and model != FALLBACK_MODEL:
-        print(f"[warn] 모델 {model} 없음 → {FALLBACK_MODEL}로 재시도")
-        return call_claude(system, user, FALLBACK_MODEL, max_tokens)
-    r.raise_for_status()
+    last_err = None
+    for attempt in range(4):
+        try:
+            r = requests.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": os.environ["CLAUDE_API_KEY"],
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={"model": model, "max_tokens": max_tokens, "system": system,
+                      "messages": [{"role": "user", "content": user}]},
+                timeout=180,
+            )
+        except requests.exceptions.RequestException as e:   # 타임아웃·연결 끊김
+            last_err = e
+            print(f"[warn] Claude 연결 오류 ({attempt+1}/4): {e}")
+            time.sleep(15 * (attempt + 1))
+            continue
+        if r.status_code == 404 and model != FALLBACK_MODEL:
+            print(f"[warn] 모델 {model} 없음 → {FALLBACK_MODEL}로 재시도")
+            return call_claude(system, user, FALLBACK_MODEL, max_tokens)
+        if r.status_code in (429, 500, 502, 503, 504, 529):   # 일시 오류·과부하
+            last_err = f"HTTP {r.status_code}"
+            print(f"[warn] Claude 일시 오류 {r.status_code} ({attempt+1}/4) — 잠시 후 재시도")
+            time.sleep(15 * (attempt + 1))
+            continue
+        r.raise_for_status()
+        break
+    else:
+        raise RuntimeError(f"Claude API 재시도 4회 실패: {last_err}")
     res = r.json()
     kinds = [b.get("type") for b in res.get("content", [])]
     if res.get("stop_reason") == "max_tokens":
@@ -609,7 +629,7 @@ def judge(cands, recent_hooks):
 
 def generate(job, inst, d_left, combo, post_text, recent_hooks):
     user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks)
-    errs, fallback = [], []          # fallback: 규격은 통과했지만 채점 0점이었던 후보 (최후 수단)
+    errs = []
     for attempt in range(3):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
@@ -628,19 +648,16 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
         if valid:
             best, sc = judge(valid, recent_hooks) if len(valid) > 1 else (0, None)
             if sc is not None and (sc.get("total") or 0) <= 0:
-                raw = sum(sc.get(k) or 0 for k in ("relate", "curious", "fresh"))
-                fallback.append((raw, valid[best]))
                 errs.append("채점 0점 (제외 패턴)")
                 print(f"[warn] {attempt+1}회차 최고점 후보도 0점 — 재생성")
                 continue
             print(f"선택: [{best}] {valid[best]['type']} / {valid[best]['cat']} (통과 후보 {len(valid)}개)")
             return valid[best]
         print(f"[warn] 생성 {attempt+1}회차 통과 후보 없음: {errs}")
-    if fallback:   # 3번 다 0점이어도 코드 규격 검사는 통과한 후보 → 채점 세부점수가 가장 높은 것으로 발행 (회차 통째로 날리지 않음)
-        raw, pick = max(fallback, key=lambda t: t[0])
-        print(f"[warn] 채점 0점만 나와 규격 통과 후보 중 세부점수 최고({raw}점)로 진행")
-        return pick
-    raise RuntimeError(f"후킹글 생성 실패: {errs}")
+    # 3회 모두 탈락·채점 0점(제외 패턴) → 억지로 발행하지 않고 이번 회차 건너뜀 (매시간 실행이라 곧 재시도)
+    print(f"[건너뜀] 3회 모두 발행할 만한 후보 없음 — 다음 회차에 재시도: {errs[-4:]}")
+    summary("### ⏭️ 건너뜀\n후보가 규격·채점을 통과하지 못함 (다음 회차 재시도)")
+    return None
 
 
 BROWSER_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -1124,14 +1141,14 @@ def _resolve_logo(inst, job, state):
 
     tried = state.setdefault("logo_tried", {})
     last = tried.get(inst)
-    if last and (dt.date.today() - dt.date.fromisoformat(last)).days < LOGO_RETRY_DAYS:
+    if last and (dt.datetime.now(KST).date() - dt.date.fromisoformat(last)).days < LOGO_RETRY_DAYS:
         return None, "로고 없음 (최근 자동수집 실패 — 글만 발행)"
 
     card = auto_collect_logo(inst, job)
     if DRY_RUN:
         return None, "자동수집 성공 (DRY_RUN이라 저장 안 함)" if card else "로고 없음 · 자동수집 실패"
     if not card:
-        tried[inst] = dt.date.today().isoformat()
+        tried[inst] = dt.datetime.now(KST).date().isoformat()
         missing = set()
         if os.path.exists(MISSING_PATH):
             missing = {l.strip() for l in open(MISSING_PATH, encoding="utf-8") if l.strip()}
@@ -1307,6 +1324,8 @@ def main():
     recent_hooks = [p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else "")
                     for p in hook_src if p.get("hook")]
     result = generate(job, inst, d_left, combo, post_text, recent_hooks)
+    if result is None:
+        return
     comment = build_comment(post, d_left)
     logo_url, logo_msg = resolve_logo(inst, job, state)
     print(f"로고: {logo_msg}" + (f" → {logo_url}" if logo_url else ""))
