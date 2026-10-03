@@ -2868,5 +2868,74 @@
     "callout": null
    }
   }
+ },
+ "305149": {
+  "at": "2026-10-03 14:41",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-305149.html",
+  "source": "2026년 하반기 극지연구소 무기계약직(행정직) 채용 공고.pdf",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 12일~23일",
+     "desc": "자격요건·블라인드 위반여부 및 직무적합성 평가",
+     "note": "평점 50점 이상, 직무수행능력 15점 미만 불합격"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 직무능력평가",
+     "date": "11월 2일~13일",
+     "desc": "필기(NCS 50%+경영·행정·경제개론 50%)+주제발표평가",
+     "note": "필기 10배수, 발표 3배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "11월 23일~12월 4일",
+     "desc": "인성분야·전문지식분야 심사",
+     "note": "분야별 60%↑, 총점 70점 이상"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 중",
+     "desc": "신체검사·결격사유 확인 후 인사위원회 심의로 확정"
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "TOEIC 600점, TOEFL IBT 57점, TEPS 482점 등 공인영어성적을 접수마감일 기준 2년 이내 보유해야 해요.",
+    "highlight": "TOEIC 600"
+   },
+   "written": {
+    "summary": "2차 전형에서 필기시험으로 NCS와 경영학·행정학·경제학개론을 함께 봐요.",
+    "highlight": "NCS(50%) + 직무관련 필기시험(50%)",
+    "subjects": [
+     {
+      "name": "NCS",
+      "count": "50%",
+      "scope": null,
+      "note": "객관식 및 단답형",
+      "ncs": true
+     },
+     {
+      "name": "직무관련 필기시험",
+      "count": "50%",
+      "scope": "경영학, 행정학, 경제학개론",
+      "note": "객관식 및 단답형",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
