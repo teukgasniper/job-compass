@@ -2937,5 +2937,147 @@
     "callout": null
    }
   }
+ },
+ "305702": {
+  "at": "2026-10-06 00:13",
+  "url": "https://hiring03.ddolbestory.com/2026/10/koreaexim-305702.html",
+  "source": "[한국수출입은행] 2026년 하반기 전문직행원(신입) 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반 부문 46명, EDCF 10명, 지역전문가 10명, 보훈 2명을 뽑아요.",
+    "columns": [
+     "경영",
+     "경제",
+     "전기·전자",
+     "IT"
+    ],
+    "rows": [
+     {
+      "label": "일반",
+      "values": [
+       15,
+       15,
+       6,
+       10
+      ]
+     },
+     {
+      "label": "EDCF",
+      "values": [
+       5,
+       5,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "지역전문가",
+      "values": [
+       5,
+       5,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "보훈",
+      "values": [
+       1,
+       1,
+       null,
+       null
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 1차 필기전형",
+     "date": "10월 24일(토)",
+     "desc": "NCS직업기초능력평가, 외국어·자격증 등 정량평가",
+     "note": "12배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 필기전형 합격자 발표",
+     "date": "10월 29일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 2차 필기전형",
+     "date": "11월 7일(토)",
+     "desc": "NCS직무수행능력평가, 직업성격검사, 자기소개서 심사",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "2차 필기전형 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 면접전형",
+     "date": "11월말~12월초",
+     "desc": "NCS기반 직무역량평가, 영어활용능력평가(TOEIC S&W)",
+     "note": "1.5배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 2차 면접전형",
+     "date": "12월 중하순",
+     "desc": "조직가치적합도 평가 후 신체검사·신원조사 거쳐 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "외국어 성적은 필수가 아니며, 성적이 없어도 지원할 수 있어요. 영어·제2외국어 우수자는 우대돼요.",
+    "highlight": "없더라도 지원 가능"
+   },
+   "written": {
+    "summary": "1차 필기는 NCS직업기초능력평가로, 2차 필기는 NCS직무수행능력평가·직업성격검사·자기소개서 심사로 진행돼요.",
+    "highlight": "NCS직업기초능력평가",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력평가",
+      "count": null,
+      "scope": "경영·경제: 의사소통, 수리, 문제해결, 조직이해 / 전기전자·IT: 의사소통, 수리, 문제해결, 정보, 기술",
+      "note": "1차 필기전형",
+      "ncs": true
+     },
+     {
+      "name": "NCS직무수행능력평가",
+      "count": null,
+      "scope": "경영·경제: 전공지식, 일반논술 / 전기전자·IT: 전공지식, 금융기초지식, 일반논술",
+      "note": "2차 필기전형",
+      "ncs": true
+     },
+     {
+      "name": "NCS직업성격검사",
+      "count": null,
+      "scope": null,
+      "note": "적·부심사",
+      "ncs": true
+     },
+     {
+      "name": "자기소개서 심사",
+      "count": null,
+      "scope": null,
+      "note": "적·부심사 및 감점",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
