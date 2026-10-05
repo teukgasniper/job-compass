@@ -44,7 +44,7 @@ jobs:
           COMMENT_LINK: ${{ vars.COMMENT_LINK_JAMI || 'profile' }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
           JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
-          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '110' || '60' }}   # 자동 실행은 110분 (수동은 60분)
+          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '100' || '60' }}   # 자동 실행은 100분 → 실제 평균 약 2시간 간격
         run: python publish_to_threads.py
 
       - name: 사용 기록 저장
