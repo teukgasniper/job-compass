@@ -3,6 +3,8 @@ name: 쓰레드 자동발행 (jami)
 on:
   schedule:
     - cron: "41 * * * *"  # 매시간 41분 — GitHub 예약 실행이 자주 빠져서 촘촘하게 깨우고, 발행 간격은 MIN_GAP_MIN(110분)으로 2시간 유지
+  repository_dispatch:            # 외부 예약(cron-job.org)이 깨우는 자동 실행 — GitHub 예약이 빠져도 발행되게
+    types: [threads-jami]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -20,7 +22,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # 예약 실행은 Variables의 THREADS_AUTO_JAMI 가 'on' 일 때만 동작 (수동 실행은 항상 가능)
+    # 자동 실행(GitHub 예약·외부 예약)은 Variables의 THREADS_AUTO_JAMI 가 'on' 일 때만 동작 (수동 실행은 항상 가능)
     if: github.event_name == 'workflow_dispatch' || vars.THREADS_AUTO_JAMI == 'on'
     steps:
       - uses: actions/checkout@v4
@@ -41,8 +43,8 @@ jobs:
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
           COMMENT_LINK: ${{ vars.COMMENT_LINK_JAMI || 'profile' }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
-          JITTER_MAX_MIN: ${{ github.event_name == 'schedule' && '15' || '0' }}
-          MIN_GAP_MIN: ${{ github.event_name == 'schedule' && '110' || '60' }}   # 예약 실행만 110분 (수동은 60분)
+          JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
+          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '110' || '60' }}   # 자동 실행은 110분 (수동은 60분)
         run: python publish_to_threads.py
 
       - name: 사용 기록 저장
