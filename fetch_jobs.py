@@ -626,6 +626,8 @@ BIG_GROUPS = [
     "엔에이치", "NH", "농협", "미래에셋", "한국투자", "교보", "삼정회계", "부산은행", "경남은행",
     "아워홈", "대한전선", "넥슨", "엔씨소프트", "넷마블", "에스엠엔터테인먼트", "하이브",
 ]
+# 그룹명으로 시작하지만 대기업 계열이 아닌 회사 [2026-10-05 추가]
+NOT_BIG = ["엔에이치엔", "엘에스이"]
 # 공공 성격 (잡알리오·클린아이·나라일터가 담당) → 공채속보에서는 제외
 PUBLIC_WORDS = ["공사", "공단", "재단", "진흥원", "연구원", "관리원", "평가원", "인재원",
                 "공제회", "중앙회", "협회", "지원협회", "교육원", "위원회"]
@@ -642,7 +644,8 @@ def gongchae_biz_type(x):
         return "대기업"
     if any(w in name for w in PUBLIC_WORDS):
         return "공공"
-    if name.startswith("엔에이치엔"):          # NHN 계열 ≠ NH농협
+    # 그룹명으로 시작하지만 그룹 계열이 아닌 회사 (NHN ≠ NH농협, 엘에스이 ≠ LS그룹) — 오탐 발견 시 여기에 추가
+    if any(name.startswith(n) for n in NOT_BIG):
         return "중견기업"
     if any(name.startswith(g) for g in BIG_GROUPS):   # 앞글자 일치만 (한국엔에스케이 오탐 방지)
         return "대기업"
@@ -685,6 +688,9 @@ def fetch_gongchae_detail(seqno):
                         part = part.strip()
                         if part and part not in bucket:
                             bucket.append(part)
+            # [2026-10-05] 공채속보 학력은 '최소~최대' 범위로 와서 최대값 '박사'가 섞임
+            #   (대졸 신입 공채도 '박사', 고졸 생산직도 '고졸,박사') → 박사는 버리고 최소 요건만 남김
+            edu = [e for e in edu if e != "박사"]
             return {"edu": edu, "career": career, "region": region, "fields": fields,
                     "homepage": root.findtext("empWantedHomepg") or ""}
         except Exception:
@@ -772,7 +778,7 @@ def collect_gongchae():
         if p_:
             d = {"region": [r for r in (p_.get("workRgnNmLst") or "").split(",") if r],
                  "career_alio": p_.get("recrutSeNm") or "",
-                 "edu": [e for e in (p_.get("acbgCondNmLst") or "").split(",") if e],
+                 "edu": [e for e in (p_.get("acbgCondNmLst") or "").split(",") if e and e != "박사"],
                  "fields": [f for f in (p_.get("ncsCdNmLst") or "").split(",") if f],
                  "homepage": "", "_at": p_["_detailAt"]}
             reuse_cnt += 1
