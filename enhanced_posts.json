@@ -3217,5 +3217,128 @@
     "callout": null
    }
   }
+ },
+ "305568": {
+  "at": "2026-10-07 07:47",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305568.html",
+  "source": "2026년 3차 한국벤처투자 신입(NCS) 및 경력(AI·전산) 채용공고.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 신입 일반 심사역 13명, 경력 AI·전산 심사역 2명을 뽑아요.",
+    "columns": [
+     "신입(일반 심사역)",
+     "경력(AI·전산 심사역)"
+    ],
+    "rows": [
+     {
+      "label": "인원",
+      "values": [
+       13,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서 정성평가(80점)+어학성적 정량평가(20점)",
+     "note": "50배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 2일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 7일(토)",
+     "desc": "NCS직업기초능력+직무전공+직무논술+인성검사",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 19일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": "11월 24일~27일",
+     "desc": "직무역량면접(50%)+PT면접(50%)",
+     "note": "2배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차면접 합격자 발표",
+     "date": "12월 3일(목)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": "12월 8일~9일",
+     "desc": "직무수행태도·능력·합리적사고·인성 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 24일(목)",
+     "desc": "결격사유 확인 및 중진공 조회 후 최종 선발",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (신입_일반)",
+    "text": "일반 심사역(신입)은 공인어학성적 최저기준(토익 760점 등)을 충족해야 하며, 경력직은 별도 어학 기준이 없어요.",
+    "highlight": "760점"
+   },
+   "written": {
+    "summary": "필기는 인성검사 + NCS직업기초능력 + 직무전공 + 직무논술로 구성돼요. 총 81문항이에요.",
+    "highlight": "81문항",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력",
+      "count": "40문항",
+      "scope": "의사소통, 수리, 문제해결, 자원관리, 정보, 조직이해",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "직무전공",
+      "count": "40문항",
+      "scope": "경영학/경제학/법학 중 택1",
+      "note": "조정점수 적용",
+      "ncs": false
+     },
+     {
+      "name": "직무논술",
+      "count": "1문항",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": "적격/부적격 판정",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
