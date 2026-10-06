@@ -24,6 +24,10 @@
                   수집 실패 시 직전 jobs.json의 나라일터 공고(마감 전) 재사용
                   클린아이 시도별 3회 재시도 + 실패 시도 있으면 직전 클린아이 공고 재사용
 [2026-09-23 수정] 의사직(전문의·전임의·레지던트 등) 공고 수집 제외
+[2026-10-06 수정] 공채속보 학력 오류 보정 — 학력 칸이 '박사'만(→ 빈 값)·'석사'만 들어오는 문제
+                  상세 응답 전체 글(지원자격 문장 포함)에서 최소 학력을 다시 읽어 더 낮은 쪽으로 저장
+                  (예: 이마트 '' → 대졸(4), 현대오토에버 '석사' → 대졸(4))
+                  학력이 비었거나 석사·박사만인 캐시는 24시간 안 지났어도 다시 조회
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -671,6 +675,45 @@ def fetch_gongchae_page(page):
     return None, None
 
 
+# [2026-10-06] 학력 순위 — 낮을수록 지원 문턱이 낮음
+EDU_RANK = {"학력무관": 0, "고졸": 1, "대졸(2~3)": 2, "대졸(4)": 3, "석사": 4, "박사": 5}
+_EDU_PATTERNS = [   # (최소 학력, 원문 표현) — 원문 지원자격 문장에서 찾음
+    ("학력무관", r"학력\s*(및\s*경력\s*)?(무관|제한\s*없|불문)"),
+    ("고졸", r"고졸|고등학교\s*(졸업|졸)"),
+    ("대졸(2~3)", r"전문학사|초대졸|전문대|2\s*[~/·]\s*3\s*년제"),
+    ("대졸(4)", r"학사|4년제|대졸|대학교?\s*(졸업|졸)"),
+    ("석사", r"석사"),
+]
+
+
+def _edu_rank(e):
+    e = (e or "").replace(" ", "")
+    if "무관" in e: return 0
+    if "고졸" in e or "고등" in e: return 1
+    if "2~3" in e or "초대졸" in e or "전문" in e: return 2
+    if "대졸" in e or "학사" in e or "4" in e: return 3
+    if "석사" in e: return 4
+    if "박사" in e: return 5
+    return 9
+
+
+def infer_min_edu(text):
+    """지원자격 원문에서 가장 낮은 학력 요건 1개 (못 찾으면 '')"""
+    found = [lvl for lvl, pat in _EDU_PATTERNS if re.search(pat, text or "")]
+    return min(found, key=lambda l: EDU_RANK[l]) if found else ""
+
+
+def fix_edu(edu, text):
+    """API 학력 값(edu)과 원문 추정 최소 학력을 비교해 더 정확한 쪽으로"""
+    edu = [e for e in edu if e != "박사"]
+    guess = infer_min_edu(text)
+    if not guess:
+        return edu
+    if not edu or all(e in ("석사", "박사") for e in edu) or EDU_RANK[guess] < min(_edu_rank(e) for e in edu):
+        return [guess]
+    return edu
+
+
 def fetch_gongchae_detail(seqno):
     """상세: 학력·경력·근무지역·모집분야 (실패하면 빈 dict)"""
     q = urllib.parse.urlencode({"authKey": WORK24_KEY, "callTp": "D", "returnType": "XML",
@@ -690,7 +733,9 @@ def fetch_gongchae_detail(seqno):
                             bucket.append(part)
             # [2026-10-05] 공채속보 학력은 '최소~최대' 범위로 와서 최대값 '박사'가 섞임
             #   (대졸 신입 공채도 '박사', 고졸 생산직도 '고졸,박사') → 박사는 버리고 최소 요건만 남김
-            edu = [e for e in edu if e != "박사"]
+            # [2026-10-06] 그래도 '박사'만(→ 빈 값)·'석사'만 오는 공고가 있어 응답 전체 글(지원자격 문장)로 다시 판단
+            all_text = " ".join(t.strip() for t in root.itertext() if t and t.strip())
+            edu = fix_edu(edu, all_text)
             return {"edu": edu, "career": career, "region": region, "fields": fields,
                     "homepage": root.findtext("empWantedHomepg") or ""}
         except Exception:
@@ -770,6 +815,10 @@ def collect_gongchae():
             return None
         if age_h >= 24:
             return None                                   # 하루 지난 상세는 다시 받아 수정사항 반영
+        # [2026-10-06] 학력이 비었거나 석사·박사만인 캐시는 오류 가능 → 다시 조회
+        edu_prev = [e for e in (p_.get("acbgCondNmLst") or "").split(",") if e]
+        if not edu_prev or all(e in ("석사", "박사") for e in edu_prev):
+            return None
         return p_
 
     out, detail_cnt, reuse_cnt, t0 = [], 0, 0, time.time()
