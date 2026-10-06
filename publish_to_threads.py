@@ -27,6 +27,12 @@
 [2026-10-03 수정] Claude API 일시 오류(429·5xx·529·타임아웃) 재시도 4회
                   3회 모두 채점 0점·규격 탈락이면 억지 발행하지 않고 건너뜀 (다음 회차 재시도)
                   로고 재시도 날짜 한국 시간 기준
+[2026-10-06 수정] 민간 후킹 테스트 결과 반영 (기존 규칙·베스트는 유지, 제외만 추가)
+                  제외 패턴 16~22 추가 — 학력 하한 지목 / 장벽 소재(전형 단계·인적성·코딩테스트·어학·학점)
+                  / 부정 종결 훅 / 전문 용어·약어 / 비현실적 오해 / 근거 없는 포기 방지 / 꼬인 문장
+                  민간 공고 학력은 본문 '지원 자격 상세' 기준 (공채속보 학력 값 오류 대응, 확인 안 되면 건너뜀)
+                  특가 '포기 방지'는 학력무관 같은 열린 조건이 있는 공고에서만 / '대기업'은 누구나 아는 그룹사만
+                  코드 검사에 학력 하한·장벽·전문 용어 정규식 추가 (훅+클로저) / 실패 사례를 프롬프트에 예시로
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -106,7 +112,11 @@ def eligible(job: dict, today: dt.date) -> bool:
     if job.get("ongoingYn") != "Y":
         return False
     # 빈 값 공고 제외 (리스트에 '공고 참조'가 들어가는 걸 원천 차단)
-    if not has_value(job.get("hireTypeNmLst")) or not has_value(job.get("acbgCondNmLst")):
+    if not has_value(job.get("hireTypeNmLst")):
+        return False
+    # [2026-10-06] 공채속보(민간)는 학력 값이 비거나 마지막 값(석사·박사)만 들어오는 수집 오류가 있음
+    #              → 민간은 여기서 거르지 않고 본문 '지원 자격 상세'로 다시 확인 (main → private_edu_ok)
+    if not is_private(job) and not has_value(job.get("acbgCondNmLst")):
         return False
     if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
         if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
@@ -122,7 +132,7 @@ def eligible(job: dict, today: dt.date) -> bool:
         return False
     # [2026-10-05] 학력이 석사·박사뿐인 공고는 일반 취준생 대상이 아니라 제외
     edu = [e.strip() for e in (job.get("acbgCondNmLst") or "").split(",") if e.strip()]
-    if edu and all(e in ("석사", "박사") for e in edu):
+    if not is_private(job) and edu and all(e in ("석사", "박사") for e in edu):
         return False
     # [2026-10-02] 지원 대상이 제한된 공고(보훈·장애인 전형)는 일반 취준생 수요가 적어 제외
     # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
@@ -172,13 +182,14 @@ def job_key(j: dict) -> str:
     return norm_key(norm_inst(j.get("instNm"))) + "|" + norm_key(j.get("recrutPbancTtl"))
 
 
-def pick_job(jobs, posts, state, today):
+def pick_job(jobs, posts, state, today, exclude=None):
     history = state["posts"]
     used_ids = {str(p["id"]) for p in history}
     used_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
     recent_insts = {norm_key(norm_inst(p["instNm"])) for p in history[-6:]}
 
-    live = [j for j in jobs if eligible(j, today)]
+    exclude = exclude or set()
+    live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
     new = [j for j in live if str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys]
     tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
     tier2 = [j for j in new if str(j["recrutPblntSn"]) not in posts]
@@ -254,50 +265,88 @@ def clean_post_text(text: str) -> str:
     # 인트로: "신입 초봉 약 4,300만원, " 제거
     text = re.sub(r"신입 초봉 약 [\d,]+만원,?\s*", "", text)
     text = "\n".join(l for l in text.split("\n") if "초봉" not in l)
+    # [2026-10-06] 공채속보 학력 값 오류(석사·박사만 표기) 문구 제거 — 학력은 '지원 자격 상세' 원문 문장으로만 판단
+    text = re.sub(r"공고 데이터 기준(으로)? 학력 조건은 「[^」]*」(이에요|예요)?[,.]?\s*", "", text)
+    text = re.sub(r"학력 조건은 「(석사|박사)」(이에요|예요)?\.?", "", text)
+    text = re.sub(r"지원 자격:\s*(석사|박사)\s*·\s*", "지원 자격: ", text)
+    text = re.sub(r"✅\s*(석사|박사)", "", text)
+    text = "\n".join(l for l in text.split("\n") if not re.fullmatch(r"\s*(석사|박사)\s*", l))
     return text
 
 
-# ─────────────────────────── 후킹 유형 (지침서 v3.5) ───────────────────────────
+def edu_section(post_text: str) -> str:
+    """본문 발췌에서 기업이 직접 쓴 '지원 자격 상세' 부분만"""
+    k = post_text.find("지원 자격 상세")
+    return post_text[k:k + 700] if k >= 0 else ""
+
+
+def private_edu_ok(post_text: str) -> bool:
+    """[2026-10-06] 민간 공고: 일반 취준생이 지원 가능한 학력(학력무관·고졸·학사 등)이 원문에 있는지"""
+    sec = edu_section(post_text or "")
+    if not sec:
+        return False
+    return bool(re.search(r"학력\s*(및\s*경력\s*)?(무관|제한\s*없)|고졸|고등학교|학사|대졸|전문학사|초대졸|4년제|2~3년제|대학(교)?\s*(졸업|재학)", sec))
+
+
+OPEN_FACT_RE = r"학력\s*(및\s*경력\s*)?무관|학력·?나이·?경력\s*제한|자소서\s*(평가\s*)?(없|폐지)|나이\s*제한\s*(없|폐지)|누구나\s*지원"
+
+
+def has_open_fact(job: dict, post_text: str) -> bool:
+    """[2026-10-06] '포기 방지'형을 쓸 근거 — 모두에게 열린 조건(학력무관·자소서 없음 등)이 있는지"""
+    return "무관" in (job.get("acbgCondNmLst") or "") or bool(re.search(OPEN_FACT_RE, post_text or ""))
+
+
+# ─────────────────────────── 후킹 유형 (지침서 v3.5 + 2026-10-06) ───────────────────────────
 # 카테고리: person(인물형 15%) / monologue(1인칭독백 35%) / fact(팩트충격 20%) / urgent(긴급 15%) / sniper(특가스나이퍼 15%)
 # [v3.5] 노잼 대부분이 인물형에서 나와 인물 30%→15%, 1인칭 독백 20%→35%
 #        점심시간 동료 장면·vs 비교 조합 삭제
+# [2026-10-06] 특가 '포기 방지'와 '바보 손실' 분리 — 포기 방지는 열린 조건(need_open)이 있는 공고에서만
 COMBOS = [
     # 인물 대화형 15% — 진짜 있을 법한 오해 + 진짜 피식할 때만. 안 나오면 담백한 1인칭으로 대체
     {"cat": "person", "person": "부모님", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무를 일상 한 마디로 재정의 → 부모님의 진짜 오해(사기치지 말라고) → 공고 보여줬더니 전환. 피식 포인트가 없으면 쓰지 말 것"},
+     "desc": "기관 업무를 일상 한 마디로 재정의 → 부모님의 진짜 오해(사기치지 말라고) → 공고 보여줬더니 전환. "
+             "오해는 요즘 기준으로 현실적이어야 함('차에 컴퓨터가 왜 있냐' 같은 비현실 반응 금지). 피식 포인트가 없으면 쓰지 말 것"},
     {"cat": "person", "person": "여자친구", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무 한 마디 재정의 → 여자친구 진짜 오해(사기꾼이냐고 차일 뻔함) → 공고 보여줬더니 전환. 피식 포인트가 없으면 쓰지 말 것"},
-    # 1인칭 독백형 35% — 상황극 없이 감정 하나. 도로공사 베스트(15만 조회) 계열
+     "desc": "기관 업무 한 마디 재정의 → 여자친구 진짜 오해(사기꾼이냐고 차일 뻔함) → 공고 보여줬더니 전환. "
+             "오해는 요즘 기준으로 현실적이어야 함. 피식 포인트가 없으면 쓰지 말 것"},
+    # 1인칭 독백형 35% — 상황극 없이 감정 하나. 도로공사 베스트(31만 조회) 계열
     {"cat": "monologue", "person": "본인", "structure": "포기→의외의 역전", "emoji": "📍",
-     "desc": "어차피 안 되겠지 싶어서 그냥 넣어봤는데 / 조건 다시 보니까 나도 되는 자리였음 — 업무 설명·상황극 없이 감정 하나만"},
+     "desc": "어차피 안 되겠지 싶어서 그냥 넣어봤는데 / 조건 다시 보니까 나도 되는 자리였음 — 첫 줄 포기, 둘째 줄 역전. "
+             "역전까지 반드시 훅 2줄 안에서 끝낸다(실패 상태로 끝나는 훅 금지). 역전 근거는 모두에게 열린 조건(학력무관 등)이나 "
+             "브랜드·연봉 같은 매력이어야 하고, '전문학사도 됨'처럼 특정 학력 허용을 근거로 쓰지 않는다"},
     {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다", "emoji": "📍",
-     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음 / 붙으면 그때 말하려고"},
+     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음. 감정 하나로 담백하게 ('합격하면 그때 말하려고'는 고정 클로저라 금지)"},
     {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍",
      "desc": "이번엔 진짜 넣는다 / ○○ 포기하고 이거 하나만 파기로 했음 — 취준생 누구나 하는 결심"},
     {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍",
      "desc": "이 공고 마감 직전에 알았으면 진짜 억울할 뻔 / 작년에 이거 몰라서 못 넣었음"},
     # 팩트 충격형 20% — 숫자를 포장하지 말고 그대로 세게
     {"cat": "fact", "person": "—", "structure": "숫자·규모 충격", "emoji": "📍",
-     "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지"},
+     "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지. "
+             "민간이면 평균연봉·브랜드로"},
     {"cat": "fact", "person": "—", "structure": "조건 나열", "emoji": "📍",
-     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음"},
+     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음. 넣을 이유만 나열하고 학력 하한·어학·전형 단계는 나열 금지"},
     # 긴급형 15%
     {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️",
      "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰"},
     {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️",
      "desc": "D-N이라 이번 주 안에 넣어야 됨 / 이번 주 지나면 끝"},
     # 특가스나이퍼형 15% — 비교(vs) 금지, 읽는 사람 상황을 바로 저격
-    {"cat": "sniper", "person": "—", "structure": "포기 방지 / 바보 손실", "emoji": "📍",
-     "desc": "스펙 없어서 공기업 접은 사람 다시 펴 / 이거 안 넣는 게 손해가 아니라 바보임"},
+    {"cat": "sniper", "person": "—", "structure": "포기 방지", "emoji": "📍", "need_open": True,
+     "desc": "스펙 없어서 공기업 접은 사람 다시 펴 — 포기를 뒤집을 열린 조건(학력무관·자소서 없음 등)을 리스트에 반드시 넣을 것. "
+             "근거 없이 '다시 봐'만 하면 안 됨. 조건을 겹겹이 단 꼬인 문장 금지"},
+    {"cat": "sniper", "person": "—", "structure": "바보 손실", "emoji": "📍",
+     "desc": "이거 안 넣는 게 손해가 아니라 바보임 — 근거는 강한 팩트(대규모 인원·학력무관·평균연봉·브랜드)"},
     {"cat": "sniper", "person": "—", "structure": "상황 저격", "emoji": "📍",
-     "desc": "지방 사는 취준생인데 이거 모르면 손해 / 스펙 없는 신입이면 이건 꼭 봐 — A vs B 비교 금지"},
+     "desc": "지방 사는 취준생인데 이거 모르면 손해 / 스펙 없는 신입이면 이건 꼭 봐 — A vs B 비교 금지. "
+             "특정 학력 집단(전문대생 등)을 지목하지 말 것"},
 ]
 
-# 유형별 가중치 (비중 반영)
-CAT_WEIGHTS = {"person": 15, "monologue": 35, "fact": 20, "urgent": 15, "sniper": 15}
+# 유형별 가중치 (비중 반영) — sniper는 조합이 3개라 10으로 맞춤 (전체 비중 유지)
+CAT_WEIGHTS = {"person": 15, "monologue": 35, "fact": 20, "urgent": 15, "sniper": 10}
 
 
-def pick_combo(state, d_left: int):
+def pick_combo(state, d_left: int, open_fact: bool = True):
     recent = state["posts"][-10:]
     recent_idxs = {p.get("combo_idx") for p in recent if p.get("combo_idx") is not None}
     recent_cats = [p.get("combo_cat") for p in recent[-2:] if p.get("combo_cat")]
@@ -313,10 +362,12 @@ def pick_combo(state, d_left: int):
             continue
         if d_left > 7 and c["structure"] in ("시한폭탄 / 막차",):
             continue
+        if c.get("need_open") and not open_fact:    # [2026-10-06] 근거 없는 포기 방지 금지
+            continue
         pool.append(i)
 
     if not pool:
-        pool = list(range(len(COMBOS)))
+        pool = [i for i in range(len(COMBOS)) if open_fact or not COMBOS[i].get("need_open")]
         if force_nonperson:
             pool = [i for i in pool if COMBOS[i]["cat"] != "person"] or pool
 
@@ -337,6 +388,8 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 - 과장은 OK, 거짓은 NO. 훅·클로저는 과장 가능. 리스트 5개는 [공고 데이터]/[본문 발췌]에 있는 팩트만.
 - 훅은 화면상 2줄 안에 끝낸다: 최대 2줄, 한 줄 26자 이내(이모지 제외). 질질 끌지 않는다.
 - 클로저도 매번 다르게. 최근 글과 장면·인물·문장 구조가 겹치면 안 된다.
+- 훅은 '넣을 이유'만 말한다. 장벽(전형 단계·스펙·학력 하한)을 드러내는 순간 스크롤이 넘어간다.
+- 모두에게 열린 말로 쓴다. 조건도 언어도 — 특정 학력 집단을 지목하지 않고, 업계를 모르는 사람도 한 번에 알아듣게.
 
 [포맷]
 - 훅: 최대 2줄, 줄당 26자 이내. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말 절대 넣지 않음.
@@ -345,7 +398,7 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 - 클로저: 1줄. 과장 OK. 인물형이면 훅과 스토리 연결.
 - 반말 구어체. 링크·해시태그 금지. 훅 앞 이모지 외 이모지 금지.
 
-[제외 패턴 15종 — 절대 사용 금지]
+[제외 패턴 22종 — 절대 사용 금지]
 1. 질문유도형 ("~인지 알아?")
 2. 일상 스토리형 ("전화/신고했더니 공기업이었음")
 3. 생활 연결형 ("~할 때 신고하는 곳 → 그 기관이 사람 뽑음", "알고 보니 이 공단이")
@@ -361,6 +414,16 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 13. 절차 디테일형 (등기우편 접수, 수입인지 5천원)
 14. 데이터 빈칸 소재형 ("학력 조건 칸이 '공고 참조'라고만 써있음", "조건란에 아무것도 없음")
 15. 숫자 포장형 정보 ("우리나라 전기 10개 중 1개 만드는 공기업이")
+16. 학력 하한 지목형 ("전문학사도 지원 가능이었음", "4년제 아니어도", "대졸 공채는 못 넣는 줄 알았는데")
+    — 특정 학력을 지목하면 대상자는 불편하고 나머지는 남 얘기. 학력은 '학력무관'처럼 모두에게 열릴 때만 훅 소재
+17. 장벽 소재형 — 전형 단계 수("전형이 무려 6단계"), 면접 횟수, 인적성·코딩테스트·AI면접, 어학 점수(토익·오픽 — 높든 낮든),
+    학점을 훅·클로저 소재로 쓰지 않는다
+18. 부정 종결 훅 ("이력서 칸마다 조건 안 맞아서 / 못 넣은 공고만 쌓여있었음") — 훅이 실패·포기 상태로 끝나면 안 된다.
+    포기→역전은 역전까지 2줄 안에 보여준다
+19. 전문 용어·약어·내부자 소재 ("코테", "과테", "스택", "백준 300문제", "MD", "PJT") — 업계를 모르는 사람도 한 번에 알아듣는 말만
+20. 비현실적 오해 ("차에 컴퓨터가 왜 있냐") — 요즘 기준으로 말이 안 되는 반응은 웃기지 않고 어색하다
+21. 근거 없는 포기 방지 ("~포기했으면 다시 봐"인데 리스트에 포기를 뒤집을 팩트가 없음)
+22. 꼬인 문장 ("옷 좋아하는 거 말고 내세울 게 없어서 / 패션 회사 포기했으면 다시 봐") — 조건이 겹겹이라 한 번에 안 읽힘
 
 [인물 대화형 — 쓸 거면 이 수준만]
 기관 업무를 일상 한 마디로 재정의했을 때 생기는 "진짜 오해 + 리얼한 부정 반응 → 역전".
@@ -368,7 +431,7 @@ OK: "나 돈 찍는 데 취직한다" → "사기치지 말라고" (조폐공사
 NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지 말장난, 무시하다 연봉 듣고 태도 바뀜.
 
 [검증된 베스트]
-(담백 — 1인칭 감정 하나, 조회 15만)
+(담백 — 1인칭 감정 하나, 조회 31만)
 📍어차피 안 되겠지 싶어서 그냥 넣어봤는데
 서류 붙고 조건 다시 보니까 나도 되는 자리였음
 1. '한국도로공사' 안전순찰원 43명 채용
@@ -394,6 +457,13 @@ NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지
 5. 접수 9월 29일 마감
 자소서 없는 235명 공채는 다음에 없음
 
+[실패 사례 — 이렇게 쓰면 안 됨]
+(조회 186) 📍대졸 공채는 못 넣는 줄 알았는데 / 전문학사도 지원 가능이었음 → 학력 하한 지목 (16)
+(망함) 📍서류만 통과하면 끝인 줄 알았는데 / 전형이 무려 6단계였음 → 장벽을 훅으로 드러냄 (17)
+(조회 810) 📍이력서 칸마다 조건 안 맞아서 / 못 넣은 공고만 쌓여있었음 → 실패 상태로 끝남 (18)
+   같은 기관 '어차피 안 되겠지 싶어서 그냥 넣어봤는데 / 서류 붙고 조건 다시 보니까 나도 되는 자리였음'은 31만
+(어색) 📍대기업 공채는 토익 만점자만 / 붙는 줄 알고 그냥 포기했었음 → 어학 점수 소재 + 체감상 대기업 아닌 곳을 '대기업'이라 부름
+
 [팩트 규칙]
 - 고용형태가 여러 개면 데이터 그대로 반영.
 - 연봉은 [공고 데이터]/[본문 발췌]에 있는 '직원 평균 연봉'·'공고 제시 연봉'만. 신입 초봉은 쓰지 않는다.
@@ -405,6 +475,11 @@ NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지
 - 민간 기업 공고([공고 데이터]에 '기업구분'이 있음)는 공기업이 아니다: '공기업', '정년 보장', '블라인드' 표현 금지.
   '대기업'이라는 말은 기업구분이 '민간 대기업'일 때만 쓴다. 중견기업을 대기업처럼 쓰지 않는다.
   인원 대신 모집분야·전형 단계·근무지·평균연봉(있을 때)으로 리스트를 채운다.
+  단, 전형 단계·학력 하한·어학 기준은 리스트에만 둘 수 있고 훅·클로저 소재로는 쓰지 않는다.
+  '대기업'은 누구나 이름을 아는 그룹사(삼성·현대·SK·LG·롯데·신세계·한화·LS·CJ 등) 계열일 때만 훅에 쓴다.
+  그 외에는 '증권사', '패션 회사'처럼 업종으로 부른다. 그룹 계열이면 리스트 2번쯤에 'OO그룹 계열사'를 적어준다.
+  민간 공고 훅의 무기: 브랜드 인지도, 평균 연봉, 하는 일(쉬운 말로), 열린 직무, 입사 시기·근무지.
+- 민간 공고 학력은 [본문 발췌]의 '지원 자격 상세' 문장 기준으로 쓴다 (예: "학사 이상, 2027년 2월 졸업예정자 지원 가능").
 
 [고정 클로저 금지]
 "세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음", "넘기려다 공고 열어본 사람이 붙는 거임",
@@ -432,11 +507,25 @@ JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이
 - type이 funny인데 funny가 7점 미만이면 total에서 15점을 뺀다 (어설프게 웃긴 글은 담백한 글보다 나쁘다).
 - 제외 패턴은 **훅과 클로저에만** 적용한다. 훅·클로저에 점심시간 동료, vs 비교, 데이터 빈칸, 숫자 포장("10개 중 1개"류),
   절차 디테일(등기우편·수입인지처럼 접수 절차를 소재로 삼음), 대학 보냈냐 무시형이 보이면 total 0.
+- [2026-10-06] 훅·클로저가 아래에 해당해도 total 0:
+  학력 하한 지목(전문학사·4년제 아니어도), 장벽 소재(전형 단계 수·면접 횟수·인적성·코딩테스트·어학 점수·학점),
+  실패·포기 상태로 끝나는 훅(2줄 안에 반전 없음), 전문 용어·약어(코테·스택·MD 등), 요즘 기준 비현실적인 오해,
+  리스트에 근거 없는 '다시 봐', 한 번에 안 읽히는 꼬인 문장, 체감상 대기업이 아닌 곳을 '대기업'이라 부름.
+- relate는 '업계를 모르는 취준생도 한 번에 알아듣고 자기 얘기로 느끼나' 기준. 특정 집단만 대상으로 좁히면 감점.
 - 리스트 5개는 팩트 칸이다. 리스트에 전형 단계·연봉·인원·마감일 같은 숫자와 절차 정보가 있는 건 정상이며 감점하지 않는다.
 - total = relate + curious + fresh (+ funny, funny 타입만) 에서 규칙 적용.
 
 설명 없이 JSON만: {"scores": [{"i": 0, "relate": 0, "curious": 0, "fresh": 0, "funny": null, "total": 0, "why": "한 줄"}], "best": 0}
 """
+
+
+def edu_for_prompt(job):
+    """[2026-10-06] 민간 공고 학력 값은 수집 오류(빈 값·석사/박사만)가 있어 본문 기준으로 쓰게 안내"""
+    v = job.get("acbgCondNmLst") or ""
+    edu = [e.strip() for e in v.split(",") if e.strip()]
+    if is_private(job) and (not edu or all(e in ("석사", "박사") for e in edu)):
+        return "본문 발췌 '지원 자격 상세' 문장 기준으로 작성 (데이터 값 오류 가능)"
+    return v
 
 
 def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
@@ -447,7 +536,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         "고용형태": job.get("hireTypeNmLst"),
         "신입/경력": job.get("recrutSeNm"),
         "모집인원": job.get("recrutNope"),
-        "학력조건": job.get("acbgCondNmLst"),
+        "학력조건": edu_for_prompt(job),
         "근무지역": job.get("workRgnNmLst"),
         ("모집분야" if is_private(job) else "직무분야(NCS)"): job.get("ncsCdNmLst"),
         "마감일": f"{end.month}월 {end.day}일",
@@ -477,6 +566,14 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     else:
         lines.append("- 인물(부모님·여자친구·동료) 등장 금지 — 이 유형은 비인물형임")
         lines.append("- '했더니', '보여줬음', '하길래' 같은 대화체 구조 사용 금지")
+
+    # [2026-10-06] 민간 공고·열린 조건 여부에 따른 추가 지시
+    if is_private(job):
+        lines.append("- 민간 기업 공고: 훅 무기는 브랜드·평균연봉·하는 일(쉬운 말)·열린 직무·입사 시기. "
+                     "전형 단계·학력 하한·어학 기준은 훅·클로저에 쓰지 말 것")
+        lines.append("- '대기업'은 누구나 아는 그룹사 계열일 때만. 아니면 업종(증권사·패션 회사 등)으로 부를 것")
+    if not has_open_fact(job, post_text):
+        lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
 
     lines += [
         "",
@@ -538,7 +635,12 @@ BANNED_HOOK = [
     (r"대학\s*보냈", "'대학 보냈냐' 무시형"), (r"공고\s*참조|조건\s*칸|조건란|칸이\s*비|아무것도\s*없", "데이터 빈칸 소재"),
     (r"\d+\s*개\s*중\s*\d+\s*개", "숫자 포장형"), (r"등기|수입인지|우체국", "절차 디테일"),
     (r"잔소리", "잔소리 농담형"), (r"인지\s*알아\?", "질문유도형"),
+    # [2026-10-06] 민간 후킹 테스트에서 나온 제외 패턴 (훅·클로저 둘 다 검사)
+    (r"전문학사|전문대|2~3년제|4년제\s*아니|대졸\s*공채는", "학력 하한 지목"),
+    (r"\d+\s*단계|인적성|코테|코딩\s*테스트|과제\s*테스트|AI\s*(면접|역량)|토익|오픽|어학\s*(성적|점수)|학점", "장벽 소재"),
+    (r"(?<![A-Za-z])MD(?![A-Za-z])|스택|백준|PJT|과테", "전문 용어·약어"),
 ]
+CLOSER_CHECKED = ("데이터 빈칸 소재", "비교형(vs)", "학력 하한 지목", "장벽 소재", "전문 용어·약어")
 BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음",
                   "넘기려다 공고 열어본 사람이 붙는 거임", "말하고 싶으면 일단 넣어야 됨",
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
@@ -572,7 +674,7 @@ def validate_candidate(d: dict, inst: str = ""):
     if re.search(r"(그곳|그 곳|하는 곳|하던 곳|던 그|알고 보니|알고보니|이 공단이|이 기관이|이 공사가|이 재단이|거기였음|곳이었음|거였음)", hook):
         return None, "생활 연결형"
     for pat, name in BANNED_HOOK:
-        if re.search(pat, hook) or (name in ("데이터 빈칸 소재", "비교형(vs)") and re.search(pat, closer)):
+        if re.search(pat, hook) or (name in CLOSER_CHECKED and re.search(pat, closer)):
             return None, f"제외 패턴: {name}"
     if d.get("cat") != "person" and re.search(r"(했더니|하길래|보여줬|보여드렸|말했더니)", hook):
         return None, "비인물형인데 인물 대화체"
@@ -1311,21 +1413,34 @@ def main():
     if not DRY_RUN and too_soon(state, "시작 전"):   # 생성 비용도 아끼려고 먼저 확인
         return
 
-    job, tier, n_cands = pick_job(jobs, posts, state, today)
+    # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
+    excluded = set()
+    job, post, post_text = None, None, ""
+    for _ in range(6):
+        job, tier, n_cands = pick_job(jobs, posts, state, today, excluded)
+        if not job:
+            break
+        post = posts.get(str(job["recrutPblntSn"]))
+        post_text = fetch_post_text(post) if post else ""
+        if is_private(job) and not private_edu_ok(post_text):
+            print(f"[제외] 민간 공고 학력 확인 불가(본문 없음·석사/박사 전용): {job['instNm']} / {job['recrutPbancTtl']}")
+            excluded.add(str(job["recrutPblntSn"]))
+            job = None
+            continue
+        break
     if not job:
-        print("진행 중인 공고 자체가 없음 — 이번 회차는 건너뜀")
-        summary("### ⏭️ 건너뜀\n진행 중인 공고 없음")
+        print("발행할 공고 없음 — 이번 회차는 건너뜀")
+        summary("### ⏭️ 건너뜀\n진행 중인 공고 없음 (또는 학력 확인 불가)")
         return
     tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 재발행"}[tier]
 
     inst = norm_inst(job["instNm"])
     d_left = dday(job["pbancEndYmd"], today)
-    post = posts.get(str(job["recrutPblntSn"]))
-    combo_idx, combo = pick_combo(state, d_left)
+    open_fact = has_open_fact(job, post_text)
+    combo_idx, combo = pick_combo(state, d_left, open_fact)
     print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")
-    print(f"조합: {combo['cat']} / {combo['person']} / {combo['structure']}")
+    print(f"조합: {combo['cat']} / {combo['person']} / {combo['structure']}" + ("" if open_fact else " (열린 조건 없음 → 포기 방지형 제외)"))
 
-    post_text = fetch_post_text(post) if post else ""
     same_job = [p for p in state["posts"] if str(p["id"]) == str(job["recrutPblntSn"])]
     hook_src = state["posts"][-10:] + [p for p in same_job if p not in state["posts"][-10:]]
     recent_hooks = [p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else "")
