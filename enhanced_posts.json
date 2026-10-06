@@ -3079,5 +3079,143 @@
     "callout": null
    }
   }
+ },
+ "305552": {
+  "at": "2026-10-07 03:35",
+  "url": "https://hiring03.ddolbestory.com/2026/09/kowepo-305552.html",
+  "source": "붙임 1-1. 2026년도 하반기 4직급 대졸수준 신입사원 모집공고문.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반전형 75명, 보훈전형 13명, 장애전형 5명을 뽑아요.",
+    "columns": [
+     "사무",
+     "기계",
+     "전기",
+     "화학",
+     "ICT",
+     "토목"
+    ],
+    "rows": [
+     {
+      "label": "일반",
+      "values": [
+       2,
+       30,
+       30,
+       11,
+       null,
+       2
+      ]
+     },
+     {
+      "label": "보훈",
+      "values": [
+       3,
+       3,
+       3,
+       3,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "장애",
+      "values": [
+       1,
+       2,
+       2,
+       null,
+       null,
+       null
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 중",
+     "desc": "외국어성적+자격증가점+입사지원서(자기소개서) 평가",
+     "note": "30배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 말"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 14일(토)",
+     "desc": "직무지식평가+직업기초능력평가+인성검사(적부)",
+     "note": "2~3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 중"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 역량구조화면접",
+     "date": "11월 24일~26일",
+     "desc": "개별인터뷰(인성면접)+직무상황면접(그룹면접)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접 합격자 발표",
+     "date": "11월 말"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 말",
+     "desc": "신체검사·신원조회 후 12월 14일(월) 입사"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (일반전형)",
+    "text": "토익 700점 이상(TOEIC, New TEPS, TOEFL(iBT), TOEIC-S, TEPS-S, OPIc 환산 인정)이고, 보훈·장애전형은 어학 제한이 없어요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 직무지식평가(60문항)+직업기초능력평가(45문항+AI 5문항)+인성검사로 봐요. 총 110문항이에요.",
+    "highlight": "110문항",
+    "subjects": [
+     {
+      "name": "직무지식평가",
+      "count": "60문항",
+      "scope": "직군별 전공지식 50문항, 한국사 10문항",
+      "note": "2~3배수 선발",
+      "ncs": false
+     },
+     {
+      "name": "직업기초능력평가",
+      "count": "45문항+AI 5문항",
+      "scope": "의사소통, 수리, 문제해결, 기술, 자원관리(NCS 5개 항목)",
+      "note": "AI 이해·활용능력 5문항 포함",
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": "적·부(20분)",
+      "scope": "필요역량, 성격유형, 부적응성검사, 응답신뢰도 등",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
