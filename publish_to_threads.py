@@ -33,6 +33,11 @@
                   민간 공고 학력은 본문 '지원 자격 상세' 기준 (공채속보 학력 값 오류 대응, 확인 안 되면 건너뜀)
                   특가 '포기 방지'는 학력무관 같은 열린 조건이 있는 공고에서만 / '대기업'은 누구나 아는 그룹사만
                   코드 검사에 학력 하한·장벽·전문 용어 정규식 추가 (훅+클로저) / 실패 사례를 프롬프트에 예시로
+[2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
+                  (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
+                  같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
+                  민간 전용 후킹 유형 — 구체 혜택(근무지 선택·졸업예정자·열린 직무)·연봉 놀람 위주,
+                  민간에선 다짐·늦게 안 손해·긴급·숫자만 던지기 유형 제외 (조회수 데이터 기준)
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -182,20 +187,62 @@ def job_key(j: dict) -> str:
     return norm_key(norm_inst(j.get("instNm"))) + "|" + norm_key(j.get("recrutPbancTtl"))
 
 
+# [2026-10-07] 그룹 단위 중복 방지 — 계열사가 연달아 나가지 않게 (앞글자 일치)
+GROUPS = {
+    "한화": ["한화"], "효성": ["에이치에스효성", "효성"], "신세계": ["신세계", "이마트", "스타벅스"],
+    "LS": ["엘에스", "LS"], "SK": ["에스케이", "SK"], "현대차": ["현대", "기아"], "삼성": ["삼성"],
+    "LG": ["엘지", "LG"], "CJ": ["씨제이", "CJ"], "롯데": ["롯데"], "GS": ["지에스", "GS"],
+    "두산": ["두산"], "포스코": ["포스코"], "HD": ["에이치디", "HD"], "KT": ["케이티", "KT"],
+    "농협": ["농협", "엔에이치", "NH"], "호반": ["호반"], "DB": ["디비", "DB"], "하나": ["하나"],
+    "신한": ["신한"], "KB": ["케이비", "KB"], "코오롱": ["코오롱"], "대한전선": ["대한전선"],
+}
+NOT_GROUP = ("엔에이치엔", "엘에스이")          # 이름만 비슷한 비계열사
+PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
+
+
+def group_key(name: str) -> str:
+    n = norm_key(norm_inst(name))
+    if not n.startswith(NOT_GROUP):
+        for g, prefixes in GROUPS.items():
+            if any(n.startswith(px) for px in prefixes):
+                return "G:" + g
+    return n
+
+
+def is_private_id(pid) -> bool:
+    return str(pid).startswith("WK-")
+
+
+def want_private_now(history) -> bool:
+    """[2026-10-07] 최근 10건 중 민간이 목표 비율보다 적고, 직전 글이 민간이 아니면 이번엔 민간"""
+    recent = history[-10:]
+    if recent and is_private_id(recent[-1]["id"]):
+        return False
+    priv = sum(1 for p in recent if is_private_id(p["id"]))
+    return priv < round(10 * PRIVATE_RATIO)
+
+
 def pick_job(jobs, posts, state, today, exclude=None):
     history = state["posts"]
     used_ids = {str(p["id"]) for p in history}
     used_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
-    recent_insts = {norm_key(norm_inst(p["instNm"])) for p in history[-6:]}
+    recent_insts = {group_key(p["instNm"]) for p in history[-6:]}   # [2026-10-07] 그룹 단위
+    want_priv = want_private_now(history)
+    print(f"이번 회차: {'민간' if want_priv else '공공'} 차례 (최근 10건 중 민간 "
+          f"{sum(1 for p in history[-10:] if is_private_id(p['id']))}건, 목표 {int(PRIVATE_RATIO*100)}%)")
+
+    def side(cands):
+        """정한 쪽(공공/민간) 후보만 — 그쪽이 비면 반대쪽으로"""
+        return [j for j in cands if is_private(j) == want_priv] or cands
 
     exclude = exclude or set()
     live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
     new = [j for j in live if str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys]
-    tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
-    tier2 = [j for j in new if str(j["recrutPblntSn"]) not in posts]
+    tier1 = side([j for j in new if str(j["recrutPblntSn"]) in posts])
+    tier2 = side([j for j in new if str(j["recrutPblntSn"]) not in posts])
 
     def choose(cands):
-        fresh = [j for j in cands if norm_key(norm_inst(j["instNm"])) not in recent_insts] or cands
+        fresh = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
         fresh.sort(key=lambda j: score(j, today), reverse=True)
         top = fresh[:5]
         return random.choices(top, weights=[max(score(j, today), 1) for j in top], k=1)[0]
@@ -206,7 +253,7 @@ def pick_job(jobs, posts, state, today, exclude=None):
         return choose(tier2), 2, len(tier2)
 
     recent_ids = {str(p["id"]) for p in history[-12:]}
-    repeat = [j for j in live if str(j["recrutPblntSn"]) not in recent_ids] or live
+    repeat = side([j for j in live if str(j["recrutPblntSn"]) not in recent_ids] or live)
     if not repeat:
         return None, 0, 0
 
@@ -223,7 +270,7 @@ def pick_job(jobs, posts, state, today, exclude=None):
         last_at(j),
         -score(j, today),
     ))
-    fresh = [j for j in repeat if norm_key(norm_inst(j["instNm"])) not in recent_insts] or repeat
+    fresh = [j for j in repeat if group_key(j["instNm"]) not in recent_insts] or repeat
     return fresh[0], 3, len(repeat)
 
 
@@ -316,20 +363,20 @@ COMBOS = [
              "브랜드·연봉 같은 매력이어야 하고, '전문학사도 됨'처럼 특정 학력 허용을 근거로 쓰지 않는다"},
     {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다", "emoji": "📍",
      "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음. 감정 하나로 담백하게 ('합격하면 그때 말하려고'는 고정 클로저라 금지)"},
-    {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍",
+    {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍", "no_private": True,
      "desc": "이번엔 진짜 넣는다 / ○○ 포기하고 이거 하나만 파기로 했음 — 취준생 누구나 하는 결심"},
-    {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍",
+    {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍", "no_private": True,
      "desc": "이 공고 마감 직전에 알았으면 진짜 억울할 뻔 / 작년에 이거 몰라서 못 넣었음"},
     # 팩트 충격형 20% — 숫자를 포장하지 말고 그대로 세게
-    {"cat": "fact", "person": "—", "structure": "숫자·규모 충격", "emoji": "📍",
+    {"cat": "fact", "person": "—", "structure": "숫자·규모 충격", "emoji": "📍", "no_private": True,
      "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지. "
              "민간이면 평균연봉·브랜드로"},
     {"cat": "fact", "person": "—", "structure": "조건 나열", "emoji": "📍",
      "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음. 넣을 이유만 나열하고 학력 하한·어학·전형 단계는 나열 금지"},
     # 긴급형 15%
-    {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️",
+    {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️", "no_private": True,
      "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰"},
-    {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️",
+    {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️", "no_private": True,
      "desc": "D-N이라 이번 주 안에 넣어야 됨 / 이번 주 지나면 끝"},
     # 특가스나이퍼형 15% — 비교(vs) 금지, 읽는 사람 상황을 바로 저격
     {"cat": "sniper", "person": "—", "structure": "포기 방지", "emoji": "📍", "need_open": True,
@@ -342,11 +389,21 @@ COMBOS = [
              "특정 학력 집단(전문대생 등)을 지목하지 말 것"},
 ]
 
+# [2026-10-07] 민간 전용 — 민간 자동발행 조회수 상위 훅 계열 (근무지 선택 8.7천 / 연봉 놀람 2.8천 / 졸업 전 지원 2.4천)
+COMBOS += [
+    {"cat": "fact", "person": "—", "structure": "구체 혜택(민간)", "emoji": "📍", "private_only": True,
+     "desc": "읽는 사람이 바로 '나도 해당'을 느끼는 조건 하나 — 근무지를 골라 갈 수 있음 / 졸업 전에도 지원됨 / "
+             "생각 못 한 사무직 자리도 있음 / 입사 시기 선택 등. 예: '서울·부산·청주 중 / 골라 갈 수 있는 신입 자리임'"},
+    {"cat": "monologue", "person": "본인", "structure": "연봉 놀람(민간)", "emoji": "📍", "private_only": True,
+     "desc": "평균연봉을 숫자만 던지지 말고 놀란 감정을 붙임 — 예: '자소서 쓰다가 연봉표 보고 / 진짜인가 싶어서 다시 확인함'. "
+             "평균연봉 데이터가 있을 때만"},
+]
+
 # 유형별 가중치 (비중 반영) — sniper는 조합이 3개라 10으로 맞춤 (전체 비중 유지)
 CAT_WEIGHTS = {"person": 15, "monologue": 35, "fact": 20, "urgent": 15, "sniper": 10}
 
 
-def pick_combo(state, d_left: int, open_fact: bool = True):
+def pick_combo(state, d_left: int, open_fact: bool = True, private: bool = False):
     recent = state["posts"][-10:]
     recent_idxs = {p.get("combo_idx") for p in recent if p.get("combo_idx") is not None}
     recent_cats = [p.get("combo_cat") for p in recent[-2:] if p.get("combo_cat")]
@@ -364,15 +421,20 @@ def pick_combo(state, d_left: int, open_fact: bool = True):
             continue
         if c.get("need_open") and not open_fact:    # [2026-10-06] 근거 없는 포기 방지 금지
             continue
+        if private and c.get("no_private"):         # [2026-10-07] 민간에서 안 먹히는 유형
+            continue
+        if not private and c.get("private_only"):
+            continue
         pool.append(i)
 
     if not pool:
-        pool = [i for i in range(len(COMBOS)) if open_fact or not COMBOS[i].get("need_open")]
+        pool = [i for i in range(len(COMBOS)) if (open_fact or not COMBOS[i].get("need_open"))
+                and not (private and COMBOS[i].get("no_private")) and not (not private and COMBOS[i].get("private_only"))]
         if force_nonperson:
             pool = [i for i in pool if COMBOS[i]["cat"] != "person"] or pool
 
     # 가중 랜덤 — 유형별 비중 반영
-    weights = [CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) for i in pool]
+    weights = [CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) * (3 if COMBOS[i].get("private_only") else 1) for i in pool]
     idx = random.choices(pool, weights=weights, k=1)[0]
     return idx, COMBOS[idx]
 
@@ -572,6 +634,8 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         lines.append("- 민간 기업 공고: 훅 무기는 브랜드·평균연봉·하는 일(쉬운 말)·열린 직무·입사 시기. "
                      "전형 단계·학력 하한·어학 기준은 훅·클로저에 쓰지 말 것")
         lines.append("- '대기업'은 누구나 아는 그룹사 계열일 때만. 아니면 업종(증권사·패션 회사 등)으로 부를 것")
+        lines.append("- 민간 훅은 '내가 얻는 구체적 혜택'이 있어야 클릭이 나옴 (근무지 선택·졸업 전 지원·열린 직무·연봉 놀람). "
+                     "다짐·후회·마감 경고 같은 감정만 있는 훅, 평균연봉 숫자만 던지는 훅, 특정 전공자만 해당되는 훅은 쓰지 말 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
 
@@ -1437,7 +1501,7 @@ def main():
     inst = norm_inst(job["instNm"])
     d_left = dday(job["pbancEndYmd"], today)
     open_fact = has_open_fact(job, post_text)
-    combo_idx, combo = pick_combo(state, d_left, open_fact)
+    combo_idx, combo = pick_combo(state, d_left, open_fact, is_private(job))
     print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")
     print(f"조합: {combo['cat']} / {combo['person']} / {combo['structure']}" + ("" if open_fact else " (열린 조건 없음 → 포기 방지형 제외)"))
 

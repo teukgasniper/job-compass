@@ -28,6 +28,11 @@
                   상세 응답 전체 글(지원자격 문장 포함)에서 최소 학력을 다시 읽어 더 낮은 쪽으로 저장
                   (예: 이마트 '' → 대졸(4), 현대오토에버 '석사' → 대졸(4))
                   학력이 비었거나 석사·박사만인 캐시는 24시간 안 지났어도 다시 조회
+[2026-10-06 수정] 협동조합(농협·수협·신협·산림조합·새마을금고) 공고가 '중앙회'·'협회' 단어 때문에 공공으로 빠지던 문제
+                  → 협동조합은 잡알리오·클린아이·나라일터 어디에도 없으므로 공채속보에서 살림 (지역농협 867명 등)
+                  공공으로 제외된 공고 이름을 로그에 남겨 다음에 놓친 공고를 바로 찾을 수 있게
+[2026-10-07 수정] 나라일터 기관 제외 목록에서 '우체국' 삭제 — 우체국 공무직 공채 수집 (기간제·단기 등은 제목 필터로 계속 제외)
+                  교도소·구치소·교정청·소년원·분류심사원·보호관찰소는 제목에 '공무직'이 있으면 수집 (교정직·보호직 공무원 채용은 계속 제외)
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -87,11 +92,11 @@ GOJOBS_INST_EXCLUDE = [
     "경찰청", "경찰서", "기동단", "경찰학교",
     "소방청", "소방서", "119구조",
     "검찰청", "지방법원", "고등법원", "가정법원", "대법원",
-    "교도소", "구치소", "교정청",
     "초등학교", "중학교", "고등학교", "유치원",
-    "우체국",
-    "소년원", "분류심사원", "보호관찰소",
+    # "우체국" — [2026-10-07] 제외 해제: 우체국 공무직(우정실무원) 공채는 쓰레드 반응이 좋아 수집
 ]
+# [2026-10-07] 직렬 공무원(교정직·보호직)은 따로 시험이라 제외하되, 같은 기관의 '공무직' 채용은 일반 취준생도 지원 가능 → 살림
+GOJOBS_INST_SOFT_EXCLUDE = ["교도소", "구치소", "교정청", "소년원", "분류심사원", "보호관찰소"]
 
 GOJOBS_TITLE_EXCLUDE = [
     "한시인력", "기간제",
@@ -154,6 +159,8 @@ def is_gojobs_excluded(x):
     inst = x.get("insttname") or x.get("instNm") or ""
     title = x.get("title") or x.get("recrutPbancTtl") or ""
     if any(k in inst for k in GOJOBS_INST_EXCLUDE):
+        return True
+    if any(k in inst for k in GOJOBS_INST_SOFT_EXCLUDE) and "공무직" not in title:
         return True
     if any(k in title for k in GOJOBS_TITLE_EXCLUDE):
         return True
@@ -635,6 +642,9 @@ NOT_BIG = ["엔에이치엔", "엘에스이"]
 # 공공 성격 (잡알리오·클린아이·나라일터가 담당) → 공채속보에서는 제외
 PUBLIC_WORDS = ["공사", "공단", "재단", "진흥원", "연구원", "관리원", "평가원", "인재원",
                 "공제회", "중앙회", "협회", "지원협회", "교육원", "위원회"]
+# [2026-10-06] 협동조합 — 이름에 '중앙회'가 있어도 공공기관이 아님 (다른 3개 출처에 없음) → 공채속보에서 수집
+COOP_WORDS = ["농협", "농업협동조합", "축협", "엔에이치", "NH", "수협", "수산업협동조합",
+              "신협", "신용협동조합", "산림조합", "새마을금고"]
 GONGCHAE_TITLE_EXCLUDE = ["체험형", "합격자", "취소", "연기", "정정", "대체인력", "단기", "아르바이트"]
 
 
@@ -646,6 +656,10 @@ def gongchae_biz_type(x):
         return "공공"
     if cls == "대기업":
         return "대기업"
+    if any(name.startswith(n) for n in NOT_BIG):      # 엔에이치엔(NHN)이 협동조합으로 잡히지 않게 먼저 거름
+        return "중견기업"
+    if any(w in name for w in COOP_WORDS):            # [2026-10-06] 협동조합은 공공 판정 전에 먼저 살림
+        return "대기업" if any(w in name for w in ("농협", "엔에이치", "NH", "농업협동조합")) else "중견기업"
     if any(w in name for w in PUBLIC_WORDS):
         return "공공"
     # 그룹명으로 시작하지만 그룹 계열이 아닌 회사 (NHN ≠ NH농협, 엘에스이 ≠ LS그룹) — 오탐 발견 시 여기에 추가
@@ -776,7 +790,7 @@ def collect_gongchae():
     print(f"[공채속보] 목록 수집: {len(raw)}건")
 
     n = {"마감": 0, "고용형태": 0, "제목": 0, "공공": 0, "의사·임원": 0}
-    kept = []
+    kept, public_names = [], []
     for x in raw:
         title = x.get("empWantedTitle", "")
         if (x.get("empWantedEndt") or "") < today_str:
@@ -789,7 +803,9 @@ def collect_gongchae():
             n["의사·임원"] += 1; continue
         biz = gongchae_biz_type(x)
         if biz == "공공":
-            n["공공"] += 1; continue
+            n["공공"] += 1
+            public_names.append(f"{x.get('empBusiNm', '')} | {title[:30]}")
+            continue
         x["_biz"] = biz
         kept.append(x)
 
@@ -864,6 +880,10 @@ def collect_gongchae():
     big = sum(1 for x in out if x["bizType"] == "대기업")
     print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big}) · 상세조회 {detail_cnt}회 + 재사용 {reuse_cnt}건 · {int(time.time()-t0)}초")
     print(f"  제외 — " + " / ".join(f"{k}: {v}" for k, v in n.items()))
+    if public_names:                                  # [2026-10-06] 놓친 공고 확인용
+        print(f"  공공으로 제외된 공고 (최대 20건):")
+        for nm in public_names[:20]:
+            print(f"    - {nm}")
     return out
 
 # ─────────────────────────────────────────────────────────────
