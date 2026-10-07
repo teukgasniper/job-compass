@@ -3340,5 +3340,90 @@
     "callout": null
    }
   }
+ },
+ "305547": {
+  "at": "2026-10-08 08:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305547.html",
+  "source": "1. (채용공고문) 2026년 하반기 채용형 청년인턴 채용 공고(2026-06호).pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기술분야에서 일반 23명, 지역인재(울산·경남) 10명을 뽑아요.",
+    "columns": [
+     "일반",
+     "지역인재(울산·경남)"
+    ],
+    "rows": [
+     {
+      "label": "기술분야",
+      "values": [
+       23,
+       10
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격 충족 여부 및 자기소개서 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 21일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 31일(토)",
+     "desc": "인성검사(적·부)+NCS직업기초능력평가(40문항)",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 5일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 11일~12일",
+     "desc": "집단면접, 직업관·전문성 등 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 18일(수)",
+     "desc": "임용예정일 11월 30일(월)",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사(적·부)와 NCS직업기초능력평가로 봐요. 총 40문항, 100점 만점이에요.",
+    "highlight": "40문항",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력평가",
+      "count": "40문항",
+      "scope": "의사소통능력, 수리능력, 문제해결능력, 대인관계능력, 기술능력(승강기), 직업윤리",
+      "note": "60점 이상 합격",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
