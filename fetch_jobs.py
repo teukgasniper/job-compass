@@ -33,6 +33,7 @@
                   공공으로 제외된 공고 이름을 로그에 남겨 다음에 놓친 공고를 바로 찾을 수 있게
 [2026-10-07 수정] 나라일터 기관 제외 목록에서 '우체국' 삭제 — 우체국 공무직 공채 수집 (기간제·단기 등은 제목 필터로 계속 제외)
                   교도소·구치소·교정청·소년원·분류심사원·보호관찰소는 제목에 '공무직'이 있으면 수집 (교정직·보호직 공무원 채용은 계속 제외)
+[2026-10-07 수정] 공채속보 — 대기업 그룹 계열사는 이름에 '연구원·재단' 등이 있어도 공공으로 빼지 않음 (현대경제연구원 누락 문제)
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -660,6 +661,9 @@ def gongchae_biz_type(x):
         return "중견기업"
     if any(w in name for w in COOP_WORDS):            # [2026-10-06] 협동조합은 공공 판정 전에 먼저 살림
         return "대기업" if any(w in name for w in ("농협", "엔에이치", "NH", "농업협동조합")) else "중견기업"
+    # [2026-10-07] 그룹 계열사는 이름에 '연구원·재단' 등이 있어도 민간 (현대경제연구원, 삼성복지재단 등)
+    if any(name.startswith(g) for g in BIG_GROUPS):
+        return "대기업"
     if any(w in name for w in PUBLIC_WORDS):
         return "공공"
     # 그룹명으로 시작하지만 그룹 계열이 아닌 회사 (NHN ≠ NH농협, 엘에스이 ≠ LS그룹) — 오탐 발견 시 여기에 추가
