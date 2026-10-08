@@ -3425,5 +3425,235 @@
     "callout": null
    }
   }
+ },
+ "CE-79993": {
+  "at": "2026-10-08 15:36",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-ce-79993.html",
+  "source": "(공고문) 2026년 하반기 사무기술직 신입사원 직무중심 채용공고.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "사무직 10명(경영지원/사업관리 7, 전산 3), 기술직 19명(토목 6, 건축 8, 기계 1, 전기 1, 조경 2, 환경 1)을 뽑아요.",
+    "columns": [
+     "경영지원/사업관리",
+     "전산",
+     "토목",
+     "건축",
+     "기계",
+     "전기",
+     "조경",
+     "환경"
+    ],
+    "rows": [
+     {
+      "label": "6급 신입",
+      "values": [
+       7,
+       3,
+       6,
+       8,
+       1,
+       1,
+       2,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서(70점)+직무수행계획서(30점) 평가에 가산점 합산",
+     "note": "30배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 7일(토)",
+     "desc": "전공과목(50문항)+직업기초능력평가(50문항)+인성검사",
+     "note": "3배수 선발(4명 이하 5배수)"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 23일~25일",
+     "desc": "직무수행능력면접(PT·그룹토론)+인성면접",
+     "note": "2배수 선발(1명 직무 3배수)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 1일(화)",
+     "desc": "신원조회 결과 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (기술직)",
+    "text": "기술직은 토익 700점, TEPS 264점, 토플 79점 이상이면 돼요. 사무직은 토익 800점 등 더 높은 기준이 적용돼요.",
+    "highlight": "700점"
+   },
+   "written": {
+    "summary": "필기는 전공과목(50문항) + 직업기초능력평가(NCS, 50문항) + 인성검사(300문항 내외)로 봐요.",
+    "highlight": "100문항",
+    "subjects": [
+     {
+      "name": "전공과목",
+      "count": "50문항",
+      "scope": "직무별 전공분야 중 택1",
+      "note": "과목 간 난이도 조정점수 적용",
+      "ncs": false
+     },
+     {
+      "name": "직업기초능력평가",
+      "count": "50문항",
+      "scope": "의사소통, 수리, 문제해결, 대인관계, 조직이해, 직업윤리",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": "300문항 내외",
+      "scope": null,
+      "note": "적/부 판정, 탈락 없음",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-179734": {
+  "at": "2026-10-08 15:36",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ls-wk179734.html",
+  "source": "기업 채용 페이지 이미지 6조각 (https://lselectric.recruiter.co.kr/career/jobs/129138)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인성검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 700점, 토익스피킹 IM2, OPIc IM2 이상 중 1개 이상 충족하면 지원할 수 있어요. 영어권 국가 4년제 해외대 학위 취득자는 어학 성적 제출이 면제돼요.",
+    "highlight": "TOEIC 700점"
+   },
+   "written": null
+  }
+ },
+ "WK-179068": {
+  "at": "2026-10-08 15:36",
+  "url": "https://hiring03.ddolbestory.com/2026/10/shinsegae-wk179068.html",
+  "source": "기업 채용 페이지 (https://job.shinsegae.com/rcrut/detail/5360)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "입사지원서 기반 심사",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인 인적성검사",
+     "date": null,
+     "desc": "1차 면접전형 전 실시",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 3차면접",
+     "date": null,
+     "desc": "최종합격 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
