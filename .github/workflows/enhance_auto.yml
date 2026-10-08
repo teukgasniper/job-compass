@@ -55,6 +55,7 @@ jobs:
           GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}            # 나라일터 상세 보충 (발행 때와 같은 내용 유지)
           WORK24_GONGCHAE_KEY: ${{ secrets.WORK24_GONGCHAE_KEY }}  # 공채속보 상세 보충
           ENHANCE_IDS: ${{ steps.views.outputs.ids }}
+          ENHANCE_TARGET: ${{ steps.views.outputs.target }}   # [2026-10-08] 이만큼 성공할 때까지 다음 후보로
         run: python enhance_posts.py
 
       - name: 테스트 결과 내려받기용 저장
