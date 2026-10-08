@@ -3655,5 +3655,228 @@
    "language": null,
    "written": null
   }
+ },
+ "305528": {
+  "at": "2026-10-09 03:59",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-305528.html",
+  "source": "(한국마약퇴치운동본부) 2026년 제4차 채용 공고.png (이미지 공고문 → 15조각)",
+  "parts": [
+   "crew",
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반행정, 재활·예방, 비대면상담 직무에서 정규직·계약직 총 10명을 뽑아요.",
+    "columns": [
+     "일반행정",
+     "재활·예방",
+     "비대면상담"
+    ],
+    "rows": [
+     {
+      "label": "정규직(6급)",
+      "values": [
+       2,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "계약직(육아휴직대체)",
+      "values": [
+       null,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "계약직",
+      "values": [
+       null,
+       null,
+       2
+      ]
+     },
+     {
+      "label": "계약직(장애인·단시간)",
+      "values": [
+       4,
+       null,
+       null
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~23일",
+     "desc": "조직적합성 등 5개 항목 적부·정성평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과 발표",
+     "date": "10월 26일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사(온라인)",
+     "date": "10월 26일~28일",
+     "desc": "가치관 등 기본역량 측정, C등급 이하 불합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "인성검사 결과 발표",
+     "date": "10월 29일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 3일~6일",
+     "desc": "직무·인성면접(100%)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접합격자 적합성 검토",
+     "date": "11월 9일~13일"
+    },
+    {
+     "type": "notice",
+     "label": "채용검증위원회",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 18일(수)",
+     "desc": "서류제출·자격검증 후 12월 1일 임용"
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "연령, 어학 및 성별 제한이 없어요.",
+    "highlight": "제한없음"
+   },
+   "written": null
+  }
+ },
+ "GJ-305003": {
+  "at": "2026-10-09 03:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305003.html",
+  "source": "국립창원대학교(창원캠퍼스) 국가공무원(사서8급) 경력경쟁채용 공고문.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 적합 여부를 서면으로 심사해요",
+     "note": "6배수 이상 시 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 5일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 12일(목)",
+     "desc": "전문지식과 응용능력, 공직자세 등 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 30일(월)",
+     "desc": "신체검사·신원조사 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "CE-79969": {
+  "at": "2026-10-09 03:59",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-ce-79969.html",
+  "source": "붙임1_인천광역시 사회서비스원 2026년 제13회 직원 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "미추홀종합재가센터 돌봄직(요양보호사) 12명, 피해장애인쉼터·피해장애아동쉼터 서비스직(생활지도원) 각 1명을 뽑아요.",
+    "columns": [
+     "돌봄직(요양보호사)",
+     "서비스직(피해장애인쉼터)",
+     "서비스직(피해장애아동쉼터)"
+    ],
+    "rows": [
+     {
+      "label": "인원",
+      "values": [
+       12,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": "돌봄직은 기간제(시급제), 서비스직 2개 분야는 정규직이에요."
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 20일(화)",
+     "desc": "응시원서 기준 자격요건 충족 여부 적부판단",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "10월 20일(화)"
+    },
+    {
+     "type": "notice",
+     "label": "인성검사(온라인) 실시",
+     "date": "10월 21일(수)"
+    },
+    {
+     "type": "notice",
+     "label": "증빙서류 원본 제출",
+     "date": "10월 22일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "10월 22일(목)",
+     "desc": "대면면접, 전문지식·응용능력 등 평정요소 평가",
+     "note": "1배수 이내 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 26일(월)",
+     "desc": "임용서류 접수 확인, 신원조회 후 발령"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
