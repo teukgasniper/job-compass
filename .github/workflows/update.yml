@@ -2,20 +2,70 @@ name: 채용공고 업데이트
 
 on:
   schedule:
-    - cron: "23 */4 * * *"  # 4시간마다 23분 (UTC 기준, 정각은 GitHub 예약 실행이 자주 빠져서 피함)
+    - cron: "23 * * * *"    # [2026-10-08] 보험용 — 매시간 깨우되, 직전 수집이 3시간 30분 안이면 바로 건너뜀 (아래 gate)
+  repository_dispatch:       # [2026-10-08] 주 담당 — 외부 예약(cron-job.org)이 4시간마다 깨움 (GitHub 예약이 자주 빠져서)
+    types: [update-jobs]
   workflow_dispatch:         # 수동 실행 버튼
 
 permissions:
   contents: write
   pages: write
   id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  actions: read        # [2026-10-08] gate가 '이미 도는 업데이트가 있는지' 확인용
 
 jobs:
+  # [2026-10-08] GitHub 예약 실행만 검사: 카드 데이터가 3시간 30분 안에 만들어졌으면 건너뜀 (외부 예약과 겹쳐서 두 번 도는 것 방지)
+  #              외부 예약(cron-job.org)·수동 실행은 항상 진행
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: jobs.json
+          sparse-checkout-cone-mode: false
+      - id: check
+        env:
+          EVENT: ${{ github.event_name }}
+          MIN_GAP_HOURS: ${{ vars.UPDATE_MIN_GAP_HOURS || '3.5' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$EVENT" = "schedule" ]; then
+            gh run list -R "$GITHUB_REPOSITORY" --workflow update.yml --limit 20 \
+              --json databaseId,status --jq "[.[] | select(.databaseId != $GITHUB_RUN_ID and .status != \"completed\")] | length" \
+              > busy.txt 2>/dev/null || echo 0 > busy.txt
+          fi
+          python3 - <<'EOF'
+          import json, os
+          from datetime import datetime, timedelta, timezone
+          kst = timezone(timedelta(hours=9))
+          run, why = True, "외부 예약·수동 실행"
+          if os.environ["EVENT"] == "schedule":
+              try:
+                  busy = int((open("busy.txt").read().strip() or "0"))
+              except Exception:
+                  busy = 0
+              try:
+                  t = json.load(open("jobs.json", encoding="utf-8"))["generated_at"]
+                  age = (datetime.now(kst) - datetime.strptime(t, "%Y-%m-%d %H:%M").replace(tzinfo=kst)).total_seconds() / 3600
+                  run = age >= float(os.environ["MIN_GAP_HOURS"]) and busy == 0
+                  why = f"직전 수집 {t} KST ({age:.1f}시간 전)" + (f", 이미 도는 업데이트 {busy}개" if busy else "")
+              except Exception as e:
+                  run = busy == 0
+                  why = f"직전 수집 시각 확인 실패 ({e})" + (f", 이미 도는 업데이트 {busy}개" if busy else "")
+          print(("▶ 진행" if run else "⏭ 건너뜀") + f": {why}")
+          open(os.environ["GITHUB_OUTPUT"], "a").write(f"run={'true' if run else 'false'}\n")
+          EOF
+
   update:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
+    # [2026-10-08] 줄 서기(pages)는 실제 수집 단계에만 — 건너뛰는 예약 실행이 줄에 서서
+    #              기다리던 수동 공고 발행을 밀어내지 않게
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     environment:
       name: github-pages
