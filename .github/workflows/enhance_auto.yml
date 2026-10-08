@@ -2,7 +2,7 @@ name: 본문 자동 보강 (조회수 기준)
 
 on:
   schedule:
-    - cron: "37 */6 * * *"   # 6시간마다 (하루 4번)
+    - cron: "37 */3 * * *"   # [2026-10-08] 3시간마다 (하루 8번) — 1회 개수는 Variables AUTO_ENHANCE_PER_RUN (없으면 3개)
   workflow_dispatch:
     inputs:
       dry_run:
