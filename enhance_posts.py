@@ -28,6 +28,7 @@ from post_template import build_html, clean_inst, crew_rows, KST
 from publish_to_blogger import access_token, api, related_jobs, enrich_gojobs, enrich_work24, is_gojobs, is_work24
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
+TRIED_FILE = "enhance_tried.json"   # [2026-10-08] 자동 보강: 시도했다가 실패한 공고 (3일 뒤 재시도, fetch_views.py가 읽음)
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 MAX_DOC_CHARS = 60000        # 공고문 텍스트 상한 (Sonnet 5 기준 글 1개 약 $0.1)
@@ -477,9 +478,15 @@ def main():
     state = json.load(open(STATE_FILE, encoding="utf-8")) if os.path.exists(STATE_FILE) else {}
     token = None
     done = 0
+    # [2026-10-08] 자동 보강: 후보를 넉넉히 받아서 TARGET개 성공할 때까지 다음 후보로 넘어감 (0이면 받은 공고 전부)
+    target = int(os.environ.get("ENHANCE_TARGET") or 0)
+    attempted, succeeded = [], set()
 
     for sn in ids:
         sn = str(sn)
+        if target and done >= target:
+            print(f"\n[목표 {target}개 달성] 남은 후보 {len(ids) - ids.index(sn)}개는 다음 회차로")
+            break
         print(f"\n[{sn}]")
         post, job = mapping.get(sn), by_id.get(sn)
         if sn.startswith("MN-") or (job or {}).get("_manual") or (post or {}).get("manual"):   # [2026-10-08]
@@ -491,6 +498,7 @@ def main():
         if sn in state and not force:
             print(f"  건너뜀: {state[sn]['at']}에 이미 보강했어요 (--force로 다시 가능)"); continue
         print(f"  {clean_inst(job['instNm'])} | {post.get('url', '')}")
+        attempted.append(sn)                              # 여기부터는 실제 시도 (실패하면 3일 뒤 재시도)
         # [2026-10-08] 발행 때와 같은 상세 보충을 다시 해야 기존 본문 내용(지원 자격 상세·접수 방법 등)이 안 빠짐
         job = dict(job)
         if is_gojobs(job):
@@ -517,6 +525,7 @@ def main():
             open(f"preview/enhanced-{sn}.html", "w", encoding="utf-8").write(page)
             json.dump(data, open(f"preview/enhanced-{sn}.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             print(f"  [미리보기] preview/enhanced-{sn}.html")
+            done += 1; succeeded.add(sn)
             continue
         if token is None:
             token = access_token()
@@ -525,13 +534,20 @@ def main():
             print("  실패: Blogger 수정 오류"); continue
         state[sn] = {"at": now.strftime("%Y-%m-%d %H:%M"), "url": post.get("url", ""), "source": src_name,
                      "parts": useful, "data": data}
-        done += 1
+        done += 1; succeeded.add(sn)
         print(f"  ✅ 보강 완료 → {post.get('url', '')}")
         time.sleep(3)
 
     if not dry:
         json.dump(state, open(STATE_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"\n[완료] 이번 {done}개 보강 / 누적 {len(state)}개")
+        failed = [sn for sn in attempted if sn not in succeeded]
+        if target and failed:                             # 자동 보강일 때만 실패 기록 (수동 보강은 기록 안 함)
+            tried = json.load(open(TRIED_FILE, encoding="utf-8")) if os.path.exists(TRIED_FILE) else {}
+            for sn in failed:
+                tried[sn] = now.date().isoformat()
+            json.dump(tried, open(TRIED_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            print(f"[실패 기록] {len(failed)}개는 3일 뒤 다시 시도: {', '.join(failed)}")
+    print(f"\n[완료] 이번 {done}개 보강" + (f" (목표 {target}개)" if target else "") + f" / 누적 {len(state)}개")
 
 
 if __name__ == "__main__":

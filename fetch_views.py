@@ -12,6 +12,7 @@ GA4 Data API → hiring03.ddolbestory.com 페이지 경로별 누적 조회수
   ⑤ 최근 3일 안에 시도했다가 실패한 공고는 건너뜀 (enhance_tried.json)
   [2026-10-08] 글 주소 → 공고번호를 job_posts.json 기준으로 찾음 (GJ-·WK-·CE- 공고가 숫자만 남아 매칭 안 되던 문제)
   → 조회수 높은 순으로 AUTO_ENHANCE_PER_RUN 개 (기본 3)
+  [2026-10-08] 예비 후보까지 5배를 넘기고, 건너뛰거나 실패하면 다음 후보로 넘어가 목표 개수를 채움
 
 필요한 값
   Secrets  : BLOGGER_CLIENT_ID, GA4_CLIENT_SECRET, GA4_REFRESH_TOKEN
@@ -27,6 +28,7 @@ JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_p
 
 MIN_VIEWS = int(os.environ.get("AUTO_ENHANCE_MIN_VIEWS") or 50)
 PER_RUN = int(os.environ.get("AUTO_ENHANCE_PER_RUN") or 3)
+CAND_MULT = 5   # [2026-10-08] 실패 대비 예비 후보 배수
 MIN_DAYS_LEFT = 2
 RETRY_DAYS = 3
 DRY = os.environ.get("ENHANCE_DRY_RUN") == "true"
@@ -138,23 +140,21 @@ def main():
         cands.append((v, sn))
 
     cands.sort(reverse=True)
-    pick = [sn for _, sn in cands[:PER_RUN]]
-    print(f"{MIN_VIEWS}회 이상 보강 후보 {len(cands)}개 / 제외 {skipped}")
-    for v, sn in cands[:PER_RUN]:
+    # [2026-10-08] 후보를 목표의 5배까지 넘김 → enhance_posts.py가 실패하면 다음 후보로 넘어가 목표 개수를 채움
+    #              실패 기록(enhance_tried.json)은 실제로 시도한 공고만 enhance_posts.py가 남김
+    pool = cands[:PER_RUN * CAND_MULT]
+    pick = [sn for _, sn in pool]
+    print(f"{MIN_VIEWS}회 이상 보강 후보 {len(cands)}개 / 제외 {skipped} → 목표 {PER_RUN}개, 예비 포함 {len(pick)}개 넘김")
+    for v, sn in pool:
         print(f"  → {sn} {jobs[sn]['instNm']} ({v}회, D-{days_left(jobs[sn]['pbancEndYmd'], today)})")
-    if len(cands) > PER_RUN:
-        print(f"  (나머지 {len(cands) - PER_RUN}개는 다음 회차)")
-
-    # 시도 기록 — 보강에 성공하면 enhanced_posts.json 에 들어가서 다음부터 자동 제외됨
-    if pick and not DRY:
-        for sn in pick:
-            tried[sn] = today.isoformat()
-        json.dump(tried, open(TRIED_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    if len(cands) > len(pool):
+        print(f"  (나머지 {len(cands) - len(pool)}개는 다음 회차)")
 
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
         with open(out, "a", encoding="utf-8") as f:
             f.write(f"ids={','.join(pick)}\n")
+            f.write(f"target={PER_RUN}\n")
 
 
 if __name__ == "__main__":
