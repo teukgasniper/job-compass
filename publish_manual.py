@@ -29,7 +29,8 @@ from datetime import datetime
 from post_template import (KST, AD, HIRING, p, r, cta, h2, table, box, toc, faq, arrow_step,
                            clean_inst, clean_title, hire_list, hire_short, region_text, make_title, make_labels,
                            is_always, end_label, md, md_w, dot, ymd, WEEK, RED, _e)
-from publish_to_blogger import access_token, api, slug_for, related_jobs
+from publish_to_blogger import access_token, api, slug_for, is_private_job, score as job_score
+from post_template import days_left
 from enhance_posts import CLAUDE_MODEL, FALLBACK_MODEL, PRICE
 
 MANUAL_FILE, JOBS_FILE, MAPPING_FILE = "manual_jobs.json", "jobs.json", "job_posts.json"
@@ -158,8 +159,10 @@ SCHEMA = """아래 형식으로 출력해. 모르는 항목은 빈 문자열 또
  "faqs": [{"q": "질문", "a": "답 1~2문장"}],
  "sources": ["참고한 원문 주소 (있으면)"]
 }
-- tips는 2~3개. 재료 기준 직무에 맞춘 준비법 (일반적인 조언이면 '보통'처럼 일반론임을 드러내기)
-- faqs는 정확히 4개: 신입 지원 가능 여부 / 학력 조건 / 담당 업무나 근무지 관련 / 지원 방법. 마감일 질문은 넣지 말 것 (코드가 넣음)"""
+- tips는 2~3개. 재료 기준 직무에 맞춘 준비법. title은 12자 이내 명사형으로만 (예: "민원 해결 사례 정리"). 일반론이면 text에서만 '보통'으로 드러내고 title에는 쓰지 말 것
+- faqs는 정확히 4개: 신입 지원 가능 여부 / 학력 조건 / 담당 업무나 근무지 관련 / 지원 방법. 마감일 질문은 넣지 말 것 (코드가 넣음)
+- 신입 지원 가능 여부는 재료의 자격요건이 기준이야. "N년 이상", "경험이 필요해요"처럼 경력을 요구하면 "경력자 대상"이라고 답하고, 카드 정보와 다르면 재료를 따른다
+- 학력은 재료에 학력 조건이 없으면 "공고에 학력 조건이 따로 적혀 있지 않아요"라고 쓴다 (학력무관이라고 단정하지 않기)"""
 
 
 def call_claude(user, model=CLAUDE_MODEL, tools=True):
@@ -230,6 +233,21 @@ def write_content(job, material, src_name):
     return c
 
 
+def related_more(job, jobs, now):
+    """함께 보면 좋은 공고 3개 — 같은 구분(대기업/중견기업) 민간 공고, 회사가 겹치지 않게"""
+    seen, out = {clean_inst(job["instNm"])}, []
+    cand = [j for j in jobs if is_private_job(j) and j.get("bizType") == job.get("bizType")
+            and j["recrutPblntSn"] != job["recrutPblntSn"] and days_left(j, now) >= 1]
+    cand.sort(key=lambda j: -job_score(j, now))
+    for j in cand:
+        n = clean_inst(j["instNm"])
+        if n not in seen:
+            seen.add(n); out.append(j)
+        if len(out) == 3:
+            break
+    return out
+
+
 # ───────── 3. HTML ─────────
 def ul(items):
     lis = "".join(f'<li style="margin:0 0 8px; line-height:1.65;">{_e(x)}</li>' for x in items)
@@ -244,11 +262,12 @@ def build_manual_html(job, src, c, related=None):
     always, end, bg = is_always(job), job["pbancEndYmd"], job["pbancBgngYmd"]
     end_txt = end_label(job) if always else f"{md(end)} 마감"
     newbie = "신입" in se
-    toc_items = [f"채용 개요: {inst} {title}", "담당 업무: 입사하면 하는 일", f"지원 자격: {acbg.split(', ')[0] or '자격 요건'} · {se or '경력 구분'}",
+    edu_short = acbg.split(", ")[0] if ("무관" in acbg or "졸" in acbg or "학사" in acbg) else ""   # 미기재면 목차·태그에 안 씀
+    toc_items = [f"채용 개요: {inst} {title}", "담당 업무: 입사하면 하는 일", f"지원 자격: {' · '.join(x for x in (edu_short, se) if x) or '자격 요건'}",
                  f"접수 일정: {end_txt}", "전형 절차", "합격 포인트: 이 직무 준비법", "함께 보면 좋은 공고: 전국 채용 더 보기"]
     tag = 'display:inline-block; background:#DBEAFE; color:#1E40AF; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     tag_dl = 'display:inline-block; background:#FEF3C7; color:#92400E; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
-    tags = (f'<span style="{tag}">✅ {_e(hs)}</span>' + (f' <span style="{tag}">✅ {_e(acbg.split(", ")[0])}</span>' if acbg else "")
+    tags = (f'<span style="{tag}">✅ {_e(hs)}</span>' + (f' <span style="{tag}">✅ {_e(edu_short)}</span>' if edu_short else "")
             + (f' <span style="{tag}">✅ 신입 지원 가능</span>' if newbie else "")
             + f' <span style="{tag_dl}">⏰ {_e(end_txt)}</span>')
     intro = ('<div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:14px; padding:22px 20px; margin:10px 0 16px;">'
@@ -270,7 +289,8 @@ def build_manual_html(job, src, c, related=None):
           + p("업무 설명에 나온 단어를 자기소개서와 이력서에 그대로 연결하면 서류에서 훨씬 잘 읽혀요.")
           + cta("담당 업무 확인하기", src))
     s3 = (h2(3, toc_items[2])
-          + p(f"카드 기준 학력 조건은 「{_e(acbg) or '공고 참조'}」, 경력 구분은 「{_e(se)}」이에요.")
+          + p((f"학력 조건은 「{_e(acbg)}」, 경력 구분은 「{_e(se)}」이에요." if edu_short else
+               f"원문 공고에는 학력 조건이 따로 적혀 있지 않아요. 경력 구분은 「{_e(se)}」이에요."))
           + ((p("<b>자격 요건</b>") + ul(c["required"])) if c["required"] else "")
           + ((p("<b>우대 사항</b>") + ul(c["preferred"])) if c["preferred"] else "")
           + (box("blue", "📌 핵심 포인트", "학력보다 실무 경험과 직무 이해도를 보는 포지션이에요. 관련 경험을 구체적인 결과 중심으로 정리해두세요.")
@@ -299,7 +319,11 @@ def build_manual_html(job, src, c, related=None):
     s6 = (h2(6, toc_items[5])
           + "".join(box("blue", f"✔ {_e(t.get('title', ''))}", _e(t.get("text", ""))) for t in tips if isinstance(t, dict))
           + cta("지금 지원하러 가기", src))
-    rel_rows = [[clean_inst(j["instNm"]), hire_short(j), "상시" if is_always(j) else dot(j["pbancEndYmd"])[5:]] for j in (related or [])[:3]]
+    seen_rel, rel = set(), []
+    for j in related or []:                                     # 같은 회사가 두 번 나오지 않게
+        if clean_inst(j["instNm"]) not in seen_rel:
+            seen_rel.add(clean_inst(j["instNm"])); rel.append(j)
+    rel_rows = [[clean_inst(j["instNm"]), hire_short(j), "상시" if is_always(j) else dot(j["pbancEndYmd"])[5:]] for j in rel[:3]]
     s7 = (h2(7, toc_items[6])
           + p(f"같은 {job.get('bizType') or '기업'} 채용에서 지금 접수 중인 공고도 함께 보세요.")
           + (table(["기업", "고용형태", "마감"], rel_rows, ["45%", "30%", "25%"]) if rel_rows else "")
@@ -335,7 +359,7 @@ def publish_one(job, sn, cur, jobs, now, dry, state):
     print(f"  작성: 업무 {len(c['tasks'])} / 자격 {len(c['required'])} / 우대 {len(c['preferred'])} / 전형 {len(c['process'])}"
           + (f" / 출처 {c['sources'][0]}" if c["sources"] else ""))
     src = job.get("srcUrl") or HIRING
-    page = build_manual_html(job, src, c, related_jobs(job, jobs, now))
+    page = build_manual_html(job, src, c, related_more(job, jobs, now))
     if dry:
         os.makedirs("preview", exist_ok=True)
         open(f"preview/{slug_for(job)}.html", "w", encoding="utf-8").write(page)
