@@ -150,6 +150,7 @@ SCHEMA = """아래 형식으로 출력해. 모르는 항목은 빈 문자열 또
  "summary": "인트로 2문장. 어떤 회사의 어떤 직무 채용인지 + 누구에게 맞는 자리인지",
  "company": "회사 소개 1~2문장",
  "role_intro": "이 직무가 하는 일 1~2문장 (재료 기준)",
+ "employment_note": "계약기간·정규직 전환·수습·근무형태 같은 고용 조건 1문장 (재료에 있을 때만, 없으면 빈 문자열)",
  "tasks": ["담당 업무 한 줄씩, 최대 6개"],
  "required": ["자격 요건 한 줄씩, 최대 6개"],
  "preferred": ["우대 사항 한 줄씩, 최대 5개"],
@@ -224,7 +225,7 @@ def write_content(job, material, src_name):
     c = json.loads(m.group(0))
     for k in ("tasks", "required", "preferred", "process", "tips", "faqs", "sources"):
         c[k] = [x for x in (c.get(k) or []) if x][:8]
-    for k in ("summary", "company", "role_intro", "process_note"):
+    for k in ("summary", "company", "role_intro", "process_note", "employment_note"):
         c[k] = str(c.get(k) or "").strip()
     bad = re.compile(r"공기업|정년\s*보장|블라인드|NCS|필기시험")
     for k in ("summary", "company", "role_intro", "process_note"):
@@ -281,6 +282,7 @@ def build_manual_html(job, src, c, related=None):
           + table(["항목", "내용"], [["기업", _e(inst)], ["포지션", _e(title)], ["고용형태", _e(", ".join(hl))],
                                      ["경력구분", _e(se)], ["학력", _e(acbg) or check], ["모집분야", _e(job.get("ncsCdNmLst") or "")],
                                      ["근무지역", _e(region_text(job))], ["접수 마감", r(_e(end_txt))]], ["30%", "70%"])
+          + (box("blue", "📌 고용 조건", _e(c.get("employment_note"))) if c.get("employment_note") else "")
           + p("같은 회사라도 포지션마다 요구 경험과 근무지가 달라요. 내가 지원할 포지션이 맞는지 원문에서 먼저 확인하세요.")
           + cta("포지션 상세 보기", src))
     s2 = (h2(2, toc_items[1])
