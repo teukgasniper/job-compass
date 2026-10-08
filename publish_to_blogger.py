@@ -10,6 +10,8 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 - 나라일터(GJ-) 공고: getItem API로 상세 정보 보충 후 발행
 - 공채속보(WK-) 공고 [2026-10-02]: 고용24 상세 API로 모집분야·담당업무·전형단계 보충 후 발행
   퍼머링크 {그룹약칭}-wk{번호} 또는 wk-{번호}, 민간 기업용 문구로 작성 (post_template.is_private)
+- 수동 공고(MN-) [2026-10-08]: 여기(예약 자동발행)서는 발행하지 않음 → publish_manual.py(수동 공고 발행 액션) 전용
+  퍼머링크 {회사약칭}-mn{번호} (MN-TOSS-01 → toss-mn01)
 
 로컬 미리보기: python publish_to_blogger.py --preview 3   (API 없이 preview/ 폴더에 HTML 생성)
 필요한 Secrets: BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID, GOJOBS_API_KEY, WORK24_GONGCHAE_KEY
@@ -241,6 +243,11 @@ def parse_contents(text):
 
 def slug_for(job):
     sn = str(job.get("recrutPblntSn", ""))
+    # [2026-10-08] 수동 공고: MN-TOSS-01 → toss-mn01
+    if sn.startswith("MN-"):
+        parts = sn.split("-")
+        tag = re.sub(r"[^a-z0-9]", "", "-".join(parts[1:-1]).lower()) or "manual"
+        return f"{tag}-mn{re.sub(r'[^0-9A-Za-z]', '', parts[-1]).lower()}"
     # 나라일터 공고: gj-{idx} 형식
     if sn.startswith("GJ-"):
         idx = sn.replace("GJ-", "")
@@ -285,7 +292,8 @@ def score(job, now=None):
     name = clean_inst(job["instNm"])
     if any(k in name for k in ABBR) or job.get("bizType") == "대기업": s += 20   # 브랜드 파워 (공기업 약칭 / 대기업)
     dl = days_left(job, now)
-    if 1 <= dl <= 10: s += 15                                     # 마감 임박
+    if job.get("always"): pass                                    # 상시채용은 마감 임박 가산 없음 [2026-10-08]
+    elif 1 <= dl <= 10: s += 15                                   # 마감 임박
     elif 11 <= dl <= 15: s += 5
     if "학력무관" in (job.get("acbgCondNmLst") or ""): s += 5      # 누구나 지원 가능
     if len(regions(job)) >= 10: s += 5                            # 전국 모집
@@ -297,9 +305,17 @@ def is_new(job, now):
     except Exception:
         return False
 
+def is_manual(job):
+    """수동 공고 (manual_jobs.json) [2026-10-08]"""
+    return bool(job.get("_manual")) or str(job.get("recrutPblntSn", "")).startswith("MN-")
+
+def is_private_job(job):
+    """민간 공고 (공채속보 + 수동 공고) [2026-10-08]"""
+    return job.get("_source") == "work24" or is_work24(job)
+
 def related_jobs(job, jobs, now):
-    if is_work24(job):   # 민간 공고: 같은 구분(대기업/중견기업) 공채 중 점수 높은 순
-        cand = [j for j in jobs if is_work24(j) and j["recrutPblntSn"] != job["recrutPblntSn"]
+    if is_private_job(job):   # 민간 공고: 같은 구분(대기업/중견기업) 공채 중 점수 높은 순
+        cand = [j for j in jobs if is_private_job(j) and j["recrutPblntSn"] != job["recrutPblntSn"]
                 and j.get("bizType") == job.get("bizType") and days_left(j, now) >= 1
                 and clean_inst(j["instNm"]) != clean_inst(job["instNm"])]
         cand.sort(key=lambda j: -score(j))
@@ -362,7 +378,7 @@ def recover_mapping(token, jobs, mapping):
     want = {}
     for j in jobs:
         sn = str(j["recrutPblntSn"])
-        if sn not in mapping:
+        if sn not in mapping and not is_manual(j):   # 수동 공고 복구는 publish_manual.py가 따로
             want[slug_for(j)] = j
     found, page_token, pages = 0, None, 0
     while pages < 3:                                   # 최근 글 최대 300개 확인
@@ -390,7 +406,8 @@ def recover_mapping(token, jobs, mapping):
 
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
-    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)]
+    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)
+            and not is_manual(j)]   # [2026-10-08] 수동 공고는 수동 공고 발행 액션에서만
     # 1순위 쓰레드 글감 후보(정규직·신입 등) → 그 안에서 점수순 (새 공고는 +15점 가산)
     todo.sort(key=lambda j: (not thread_eligible(j, now), -(score(j, now) + (15 if is_new(j, now) else 0))))
     n_hot = sum(1 for j in todo if thread_eligible(j, now))
@@ -443,7 +460,7 @@ def main():
             if info:
                 mapping[str(job["recrutPblntSn"])] = info
                 done += 1
-                src_tag = " [나라일터]" if is_gojobs(job) else (" [공채속보]" if is_work24(job) else "")
+                src_tag = " [나라일터]" if is_gojobs(job) else (" [공채속보]" if is_work24(job) else (" [수동]" if job.get("_manual") else ""))
                 print(f"[발행] {datetime.now(KST).strftime('%H:%M:%S')} {info['url']}  |  {info['title'][:40]}{src_tag}")
             if not JITTER:
                 time.sleep(3)

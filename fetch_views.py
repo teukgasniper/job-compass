@@ -10,6 +10,7 @@ GA4 Data API → hiring03.ddolbestory.com 페이지 경로별 누적 조회수
   ③ 아직 보강 안 됨 (enhanced_posts.json 에 없음)
   ④ 마감까지 2일 이상 남음 (곧 닫힐 글은 보강해도 효과 없음)
   ⑤ 최근 3일 안에 시도했다가 실패한 공고는 건너뜀 (enhance_tried.json)
+  [2026-10-08] 글 주소 → 공고번호를 job_posts.json 기준으로 찾음 (GJ-·WK-·CE- 공고가 숫자만 남아 매칭 안 되던 문제)
   → 조회수 높은 순으로 AUTO_ENHANCE_PER_RUN 개 (기본 3)
 
 필요한 값
@@ -52,8 +53,19 @@ def ga4_token():
     }, form=True)["access_token"]
 
 
+def path_index():
+    """job_posts.json의 글 주소 경로 → 공고번호 (예: /2026/10/gj-305182.html → GJ-305182)"""
+    idx = {}
+    for sn, info in load(MAPPING_FILE, {}).items():
+        path = urllib.parse.urlparse((info or {}).get("url", "")).path
+        if path:
+            idx[path] = str(sn)
+    return idx
+
+
 def fetch_views():
     """{공고번호: 누적 조회수} — 최근 90일"""
+    by_path = path_index()
     token = ga4_token()
     url = f"https://analyticsdata.googleapis.com/v1beta/properties/{os.environ['GA4_PROPERTY_ID']}:runReport"
     views, offset = {}, 0
@@ -67,9 +79,13 @@ def fetch_views():
         }, headers={"Authorization": f"Bearer {token}"})
         rows = res.get("rows", [])
         for r in rows:
-            m = re.search(r"-(?:[a-z]{2})?(\d{5,7})(?:_\d+)?\.html", r["dimensionValues"][0]["value"], re.I)  # wk·gj 접두 퍼머링크도 인식
-            if m:
-                views[m.group(1)] = views.get(m.group(1), 0) + int(r["metricValues"][0]["value"])
+            path = r["dimensionValues"][0]["value"].split("?")[0].split("#")[0]
+            sn = by_path.get(path) or by_path.get(re.sub(r"_\d+(\.html)$", r"\1", path))   # _1 붙은 주소도
+            if not sn and not re.search(r"/(gj|wk|ce|mn)-", path):            # 매핑에 없는 예전 글: 알리오 숫자 번호만
+                m = re.search(r"-(\d{5,7})(?:_\d+)?\.html$", path)
+                sn = m.group(1) if m else None
+            if sn:
+                views[sn] = views.get(sn, 0) + int(r["metricValues"][0]["value"])
         offset += len(rows)
         if not rows or offset >= int(res.get("rowCount", 0)):
             break
@@ -110,6 +126,8 @@ def main():
             continue
         if sn in state:
             skipped["보강완료"] += 1; continue
+        if sn.startswith("MN-"):                    # [2026-10-08] 수동 공고 글은 보강 안 함
+            continue
         if sn not in jobs or sn not in mapping:
             skipped["마감/본문없음"] += 1; continue
         if days_left(jobs[sn].get("pbancEndYmd"), today) < MIN_DAYS_LEFT:

@@ -154,7 +154,9 @@ def score(job: dict, today: dt.date) -> float:
     if is_private(job):                           # 민간: 인원 점수가 없으니 이름값으로 보정
         s += 45 if job.get("bizType") == "대기업" else 15
     d = dday(job.get("pbancEndYmd", ""), today)
-    if 1 <= d <= 10:
+    if job.get("always"):                         # [2026-10-08] 상시채용(수동 공고)은 마감 임박 가산 없음
+        pass
+    elif 1 <= d <= 10:
         s += 15
     elif 11 <= d <= 15:
         s += 5
@@ -193,6 +195,7 @@ GROUPS = {
     "두산": ["두산"], "포스코": ["포스코"], "HD": ["에이치디", "HD"], "KT": ["케이티", "KT"],
     "농협": ["농협", "엔에이치", "NH"], "호반": ["호반"], "DB": ["디비", "DB"], "하나": ["하나"],
     "신한": ["신한"], "KB": ["케이비", "KB"], "코오롱": ["코오롱"], "대한전선": ["대한전선"],
+    "토스": ["토스", "비바리퍼블리카"],
 }
 NOT_GROUP = ("엔에이치엔", "엘에스이")          # 이름만 비슷한 비계열사
 PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
@@ -208,7 +211,7 @@ def group_key(name: str) -> str:
 
 
 def is_private_id(pid) -> bool:
-    return str(pid).startswith("WK-")
+    return str(pid).startswith(("WK-", "MN-"))      # 공채속보 + 수동 공고(토스 등) [2026-10-08]
 
 
 def want_private_now(history) -> bool:
@@ -587,6 +590,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         "마감일": f"{end.month}월 {end.day}일",
         "D-day": f"D-{d_left}",
     }
+    if job.get("always"):                         # [2026-10-08] 상시채용 — 정리용 날짜를 마감일로 쓰지 않게
+        data.pop("D-day")
+        data["마감일"] = (job.get("endLabel") or "상시채용") + " (정해진 마감일 없음 — 날짜·D-day·마감 임박 표현 금지, 리스트 5번은 이 표기 그대로)"
     for k_src, k_out in (("yearIncome", "공고 제시 연봉(클린아이)"), ("judgeMethod", "전형방법(클린아이)")):
         if job.get(k_src):
             data[k_out] = job[k_src]
@@ -1467,7 +1473,7 @@ def main():
             break
         post = posts.get(str(job["recrutPblntSn"]))
         post_text = fetch_post_text(post) if post else ""
-        if is_private(job) and not private_edu_ok(post_text):
+        if is_private(job) and not job.get("_manual") and not private_edu_ok(post_text):   # 수동 공고 학력은 직접 입력값이라 신뢰
             print(f"[제외] 민간 공고 학력 확인 불가(본문 없음·석사/박사 전용): {job['instNm']} / {job['recrutPbancTtl']}")
             excluded.add(str(job["recrutPblntSn"]))
             job = None
@@ -1481,6 +1487,8 @@ def main():
 
     inst = norm_inst(job["instNm"])
     d_left = dday(job["pbancEndYmd"], today)
+    if job.get("always"):
+        d_left = 99                               # [2026-10-08] 상시채용 → 시한폭탄·막차 조합 제외
     open_fact = has_open_fact(job, post_text)
     combo_idx, combo = pick_combo(state, d_left, open_fact)
     print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")

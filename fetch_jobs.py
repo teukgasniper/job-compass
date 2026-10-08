@@ -34,6 +34,8 @@
 [2026-10-07 수정] 나라일터 기관 제외 목록에서 '우체국' 삭제 — 우체국 공무직 공채 수집 (기간제·단기 등은 제목 필터로 계속 제외)
                   교도소·구치소·교정청·소년원·분류심사원·보호관찰소는 제목에 '공무직'이 있으면 수집 (교정직·보호직 공무원 채용은 계속 제외)
 [2026-10-07 수정] 공채속보 — 대기업 그룹 계열사는 이름에 '연구원·재단' 등이 있어도 공공으로 빼지 않음 (현대경제연구원 누락 문제)
+[2026-10-08 추가] 수동 공고(manual_jobs.json) 합치기 — API에 없는 공고(토스 등)를 직접 추가
+                  마감일(상시 공고는 정리 날짜) 지난 항목은 자동 제외 / 수집 실패 재사용 대상에서는 제외
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -973,6 +975,32 @@ gojobs_items = collect_gojobs()
 gongchae_items = collect_gongchae()
 merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items)
 
+
+# [2026-10-08] 수동 공고 — 저장소의 manual_jobs.json (API에 없는 공고 직접 추가)
+def add_manual(merged, path="manual_jobs.json"):
+    if not os.path.exists(path):
+        return
+    try:
+        doc = json.load(open(path, encoding="utf-8"))
+    except Exception as e:
+        print(f"[수동 공고] {path} 읽기 실패 → 건너뜀: {e}")
+        return
+    items = doc.get("items", []) if isinstance(doc, dict) else doc
+    today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
+    have_id = {x.get("recrutPblntSn") for x in merged}
+    have_key = {dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) for x in merged}
+    added = expired = dup = 0
+    for x in items:
+        if (x.get("pbancEndYmd") or "") < today_str:
+            expired += 1; continue
+        if x.get("recrutPblntSn") in have_id or dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) in have_key:
+            dup += 1; continue
+        x = {k: v for k, v in x.items() if k not in ("detail", "post_url", "post_id", "manual_post")}   # 본문용 입력 칸은 카드에서 뺌
+        x["_manual"] = True; x["ongoingYn"] = "Y"
+        merged.append(x); added += 1
+    print(f"[수동 공고] {added}건 추가 (마감 지남 {expired}건 · 중복 {dup}건 제외)")
+
+
 # [2026-10-02 추가] 수집 실패 시 직전 jobs.json 공고 재사용 (마감 전 + 이번 결과와 중복 아닌 것만)
 _prev_cache = None
 
@@ -987,7 +1015,7 @@ def reuse_previous(source, label, merged):
         have_key = {dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) for x in merged}
         reused = []
         for x in _prev_cache:
-            if x.get("_source") != source or (x.get("pbancEndYmd") or "") < today_str:
+            if x.get("_source") != source or x.get("_manual") or (x.get("pbancEndYmd") or "") < today_str:
                 continue
             if x.get("recrutPblntSn") in have_id:
                 continue
@@ -1014,6 +1042,8 @@ print(f"[품질필터] {before}건 → {len(merged)}건 (알바급 {before - len
 
 if len(merged) < 50:
     sys.exit(f"수집 건수가 너무 적음({len(merged)}건) → 기존 데이터 유지")
+
+add_manual(merged)   # [2026-10-08] 수집 건수 검사 뒤에 붙임 — 수동 공고가 수집 실패를 가리지 않게
 
 kst = datetime.now(timezone(timedelta(hours=9)))
 out = {"generated_at": kst.strftime("%Y-%m-%d %H:%M"), "count": len(merged), "result": merged}

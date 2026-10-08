@@ -1,6 +1,7 @@
 """hiring03 본문 보강 (조회수 50회 돌파 글)
 ─────────────────────────────────────────────
-공고번호 → 알리오 원문 공고문(PDF·HWP·HWPX) 텍스트 추출 → Claude(Sonnet)로 핵심 정보 JSON 추출
+공고번호 → 원문 공고문(PDF·HWP·HWPX·이미지) 텍스트 추출
+  [2026-10-08] 알리오 + 클린아이·나라일터(상세페이지 첨부) + 공채속보(기업 채용 페이지를 브라우저로 열어 읽음) → Claude(Sonnet)로 핵심 정보 JSON 추출
 → post_template.build_html(enh=...)로 본문 재생성 → Blogger 글을 같은 주소 그대로 수정
 
 보강 내용 (디자인: 한국남부발전 보강본 kospo-v2-enhanced.html 기준)
@@ -17,13 +18,14 @@
   ENHANCE_IDS="304839,305413" python enhance_posts.py   (GitHub Actions 입력용)
 
 필요한 Secrets: CLAUDE_API_KEY, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID
-필요한 패키지: pypdf, pyhwp, pypdfium2, pillow
+필요한 패키지: pypdf, pyhwp, pypdfium2, pillow, olefile(pyhwp와 함께 설치됨)
+[2026-10-08] 공고문이 이미지(jpg·png)면 조각내서 Claude가 읽음 / hwp5html 변환 실패 시 HWP 본문을 직접 읽는 방식으로 재시도
 기록: enhanced_posts.json (공고번호 → 보강 시각·추출 데이터)
 """
-import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.error
+import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from post_template import build_html, clean_inst, crew_rows, KST
-from publish_to_blogger import access_token, api, related_jobs
+from publish_to_blogger import access_token, api, related_jobs, enrich_gojobs, enrich_work24, is_gojobs, is_work24
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
@@ -72,31 +74,102 @@ MAX_TILES = 20          # 이미지 조각 상한 (조각 1개 약 1,900토큰 �
 TILE_W, TILE_H = 1300, 1100
 
 
+def _tiles_from_pil(im, tiles):
+    """가로 1300px 이미지를 세로로 잘라 JPEG base64로 tiles에 추가 (60px 겹치게)"""
+    import base64
+    y = 0
+    while y < im.height and len(tiles) < MAX_TILES:
+        part = im.crop((0, y, im.width, min(im.height, y + TILE_H)))
+        if part.height > 80:
+            buf = io.BytesIO()
+            part.save(buf, "JPEG", quality=85)
+            tiles.append(base64.b64encode(buf.getvalue()).decode())
+        y += TILE_H - 60
+    return tiles
+
+
 def images_from_pdf(data):
     """글자가 없는 PDF(포스터·스캔)를 가로 1300px로 렌더링해 세로로 잘라 JPEG base64 목록으로.
     통째로 보내면 자동 축소돼 글씨가 뭉개지므로 잘라서 보낸다 (60px 겹치게)"""
-    import base64, pypdfium2 as pdfium
+    import pypdfium2 as pdfium
     pdf = pdfium.PdfDocument(data)
     tiles = []
     for pg in pdf:
         w, _ = pg.get_size()
-        im = pg.render(scale=TILE_W / w).to_pil().convert("RGB")
-        y = 0
-        while y < im.height and len(tiles) < MAX_TILES:
-            part = im.crop((0, y, im.width, min(im.height, y + TILE_H)))
-            if part.height > 80:
-                buf = io.BytesIO()
-                part.save(buf, "JPEG", quality=85)
-                tiles.append(base64.b64encode(buf.getvalue()).decode())
-            y += TILE_H - 60
+        _tiles_from_pil(pg.render(scale=TILE_W / w).to_pil().convert("RGB"), tiles)
         if len(tiles) >= MAX_TILES:
             print(f"  [공고문] 이미지 조각 상한 {MAX_TILES}개에서 자름")
             break
     return tiles
 
 
+IMG_EXT = ("jpg", "jpeg", "png", "gif", "bmp", "webp")
+
+
+def is_image_file(name, data):
+    ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    return ext in IMG_EXT or data[:3] == b"\xff\xd8\xff" or data[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def images_from_image(data):
+    """[2026-10-08] 공고문이 통째로 이미지(jpg·png)인 경우 — 가로 1300px로 맞춰 세로로 자름"""
+    from PIL import Image
+    im = Image.open(io.BytesIO(data)).convert("RGB")
+    if im.width != TILE_W:
+        im = im.resize((TILE_W, max(1, round(im.height * TILE_W / im.width))))
+    tiles = _tiles_from_pil(im, [])
+    if len(tiles) >= MAX_TILES:
+        print(f"  [공고문] 이미지 조각 상한 {MAX_TILES}개에서 자름")
+    return tiles
+
+
+def text_from_hwp_raw(data):
+    """[2026-10-08] hwp5html 변환이 실패하는 HWP용 — 본문 문단 글자를 직접 읽음 (표는 칸마다 한 줄)"""
+    import olefile, zlib, struct
+    o = olefile.OleFileIO(io.BytesIO(data))
+    flags = struct.unpack("<I", o.openstream("FileHeader").read()[36:40])[0]
+    if flags & 4:
+        raise ValueError("배포용(암호화) HWP라 글자를 읽을 수 없음")
+    secs = sorted([e for e in o.listdir() if e[0] == "BodyText"], key=lambda e: int(re.sub(r"\D", "", e[1]) or 0))
+    out = []
+    for e in secs:
+        raw = o.openstream(e).read()
+        if flags & 1:
+            raw = zlib.decompress(raw, -15)
+        i = 0
+        while i + 4 <= len(raw):
+            h = struct.unpack("<I", raw[i:i + 4])[0]; i += 4
+            tag, size = h & 0x3FF, (h >> 20) & 0xFFF
+            if size == 0xFFF:
+                size = struct.unpack("<I", raw[i:i + 4])[0]; i += 4
+            if tag == 67:                                   # 문단 글자
+                b, s, k = raw[i:i + size], [], 0
+                while k + 2 <= len(b):
+                    c = struct.unpack("<H", b[k:k + 2])[0]
+                    if c in (1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23):
+                        if c == 9:
+                            s.append(" ")
+                        k += 16; continue                   # 확장 컨트롤 문자 (8글자 분량)
+                    if c in (10, 13):
+                        s.append("\n")
+                    elif c >= 32:
+                        s.append(chr(c))
+                    k += 2
+                out.append("".join(s))
+            i += size
+    return "\n".join(out)
+
+
 def text_from_hwp(data):
-    """hwp5html로 변환 (hwp5txt는 표를 빼먹어서 인원·일정이 사라짐)"""
+    """hwp5html로 변환 (hwp5txt는 표를 빼먹어서 인원·일정이 사라짐) → 실패하면 직접 읽기"""
+    try:
+        return text_from_hwp_html(data)
+    except Exception as e:
+        print(f"  [공고문] hwp5html 변환 실패 → 직접 읽기로 재시도 ({str(e)[:80]})")
+        return text_from_hwp_raw(data)
+
+
+def text_from_hwp_html(data):
     with tempfile.TemporaryDirectory() as d:
         src, out = os.path.join(d, "a.hwp"), os.path.join(d, "out")
         open(src, "wb").write(data)
@@ -136,18 +209,136 @@ def text_from_file(name, data):
     return ""
 
 
+def http_post(url, form, timeout=60, tries=3):
+    data = urllib.parse.urlencode(form).encode()
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, data=data, headers=UA, method="POST"), timeout=timeout) as r:
+                return r.read()
+        except Exception:
+            if i == tries - 1:
+                raise
+            time.sleep(2 + i * 3)
+
+
+def _js_args(s):
+    return [html.unescape(x) for x in re.findall(r"'([^']*)'", s)]
+
+
+def cleaneye_notice_files(sn):
+    """[2026-10-08] 클린아이 상세페이지 첨부 [(파일명, 받기함수)] — fn_FileDown(저장명, 원래이름, 경로)"""
+    idx = str(sn).replace("CE-", "")
+    page, _ = http_get(f"https://job.cleaneye.go.kr/user/ypCareersData.do?idx={idx}", timeout=25)
+    out = []
+    for call in re.findall(r"fn_FileDown\(((?:\s*'[^']*'\s*,?)+)\)", page.decode("utf-8", "ignore")):   # 파일명 속 괄호 대응
+        a = _js_args(call)
+        if len(a) >= 3:
+            form = {"UPLOAD_FILENAME": a[0], "ORIGINAL_FILENAME": a[1], "FILE_PATH": a[2]}
+            out.append((a[1], lambda f=form: http_post("https://job.cleaneye.go.kr/file/FileDownload.do", f)))
+    return out
+
+
+def gojobs_notice_files(sn):
+    """[2026-10-08] 나라일터 상세페이지 첨부 [(파일명, 받기함수)] — gfn_fileDown(파일명, uuid, 저장경로)"""
+    idx = str(sn).replace("GJ-", "")
+    page, _ = http_get(f"https://www.gojobs.go.kr/apmView.do?empmnsn={idx}", timeout=25)
+    out = []
+    for call in re.findall(r"gfn_fileDown\(((?:\s*'[^']*'\s*,?)+)\)", page.decode("utf-8", "ignore")):   # 파일명 속 괄호 대응
+        a = _js_args(call)
+        if len(a) >= 3:
+            form = {"filenm": a[0], "uuid": a[1], "saveGbn": a[2], "empmnsn": idx}
+            out.append((a[0], lambda f=form: http_post("https://www.gojobs.go.kr/downFile.do", f)))
+    return out
+
+
+FORM_WORDS = ("서식", "지원서", "양식", "제출", "동의서", "검토기준", "확인서", "서약서", "자기소개", "경력기술", "제안서", "체크리스트")
+
+
+def _file_rank(name, title):
+    """공고문을 먼저, 제출 서식은 나중에. 공고명과 겹치는 단어가 많을수록 먼저"""
+    n = name.replace(" ", "")
+    r = 0
+    if "공고" in n:
+        r -= 10
+    if "직무기술" in n:
+        r += 3
+    if any(w in n for w in FORM_WORDS):
+        r += 20
+    words = [w for w in re.split(r"[\s()\[\],·/]+", title or "") if len(w) >= 2]
+    r -= sum(1 for w in words if w in name)
+    return r
+
+
+def page_material(url):
+    """[2026-10-08] 민간(공채속보) 공고 — 기업 채용 페이지를 실제 브라우저로 열어 글자를 읽고,
+    글자가 적으면(이미지로 된 공고) 큰 이미지들을 잘라서 넘김. 반환: (텍스트, 이미지조각, 설명)"""
+    if not url:
+        return "", [], "원문 링크 없음"
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return "", [], "브라우저(playwright) 없음"
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        try:
+            pg = b.new_page(viewport={"width": TILE_W, "height": 1000}, user_agent=UA["User-Agent"])
+            pg.goto(url, wait_until="domcontentloaded", timeout=45000)
+            pg.wait_for_timeout(8000)
+            text = _clean(pg.evaluate("() => document.body.innerText") or "")
+            if len(text) >= 800:
+                return text[:MAX_DOC_CHARS], [], f"기업 채용 페이지 ({url})"
+            tiles = []
+            srcs = pg.evaluate("() => [...document.images].filter(i => i.naturalWidth >= 500 && i.naturalHeight >= 500)"
+                               ".map(i => i.currentSrc || i.src)")
+            for u in list(dict.fromkeys(srcs))[:8]:          # 이미지로 된 공고 본문 — 원본 파일을 받아서 자름
+                try:
+                    res = pg.request.get(u, timeout=30000)
+                    if res.ok:
+                        tiles += images_from_image(res.body())
+                except Exception as e:
+                    print(f"  [공고문] 페이지 이미지 받기 실패: {str(e)[:60]}")
+                if len(tiles) >= MAX_TILES:
+                    tiles = tiles[:MAX_TILES]
+                    break
+            if tiles:
+                return (text[:3000] if text else ""), tiles, f"기업 채용 페이지 이미지 {len(tiles)}조각 ({url})"
+            return "", [], f"기업 채용 페이지에 읽을 내용 없음 (글자 {len(text)}자)"
+        except Exception as e:
+            return "", [], f"기업 채용 페이지 열기 실패: {str(e)[:80]}"
+        finally:
+            b.close()
+
+
 def get_notice(job):
     """반환: (텍스트, 이미지조각목록, 파일명 또는 실패사유)
-    글자를 뽑을 수 있으면 텍스트, 글자 없는 PDF(포스터·스캔)면 이미지 조각"""
-    if job.get("_source", "alio") != "alio":
-        return "", [], "알리오 공고만 지원 (클린아이·나라일터는 추후)"
-    files = alio_notice_files(job["recrutPblntSn"])
+    글자를 뽑을 수 있으면 텍스트, 글자 없는 PDF(포스터·스캔)·이미지 공고문이면 이미지 조각
+    [2026-10-08] 알리오 + 클린아이·나라일터(상세페이지 첨부) + 공채속보(기업 채용 페이지)"""
+    sn, src = str(job["recrutPblntSn"]), job.get("_source", "alio")
+    if job.get("_manual") or sn.startswith("MN-"):
+        return "", [], "수동 공고는 보강 안 함"
+    if src == "work24" or sn.startswith("WK-"):
+        return page_material(job.get("srcUrl", ""))
+    if src == "cleaneye" or sn.startswith("CE-"):
+        files = cleaneye_notice_files(sn)
+    elif src == "gojobs" or sn.startswith("GJ-"):
+        files = gojobs_notice_files(sn)
+    else:
+        files = [(name, lambda u=url: http_get(u)[0]) for url, name in alio_notice_files(sn)]
     if not files:
         return "", [], "공고문 첨부 없음"
-    image_pdf = None
-    for url, name in files:
+    files.sort(key=lambda f: _file_rank(f[0], job.get("recrutPbancTtl", "")))
+    image_pdf = image_file = None
+    for name, fetch in files:
+        if any(w in name.replace(" ", "") for w in FORM_WORDS) and "공고" not in name:
+            continue                                       # 제출 서식은 읽지 않음
         try:
-            data, _ = http_get(url)
+            data = fetch()
+            if is_image_file(name, data):                  # [2026-10-08] 이미지 공고문은 아래에서 조각내서 읽음
+                if image_file is None:
+                    image_file = (name, data)
+                if "공고" in name:
+                    break
+                continue
             text = _clean(text_from_file(name, data))
         except Exception as e:
             print(f"  [공고문] {name} 읽기 실패: {e}")
@@ -156,6 +347,15 @@ def get_notice(job):
             return text[:MAX_DOC_CHARS], [], name
         if data[:4] == b"%PDF" and image_pdf is None:
             image_pdf = (name, data)
+            if "공고" in name:
+                break                                      # 공고문이 글자 없는 PDF면 직무기술서보다 공고문 이미지를 읽음
+    if image_file and not image_pdf:
+        try:
+            tiles = images_from_image(image_file[1])
+            if tiles:
+                return "", tiles, f"{image_file[0]} (이미지 공고문 → {len(tiles)}조각)"
+        except Exception as e:
+            print(f"  [공고문] 이미지 읽기 실패: {e}")
     if image_pdf:
         try:
             tiles = images_from_pdf(image_pdf[1])
@@ -163,11 +363,11 @@ def get_notice(job):
                 return "", tiles, f"{image_pdf[0]} (글자 없는 PDF → 이미지 {len(tiles)}조각)"
         except Exception as e:
             print(f"  [공고문] 이미지 변환 실패: {e}")
-    return "", [], f"공고문 텍스트 추출 실패 ({', '.join(n for _, n in files)})"
+    return "", [], f"공고문 텍스트 추출 실패 ({', '.join(n for n, _ in files)})"
 
 
 # ───────── 2. Claude로 핵심 정보 추출 ─────────
-SYSTEM = """너는 한국 공공기관 채용공고문에서 정보를 뽑아 JSON으로 정리하는 편집자야.
+SYSTEM = """너는 한국 채용공고문(공공기관·민간 기업)에서 정보를 뽑아 JSON으로 정리하는 편집자야.
 반드시 공고문에 적힌 사실만 쓴다. 공고문에 없으면 null 또는 빈 배열. 추측·일반론·계산 금지.
 숫자(인원·점수·문항수·배수)와 날짜는 공고문 그대로. 요일은 공고문에 적혀 있을 때만 붙인다.
 JSON 하나만 출력한다. 설명·마크다운 금지."""
@@ -235,7 +435,9 @@ def extract(job, doc, tiles=None):
     head = (f"기관: {clean_inst(job['instNm'])}\n공고명: {job['recrutPbancTtl']}\n"
             f"API 모집인원: {job.get('recrutNope')}명 / 고용형태: {job.get('hireTypeNmLst')}\n\n{SCHEMA}\n\n")
     if tiles:
-        user = [{"type": "text", "text": head + f"공고문은 글자 없는 이미지라 위에서 아래 순서로 {len(tiles)}조각으로 잘라 보내. "
+        if doc:
+            head += f"<페이지 글자 (참고)>\n{doc}\n</페이지 글자>\n\n"
+        user = [{"type": "text", "text": head + f"공고문은 이미지라 위에서 아래 순서로 {len(tiles)}조각으로 잘라 보내. "
                  "조각 경계에서 표가 이어질 수 있고, 위아래가 조금 겹쳐 있으니 중복으로 세지 마. 이미지에서 읽히는 내용만 써."}]
         user += [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": t}} for t in tiles]
     else:
@@ -280,6 +482,8 @@ def main():
         sn = str(sn)
         print(f"\n[{sn}]")
         post, job = mapping.get(sn), by_id.get(sn)
+        if sn.startswith("MN-") or (job or {}).get("_manual") or (post or {}).get("manual"):   # [2026-10-08]
+            print("  건너뜀: 수동 공고 글은 보강하지 않아요 (직접 쓴 본문·Claude 작성 본문 보호)"); continue
         if not post:
             print("  건너뜀: hiring03에 발행된 글이 없어요"); continue
         if not job:
@@ -287,6 +491,16 @@ def main():
         if sn in state and not force:
             print(f"  건너뜀: {state[sn]['at']}에 이미 보강했어요 (--force로 다시 가능)"); continue
         print(f"  {clean_inst(job['instNm'])} | {post.get('url', '')}")
+        # [2026-10-08] 발행 때와 같은 상세 보충을 다시 해야 기존 본문 내용(지원 자격 상세·접수 방법 등)이 안 빠짐
+        job = dict(job)
+        if is_gojobs(job):
+            job = enrich_gojobs(job)
+            if "_gojobs_contents" not in job:
+                print("  건너뜀: 나라일터 상세 보충 실패 (본문이 원래보다 빈약해질 수 있어 수정 안 함)"); continue
+        if is_work24(job):
+            job = enrich_work24(job)
+            if not job.get("_work24"):
+                print("  건너뜀: 공채속보 상세 보충 실패 (본문이 원래보다 빈약해질 수 있어 수정 안 함)"); continue
         try:
             doc, tiles, src_name = get_notice(job)
             if not doc and not tiles:

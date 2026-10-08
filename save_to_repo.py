@@ -2,6 +2,8 @@
 [2026-10-02] 실행 중에 다른 커밋(수동 업로드·다른 워크플로)이 들어와도 충돌 없이 저장
 - jobs.json      : 이번 실행 결과로 저장
 - job_posts.json : 저장소 쪽 기록 + 이번에 새로 발행한 기록을 합침 (어느 쪽 기록도 잃지 않음)
+[2026-10-08] 수동 공고 발행(publish_manual.py)이 바꾼 공고번호(.manual_changed.json)는 이번 실행 기록을 우선
+             (직접 쓴 본문 연결·Claude 글 다시 쓰기가 저장소의 예전 기록에 덮이지 않게)
 """
 import json, subprocess, sys, time
 from datetime import datetime, timezone
@@ -19,6 +21,7 @@ def load(path, default):
 
 ours_jobs = open("jobs.json", encoding="utf-8").read()
 ours_posts = load("job_posts.json", {})
+ours_changed = set(load(".manual_changed.json", []))
 
 sh("git", "config", "user.name", "job-compass-bot")
 sh("git", "config", "user.email", "actions@users.noreply.github.com")
@@ -28,6 +31,9 @@ for attempt in range(1, 6):
     sh("git", "reset", "--hard", "origin/main")          # 저장소 최신 상태로 맞춘 뒤
     remote_posts = load("job_posts.json", {})
     merged = {**ours_posts, **remote_posts}               # 같은 공고는 저장소 쪽(보강 등 최신 수정) 우선
+    for k in ours_changed:                                # 단, 수동 공고 발행이 이번에 바꾼 공고는 이번 기록 우선
+        if k in ours_posts:
+            merged[k] = ours_posts[k]
     added = len(set(merged) - set(remote_posts))
     with open("jobs.json", "w", encoding="utf-8") as f:
         f.write(ours_jobs)

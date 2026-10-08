@@ -171,7 +171,7 @@ def intro_box(inst, total_count, hire_type, starting_salary, avg_salary, inst_de
             f'아래에서 모집 분야, 전형 일정, 시험 과목까지 한 번에 확인하세요.</p>'
             f'</div>')
 
-def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True):
+def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True, deadline_label=""):
     """셀링포인트 태그 (인트로 박스 아래)"""
     tag_style = 'display:inline-block; background:#DBEAFE; color:#1E40AF; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     deadline_style = 'display:inline-block; background:#FEF3C7; color:#92400E; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
@@ -179,11 +179,20 @@ def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True):
     tags += f' <span style="{tag_style}">✅ {edu_label}</span>'
     if blind:
         tags += f' <span style="{tag_style}">✅ 블라인드 채용</span>'
-    tags += f' <span style="{deadline_style}">⏰ {deadline_short} 마감</span>'
+    tags += f' <span style="{deadline_style}">⏰ {deadline_label or (deadline_short + " 마감")}</span>'
     return f'<div style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px;">{tags}</div>'
 
 # ───────── 클린아이 제시 연봉 / 전형방법 ─────────
 SOURCE_NAME = {"alio": "잡알리오", "cleaneye": "클린아이", "gojobs": "나라일터", "work24": "고용24 공채속보"}
+
+
+def is_always(job):
+    """[2026-10-08] 수동 공고 중 상시채용·채용 시 마감 (pbancEndYmd는 정리 날짜일 뿐 실제 마감일 아님)"""
+    return bool(job.get("always"))
+
+
+def end_label(job):
+    return job.get("endLabel") or "상시채용"
 
 def is_private(job):
     """민간 기업 공고(고용24 공채속보) 여부 — 공공기관 전용 문구를 바꿔 쓰기 위함"""
@@ -570,7 +579,7 @@ def make_title(job):
     t = clean_title(job["recrutPbancTtl"])
     base = t if inst in t else f"{inst} {t}"
     if is_private(job) and not (job.get("recrutNope") or 0):
-        return f"{base} | {hire_short(job)} 채용, {md(job['pbancEndYmd'])} 마감"
+        return f"{base} | {hire_short(job)} 채용, " + (end_label(job) if is_always(job) else f"{md(job['pbancEndYmd'])} 마감")
     return f"{base} | {hire_short(job)} {nope_text(job)}, {md(job['pbancEndYmd'])} 마감"
 
 def make_labels(job):
@@ -626,6 +635,10 @@ def build_html(job, src, related=None, enh=None):
     if priv:
         step_toc = "전형 절차"                              # 민간: 단계명이 길어 목차·소제목은 짧게, 본문에서 풀어줌
     source_name = SOURCE_NAME.get(job.get("_source"), "잡알리오")
+    if job.get("_manual"):
+        source_name = "기업 채용 공고"                       # [2026-10-08] 수동 공고 — 고용24 데이터 아님
+    always = is_always(job)
+    end_txt = end_label(job) if always else f"{md(end)} 마감"
 
     # ★ 셀링포인트
     points = []
@@ -647,7 +660,7 @@ def build_html(job, src, related=None, enh=None):
     if is_regular:
         toc_items = [
             f"채용 개요: {inst} {hs} {nope_text(job) if (nope or not priv) else '공채'} 모집",
-            f"접수 일정: {md(end)} 마감",
+            f"접수 일정: {end_txt}",
             f"지원 자격: {acbg.split(', ')[0]} · {se}",
             step_toc,
             f"선배들이 말하는 합격 포인트: {'직무별 준비법' if priv else (ncs_main or '공공기관') + ' 직무 준비법'}",
@@ -656,7 +669,7 @@ def build_html(job, src, related=None, enh=None):
     else:
         toc_items = [
             f"채용 개요: {inst} {hs} {nope_text(job) if (nope or not priv) else '공채'} 모집",
-            f"접수 일정: {md(end)} 마감",
+            f"접수 일정: {end_txt}",
             f"지원 자격: {acbg.split(', ')[0]} · {se}",
             f"고용형태 알아보기: {hs}",
             step_toc,
@@ -668,7 +681,7 @@ def build_html(job, src, related=None, enh=None):
     edu_label = "학력무관" if "학력무관" in acbg else acbg.split(", ")[0]
     deadline_short = f"{int(end[4:6])}/{int(end[6:])}"
     intro = intro_box(inst, nope, hs, starting if starting > 0 else None, avg if avg > 0 else None, inst_desc, selling_point, offered)
-    intro += selling_tags(hs, nope, edu_label, deadline_short, blind=not priv)
+    intro += selling_tags(hs, nope, edu_label, deadline_short, blind=not priv, deadline_label=end_label(job) if always else "")
 
     # ★ H2-1 채용 개요 (+ 연봉 테이블 + NCS 태그 병합)
     sec_n = 1
@@ -690,18 +703,24 @@ def build_html(job, src, related=None, enh=None):
     # H2-2 접수 일정
     sec_n += 1
     total = (ymd(end) - ymd(bg)).days
-    s2 = (h2(sec_n, toc_items[sec_n - 1])
-          + p(f"접수는 {md(bg)}에 시작해서 {md_w(end)}에 끝나요. 전체 접수 기간은 {total}일이에요.")
+    if always:                                             # [2026-10-08] 상시채용 — 마감일·D-day 없음
+        s2_sched = (p(f"이 공고는 {r(end_label(job))}이에요. 정해진 마감일 없이 접수를 받다가 채용이 끝나면 예고 없이 닫힐 수 있어요.")
+                    + table(["구분", "일정"], [["접수 시작", "접수 중"], ["접수 마감", r(end_label(job))]], ["35%", "65%"]))
+    else:
+        s2_sched = (p(f"접수는 {md(bg)}에 시작해서 {md_w(end)}에 끝나요. 전체 접수 기간은 {total}일이에요.")
           + table(["구분", "일정"], [
               ["접수 시작", dot(bg)], ["접수 마감", r(dot(end) + f"({WEEK[ymd(end).weekday()]})")],
               ["남은 기간", f'<span class="jm-dday" data-end="{end[:4]}-{end[4:6]}-{end[6:]}T23:59:59+09:00" {RED}>{md(end)} 마감</span>']],
-              ["35%", "65%"])
+              ["35%", "65%"]))
+    s2 = (h2(sec_n, toc_items[sec_n - 1])
+          + s2_sched
           + ((p("접수 방법과 제출 서류는 기업이 고용24에 등록한 내용 그대로 정리했어요.")
               + table(["구분", "내용"], [r_ for r_ in [["접수 방법", _detail_html(wk.get("method"))] if wk.get("method") else None,
                                                     ["제출 서류", _detail_html(wk.get("docs"))] if wk.get("docs") else None] if r_],
                       ["25%", "75%"]))
              if priv and (wk.get("method") or wk.get("docs")) else "")
-          + box("red", "⚠️ 주의하세요", "마감 시각은 기관마다 달라요. 오후 6시에 닫는 곳도 많으니 마감 당일이 아니라 하루 전 제출을 목표로 하세요.")
+          + (box("red", "⚠️ 주의하세요", "상시채용은 적합한 지원자가 모이면 바로 닫히는 경우가 많아요. 미루지 말고 준비되는 대로 제출하세요.") if always else
+             box("red", "⚠️ 주의하세요", "마감 시각은 기관마다 달라요. 오후 6시에 닫는 곳도 많으니 마감 당일이 아니라 하루 전 제출을 목표로 하세요."))
           + p("그런데 가장 중요한 건 지원서 작성 시간이에요. 자기소개서 문항과 증빙 서류를 챙기다 보면 생각보다 오래 걸려요.")
           + p("신청 안 하면 그대로 지나가는 기회예요. 접수창부터 미리 열어두세요.")
           + cta("접수창 열기", src))
@@ -715,7 +734,7 @@ def build_html(job, src, related=None, enh=None):
               ["모집분야" if priv else "직무분야", ncs_text(job)]]
              + ([] if priv else [["대체인력", "예(휴직자 등 공석 대체)" if repl else "아니오"]]), ["35%", "65%"])
           + (box("red", "⚠️ 지원 대상 제한", _e(restriction)) if restriction else "")
-          + ((p("기업이 등록한 지원 자격을 그대로 옮겼어요.")
+          + ((p("기업 채용 공고 기준 지원 조건이에요. 직무별 세부 자격은 원문 공고에서 확인하세요." if job.get("_manual") else "기업이 등록한 지원 자격을 그대로 옮겼어요.")
               + "".join(box("blue", "📋 지원 자격 상세" if i == 0 else "📋 모집분야별 자격", _detail_html(t))
                         for i, t in enumerate(([wk["common"]] if wk.get("common") else []) + wk.get("support", []))))
              if priv and (wk.get("common") or wk.get("support")) else "")
@@ -796,7 +815,7 @@ def build_html(job, src, related=None, enh=None):
 
     # H2 함께 보면 좋은 공고
     sec_n += 1
-    rel_rows = [[clean_inst(j["instNm"]), hire_short(j), dot(j["pbancEndYmd"])[5:]] for j in (related or [])[:3]]
+    rel_rows = [[clean_inst(j["instNm"]), hire_short(j), "상시" if is_always(j) else dot(j["pbancEndYmd"])[5:]] for j in (related or [])[:3]]
     rel_label = (job.get("bizType") or "기업") if priv else (ncs_main or "분야")
     s7 = (h2(sec_n, toc_items[sec_n - 1])
           + p(f"같은 {rel_label} {'공채' if priv else '분야'}에서 지금 접수 중인 공고도 함께 보세요. 여러 곳을 같이 준비하면 자기소개서와 {'인적성' if priv else '필기'} 준비를 겹쳐 쓸 수 있어요.")
@@ -808,7 +827,7 @@ def build_html(job, src, related=None, enh=None):
     if priv and hl and hl[0] == "정규직":
         q3 = (("연봉은 얼마나 되나요?", f"DART {dart.get('year', '')}년 사업보고서 기준 {inst}의 직원 평균 연봉은 {r('약 ' + format(dart['avg'], ',') + '만원')}이에요. 전 직원 평균이라 신입 초봉은 이보다 낮아요. 정확한 처우는 원문 공고와 채용 페이지에서 확인하세요.")
               if dart and dart.get("avg") else
-              ("연봉은 얼마나 되나요?", "공채속보 데이터에는 연봉이 따로 등록돼 있지 않아요. 회사 내규에 따르는 경우가 많으니 원문 공고와 채용 페이지의 처우 안내를 확인하세요."))
+              ("연봉은 얼마나 되나요?", ("공고" if job.get("_manual") else "공채속보") + " 데이터에는 연봉이 따로 등록돼 있지 않아요. 회사 내규에 따르는 경우가 많으니 원문 공고와 채용 페이지의 처우 안내를 확인하세요."))
     elif priv and hl and "전환형" in hl[0]:
         q3 = ("정규직 전환형은 어떻게 되나요?", "일정 기간 근무한 뒤 평가를 거쳐 정규직으로 전환되는 방식이에요. 근무 기간과 전환 기준은 원문 공고에서 확인하세요.")
     elif hl and hl[0] == "정규직":
@@ -822,7 +841,9 @@ def build_html(job, src, related=None, enh=None):
     else:
         q3 = ("계약 기간이 끝나면 어떻게 되나요?", "기관 사정과 평가에 따라 재계약하거나 종료돼요. 연장·전환 가능 여부는 원문 공고에 적힌 기준을 확인하세요.")
     faqs = [
-        ("마감 당일 몇 시까지 접수되나요?", f"마감일은 {r(md_w(end))}이에요. 마감 시각은 기관마다 달라서 원문 공고에서 꼭 확인하고, 하루 전 제출을 권해요."),
+        (("언제까지 접수할 수 있나요?", f"이 공고는 {r(end_label(job))}이라 정해진 마감일이 없어요. 채용이 끝나면 예고 없이 닫힐 수 있으니 준비되는 대로 빨리 지원하는 게 좋아요.")
+         if always else
+         ("마감 당일 몇 시까지 접수되나요?", f"마감일은 {r(md_w(end))}이에요. 마감 시각은 기관마다 달라서 원문 공고에서 꼭 확인하고, 하루 전 제출을 권해요.")),
         ("학력 조건이 어떻게 되나요?", f"공고 데이터 기준 학력 조건은 「{acbg}」이에요. 전공이나 졸업 예정자 인정 여부는 원문 공고를 확인하세요."),
         q3,
         (("다른 회사와 중복 지원할 수 있나요?", "다른 회사와는 대부분 중복 지원할 수 있어요. 다만 같은 그룹 계열사끼리는 중복 지원을 제한하는 경우가 있으니 원문 공고의 유의사항을 확인하세요.")
@@ -853,15 +874,17 @@ def build_html(job, src, related=None, enh=None):
     elif any("채용형" in h for h in hl):
         tenure = "정규직 전환 "
 
-    body = (AD + toc(toc_items) + AD
-            + intro
+    body = (AD + toc(toc_items)
+            + intro + AD                    # [2026-10-08] 초반 순서: 광고 - 목차 - 후킹박스 - 광고 - 버튼
             + cta("채용공고 바로가기", src)  # ★ 첫 번째 CTA만 변경
             + sections_with_ads
             + AD
             + (box("green", "💡 유의사항 (기업 공지)", _detail_html(wk.get("notes"))) if priv and wk.get("notes") else "")
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
-            + p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job) if nope else '채용'} — 이런 공채는 자주 안 열려요.")
+            + (p(f"이번 {inst} 공고는 {r(end_label(job))}이에요. 정해진 마감일이 없는 대신 뽑히면 예고 없이 닫힐 수 있어요.")
+               if always else
+               p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job) if nope else '채용'} — 이런 공채는 자주 안 열려요."))
             + cta("지금 바로 지원하기", src)
             + AD
             + '<div style="background:#F3F4F6; border-radius:10px; padding:16px 18px; margin:30px 0 10px; font-size:14px; color:#6B7280; line-height:1.65; word-break:keep-all;">'
