@@ -1,0 +1,86 @@
+name: 수동 공고 발행
+
+# [2026-10-08] manual_jobs.json 수정 후 이 버튼을 누르면
+#   ① 카드(jobs.json)에 바로 반영 → ② 글 없는 수동 공고를 Claude가 본문 작성·hiring03 발행 → ③ 카드 사이트 배포
+# 예약 자동발행·본문 보강은 수동 공고를 건드리지 않음
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "특정 공고만 (비우면 새 공고 전부, 예: MN-TOSS-05,MN-TOSS-17)"
+        required: false
+        default: ""
+      dry_run:
+        description: "테스트만 (발행 안 하고 미리보기 파일만)"
+        type: boolean
+        default: false
+      force:
+        description: "이미 Claude가 쓴 글 다시 쓰기 (ids 지정 필요, 직접 쓴 본문은 안 건드림)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages              # 채용공고 업데이트와 동시에 안 돌게 (같은 jobs.json을 씀)
+  cancel-in-progress: false
+
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 수동 공고 카드 반영 + 본문 발행
+        continue-on-error: true      # 중간에 오류가 나도 그때까지 발행한 기록은 아래에서 저장 (중복 발행 방지)
+        env:
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          MANUAL_IDS: ${{ inputs.ids }}
+          MANUAL_DRY_RUN: ${{ inputs.dry_run }}
+          MANUAL_FORCE: ${{ inputs.force }}
+        run: python publish_manual.py
+
+      - name: 미리보기 내려받기용 저장
+        if: ${{ inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-preview
+          path: preview/
+          if-no-files-found: ignore
+
+      - name: 저장소에 저장
+        if: ${{ !inputs.dry_run }}
+        run: python save_to_repo.py
+
+      - name: 배포 파일 준비
+        if: ${{ !inputs.dry_run }}
+        run: |
+          mkdir -p _site
+          cp jobs.json job_posts.json _site/
+          [ -f views.json ] && cp views.json _site/ || true
+          touch _site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+        if: ${{ !inputs.dry_run }}
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ !inputs.dry_run }}
+        with:
+          path: _site
+      - name: Pages 배포
+        if: ${{ !inputs.dry_run }}
+        id: deployment
+        uses: actions/deploy-pages@v4

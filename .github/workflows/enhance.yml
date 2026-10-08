@@ -30,7 +30,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pypdf pyhwp pypdfium2 pillow
+      - run: pip install pypdf pyhwp pypdfium2 pillow olefile playwright   # olefile: HWP 직접 읽기 / playwright: 기업 채용 페이지 읽기 [2026-10-08]
+      - run: python -m playwright install --with-deps chromium
 
       - name: 본문 보강
         env:
@@ -40,6 +41,8 @@ jobs:
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
           BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}            # 나라일터 상세 보충 (발행 때와 같은 내용 유지)
+          WORK24_GONGCHAE_KEY: ${{ secrets.WORK24_GONGCHAE_KEY }}  # 공채속보 상세 보충
           ENHANCE_IDS: ${{ inputs.ids }}
           ENHANCE_DRY_RUN: ${{ inputs.dry_run }}
           ENHANCE_FORCE: ${{ inputs.force }}
