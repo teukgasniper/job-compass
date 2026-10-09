@@ -4271,5 +4271,258 @@
    "language": null,
    "written": null
   }
+ },
+ "294385": {
+  "at": "2026-10-10 03:29",
+  "url": "https://hiring03.ddolbestory.com/2026/09/comwel-294385.html",
+  "source": "251224 [산재심사위원회] 공무직(사무원) 채용 공고문.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격사항(100점)+우대사항(10점) 정량평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "1월 8일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "1월 13일(화)",
+     "desc": "직업기초능력 및 직무수행능력 평가",
+     "note": "가산점 포함 평균 50점 이상 합격"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "1월 16일(금)",
+     "desc": "면접 합격자 중 서류검증 적격자 선발",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305707": {
+  "at": "2026-10-10 03:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305707.html",
+  "source": "채용 공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기능직 1명, 공무직 2명, 기간제 3명 등 총 6명을 뽑아요.",
+    "columns": [
+     "운전 및 차량관리",
+     "시설운영",
+     "보안",
+     "정보시스템운영",
+     "디자인",
+     "일반행정"
+    ],
+    "rows": [
+     {
+      "label": "기능직",
+      "values": [
+       1,
+       null,
+       null,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "공무직",
+      "values": [
+       null,
+       1,
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "기간제",
+      "values": [
+       null,
+       null,
+       null,
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 2일~16일",
+     "desc": "적부평가 및 자기소개서 정성평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 27일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "10월 30일(금)까지",
+     "desc": "온라인 인성검사, 면접 참고자료로 활용",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종 면접전형",
+     "date": "11월 3일(화)",
+     "desc": "직무·인성면접(디자인은 발표면접 포함)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 17일(화)",
+     "desc": "신체검사 등 거쳐 적격자 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305774": {
+  "at": "2026-10-10 03:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305774.html",
+  "source": "2026년 제2차 일반직사원 채용공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "경력직 사업관리 2명, 안전관리 2명, 보건관리 2명, 사무직군(고졸) 2명, 사무직군(인턴) 8명, 기술직군(인턴) 3명을 뽑아요.",
+    "columns": [
+     "경력직(사업관리)",
+     "안전관리",
+     "보건관리",
+     "사무직군(고졸)",
+     "사무직군(인턴)",
+     "기술직군(인턴)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       2,
+       2,
+       2,
+       2,
+       8,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "notice",
+     "label": "원서접수",
+     "date": "10월 7일~21일"
+    },
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "정량평가(30점)+정성평가(70점)",
+     "note": "30배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 4일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기심사",
+     "date": "11월 14일(토)",
+     "desc": "인성검사+직업기초능력평가+직무수행능력평가",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기심사 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "11월 24일~25일",
+     "desc": "발표면접+집중면접 또는 다대다 구술면접",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접심사 합격자 발표",
+     "date": "12월 1일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 9일(수)",
+     "desc": "서류검증 후 12월14일(월) 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사(300문항 내외)와 직업기초능력평가(30문항), 직무수행능력평가(20문항)로 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "300문항 내외",
+      "scope": null,
+      "note": "적/부 판정",
+      "ncs": false
+     },
+     {
+      "name": "직업기초능력평가",
+      "count": "30문항",
+      "scope": "의사소통, 수리, 문제해결",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "직무수행능력평가",
+      "count": "20문항",
+      "scope": "경영학원론(회계학원론 포함)",
+      "note": "분야별 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
