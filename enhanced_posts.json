@@ -4042,5 +4042,234 @@
    "language": null,
    "written": null
   }
+ },
+ "305856": {
+  "at": "2026-10-09 19:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/comwel-305856.html",
+  "source": "261008 [근로복지공단 울산병원] 의료직 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "간호사 66명, 물리치료사 16명 등 총 9개 직렬에서 99명을 뽑아요.",
+    "columns": [
+     "간호사",
+     "방사선사",
+     "임상병리사",
+     "물리치료사",
+     "작업치료사",
+     "산업위생사",
+     "사회복지사",
+     "기타"
+    ],
+    "rows": [
+     {
+      "label": "의료직",
+      "values": [
+       66,
+       2,
+       1,
+       16,
+       8,
+       2,
+       1,
+       3
+      ]
+     }
+    ],
+    "note": "기타는 의공기사 1명, 청능·청각사 2명을 합한 수예요."
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "정량평가(100점) + 우대가점(최대10점)",
+     "note": "2.5~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 4일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 직업성격검사·증빙서류 등록",
+     "date": "11월 4일~9일",
+     "desc": "온라인 직업성격검사 실시 및 증빙서류 사전 등록",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 16일~20일",
+     "desc": "1인 개별면접, NCS 기반 직업기초·직무수행능력 평가",
+     "note": "평균 50점 미만 시 부적격"
+    },
+    {
+     "type": "notice",
+     "label": "서류검증",
+     "date": "11월 16일~12월 2일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 8일(화)",
+     "desc": "임용후보자 등록·신체검사 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305732": {
+  "at": "2026-10-09 19:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305732.html",
+  "source": "1. 모집공고.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "계약직으로 행정 3명, 방사선사 2명, 간호사 또는 응급구조사 또는 보건의료정보관리사 2명을 뽑아요.",
+    "columns": [
+     "행정",
+     "방사선사",
+     "간호사/응급구조사/보건의료정보관리사"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       3,
+       2,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 필기전형",
+     "date": "10월 17일(토)",
+     "desc": "NCS 직업기초능력평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "10월 20일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 22일(목)",
+     "desc": "블라인드 면접(1차 40%, 2차 60%)",
+     "note": "총점 60점 미만 불합격"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "10월 26일(월)",
+     "desc": "서류 제출 및 신체검사 후 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (행정)",
+    "text": "TOEIC 700점, TOEIC-S 120점, TOEFL 80점, NEW TEPS 264점 중 1개 이상의 공인영어성적이 있어야 해요. 접수마감일 기준 최근 2년 이내 발표된 성적만 인정돼요.",
+    "highlight": "TOEIC 700 이상"
+   },
+   "written": {
+    "summary": "필기전형은 NCS 직업기초능력평가로 진행하며, 40점 이상 득점자 중 고득점자순으로 모집인원의 5배수를 선발해요.",
+    "highlight": "40점 이상",
+    "subjects": [
+     {
+      "name": "NCS 직업기초능력평가",
+      "count": null,
+      "scope": null,
+      "note": "40점 이상 득점자 중 5배수 선발",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305714": {
+  "at": "2026-10-09 19:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305714.html",
+  "source": "채용공고문(업무지원직_10월).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "업무지원직 외래보조 1명, 간호간병 병동지원 1명, 조리원 6명, 청소 2명 등 총 10명을 뽑아요.",
+    "columns": [
+     "외래보조",
+     "병동지원",
+     "조리원",
+     "청소"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1,
+       6,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자격요건 충족여부 확인, 충족자 전원 합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격 발표",
+     "date": "10월 20일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 22일~23일",
+     "desc": "블라인드 면접(직무·공통역량)",
+     "note": "면접 100점, 가점 5~10%"
+    },
+    {
+     "type": "notice",
+     "label": "채용검증위원회",
+     "date": "10월 26일(월)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 27일(화)",
+     "desc": "신체검사·신원조회 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
