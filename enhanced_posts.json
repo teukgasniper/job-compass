@@ -3878,5 +3878,169 @@
    "language": null,
    "written": null
   }
+ },
+ "305703": {
+  "at": "2026-10-09 10:23",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305703.html",
+  "source": "2. 2026년 제6차 요양보호직 공개채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "원주보훈요양원 요양보호사를 정규직 3명, 정규직 전환 조건 계약직 9명 뽑아요.",
+    "columns": [
+     "정규직",
+     "정규직 전환 조건 계약직"
+    ],
+    "rows": [
+     {
+      "label": "요양보호사",
+      "values": [
+       3,
+       9
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 2일~19일",
+     "desc": "자격요건 충족 시 전원합격(불성실 기재 시 불합격 가능)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 20일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 21일(수)",
+     "desc": "블라인드 면접(직무·능력·인성면접)",
+     "note": "면접점수 60점 미만 과락"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "10월 23일(금)"
+    },
+    {
+     "type": "final",
+     "title": "최종 — 임용",
+     "date": "11월 1일(일)",
+     "desc": "신체검사·합격서류 등록 후 8명 즉시 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-179066": {
+  "at": "2026-10-09 10:23",
+  "url": "https://hiring03.ddolbestory.com/2026/10/emart-wk179066.html",
+  "source": "기업 채용 페이지 (https://job.shinsegae.com/rcrut/detail/5365)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "9월 18일~10월 12일",
+     "desc": "접수 마감 18시까지, AI 역량평가 진행될 수 있음",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "10월말"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형(1~3차)",
+     "date": null,
+     "desc": "1차부터 3차까지 순차 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "채용검진 후 최종 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305749": {
+  "at": "2026-10-09 10:23",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305749.html",
+  "source": "정규직-무기계약직 업무지원직(고객지원 급식) 직원 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "업무지원직(고객지원) 간병지원 1명과 업무지원직(급식) 취사원 1명을 뽑아요.",
+    "columns": [
+     "간병지원(고객지원)",
+     "취사원(급식)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 6일~16일",
+     "desc": "기본 자격요건 충족자 선발",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격 발표",
+     "date": "10월 19일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 21일(수)",
+     "desc": "NCS 기반 면접, 면접 100%(+가점)",
+     "note": "60점 이상자 중 고득점순"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 23일(금)",
+     "desc": "신체검사·신원조회 후 11월 1일 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
