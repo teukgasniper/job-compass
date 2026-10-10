@@ -5038,5 +5038,272 @@
    "language": null,
    "written": null
   }
+ },
+ "305515": {
+  "at": "2026-10-11 04:29",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-305515.html",
+  "source": "2026년도_NCS기반_신규직원_블라인드_채용_공고.jpg (이미지 공고문 → 10조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반행정(사무) 6명, 시설관리(건축·전기·설비) 9명 등 총 15명을 뽑아요.",
+    "columns": [
+     "사무",
+     "건축",
+     "전기",
+     "설비"
+    ],
+    "rows": [
+     {
+      "label": "일반직7급",
+      "values": [
+       3,
+       1,
+       2,
+       1
+      ]
+     },
+     {
+      "label": "일반직8급",
+      "values": [
+       3,
+       1,
+       3,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서(40점)+자격사항(60점) 평가",
+     "note": "30배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 발표",
+     "date": "10월 23일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 31일(토)",
+     "desc": "직업공통능력평가(60문항)+직무지식평가(30문항)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 발표",
+     "date": "11월 10일(화)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인성검사",
+     "date": "11월 12일~13일",
+     "desc": "온라인 개별응시로 직무수행 역량 평가",
+     "note": "필기 합격자만 응시"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "11월 19일~20일",
+     "desc": "토의면접(50%)+종합(경험)면접(50%)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 8일(화)",
+     "desc": "이의신청·구비서류 제출 후 12.29 채용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 직업공통능력평가와 직무지식평가로 봐요. 총 90문항이에요.",
+    "highlight": "90문항",
+    "subjects": [
+     {
+      "name": "직업공통능력평가",
+      "count": "60문항",
+      "scope": "의사소통, 수리, 문제해결, 자기관리, 대인관계, 디지털, 직업윤리",
+      "note": "일반직8급은 100% 반영",
+      "ncs": true
+     },
+     {
+      "name": "직무지식평가(전공시험)",
+      "count": "30문항",
+      "scope": "경영학·경제학 또는 행정학·법학, 건축구조·시공, 전기이론·전자일반, 기계공학",
+      "note": "일반직7급만 응시",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305688": {
+  "at": "2026-10-11 04:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305688.html",
+  "source": "지원직 채용공고.zip",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "경력·자격·교육사항 및 자기소개서 평가(100점 만점)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 발표",
+     "date": "10월 19일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 21일(수)",
+     "desc": "직무수행능력(지식, 태도 등) 평가(15점 만점)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 22일(목)",
+     "desc": "채용구비서류 검증 후 10월 30일(금) 채용예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305752": {
+  "at": "2026-10-11 04:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305752.html",
+  "source": "1. 한국언론진흥재단 2026년 2차 정규직 신입사원 채용 공고문_최종.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반행정(공개경쟁) 9명, 일반행정(장애)(제한경쟁) 1명, IT(공개경쟁) 1명을 뽑아요.",
+    "columns": [
+     "일반행정",
+     "일반행정(장애)",
+     "IT"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       9,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~29일",
+     "desc": "블라인드 위배·불성실 기재자 제외 전원 합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 30일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차 필기",
+     "date": "11월 7일(토)",
+     "desc": "직업기초능력평가+직무수행능력평가",
+     "note": "10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 필기 합격자 발표",
+     "date": "11월 18일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차 필기",
+     "date": "11월 21일(토)",
+     "desc": "직무논술(논술형·자료분석형 등)",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "2차 필기 합격자 발표",
+     "date": "12월 2일"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "12월 8일(화)~9일(수)",
+     "desc": "실무면접+발표면접+인성면접(일반행정 기준)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 23일",
+     "desc": "수습(3개월) 후 12월31일자 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 1차(직업기초능력평가+직무수행능력평가, 각 50문항)와 2차(직무논술)로 나뉘어요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "직업기초능력평가",
+      "count": "50문항(일반행정·IT)/25문항(장애)",
+      "scope": "의사소통, 수리, 문제해결, 자기관리, 디지털능력",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "직무수행능력평가",
+      "count": "50문항(일반행정·IT)/25문항(장애)",
+      "scope": "미디어·광고·경영·경제 등 직무관련 과목",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "직무논술",
+      "count": "3문항(일반행정)/2문항(장애·IT)",
+      "scope": "미디어·광고·경영 등 직무관련 주제",
+      "note": "자료분석형 등 포함",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
