@@ -4879,5 +4879,164 @@
    "language": null,
    "written": null
   }
+ },
+ "299412": {
+  "at": "2026-10-10 21:59",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-299412.html",
+  "source": "약무직(면허소지자) 채용공고.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격 충족 여부 심사, 충족자 전원 합격",
+     "note": "직무수행계획서 200자 미만 불합격"
+    },
+    {
+     "type": "final",
+     "title": "2단계 — 면접시험",
+     "date": null,
+     "desc": "직무 수행 능력, 인성 및 적격성 검정",
+     "note": "만점 100점, 40% 이상 득점자 중 선발"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305631": {
+  "at": "2026-10-10 21:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305631.html",
+  "source": "2-1. 충남대학교병원 10월 공무직 채용공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "방사선사(전일제) 2명, 방사선사(반일제) 2명, 음식조리 및 판매(부대사업장) 2명을 뽑아요.",
+    "columns": [
+     "방사선사(전일제)",
+     "방사선사(반일제)",
+     "음식조리 및 판매"
+    ],
+    "rows": [
+     {
+      "label": "공무직",
+      "values": [
+       2,
+       2,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 1일~15일",
+     "desc": "응시자격 충족 여부 및 자기소개서 성실 작성 여부 확인",
+     "note": "적부심사"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월중"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월중",
+     "desc": "종합평가(인성, 조직적합도, 직무역량 등)",
+     "note": "모집인원의 1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "최종 합격자 발표",
+     "date": "10월말"
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 결격사유 조회·임용",
+     "date": "11월초",
+     "desc": "범죄경력 조회, 신체검사 등 결격사유 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-179069": {
+  "at": "2026-10-10 21:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/shinsegae-wk179069.html",
+  "source": "기업 채용 페이지 (https://job.shinsegae.com/rcrut/detail/5354)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "9월 18일~10월 12일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "10월말"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": null,
+     "desc": "기초소양 면접",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접(Dream Stage)",
+     "date": null,
+     "desc": "직무 면접",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 최종면접",
+     "date": null,
+     "desc": "임원 면접",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "채용검진 후 최종 합격",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
