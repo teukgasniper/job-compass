@@ -4751,5 +4751,133 @@
     "callout": null
    }
   }
+ },
+ "305681": {
+  "at": "2026-10-10 15:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305681.html",
+  "source": "정규직 요양보호직 채용공고.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 2일~16일",
+     "desc": "지원자격 요건 충족 및 필수서류 제출자 전원",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 19일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "10월 20일(화)",
+     "desc": "면접 가점의 고득점순 100%로 선발",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 22일(목)",
+     "desc": "신체검사·신원조사 후 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "301416": {
+  "at": "2026-10-10 15:19",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-301416.html",
+  "source": "2026년 약무직 공개채용 수시모집 공고문.pdf",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "정량평가(교육·어학 65점)+정성평가(경력·자소서 35점)",
+     "note": "2배수 이내 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": "직무능력, 인성, 태도, 표현력, 장래성 등 종합 검정",
+     "note": "1배수 이내(예비합격자 포함)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 입사지원서 기재사항 진위확인",
+     "date": null,
+     "desc": "면허증·경력 등 기재사항과 증빙서류 일치 여부 확인",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": null,
+     "desc": "증빙서류 확인 후 임용희망자등록·건강검진 거쳐 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익, 토플, 텝스, 오픽, 토익스피킹, 텝스스피킹 성적 중 토익 기준 600점 이상부터 가산점을 받을 수 있고, 다른 시험 성적은 토익 점수로 환산해요.",
+    "highlight": "600점 이상"
+   },
+   "written": null
+  }
+ },
+ "299289": {
+  "at": "2026-10-10 15:19",
+  "url": "https://hiring03.ddolbestory.com/2026/09/job-299289.html",
+  "source": "2025년도 일반직(약무직) 신규직원 블라인드 공개채용 상시모집 공고_실무전형.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격 요건 충족 여부 적격 심사",
+     "note": "요건 충족자 전원 합격"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무(실기)시험 및 면접시험",
+     "date": null,
+     "desc": "실무(실기)시험 60점 + 면접시험 40점",
+     "note": "총점 60점 이하 불합격"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "서류적격확인 후 정규직 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
