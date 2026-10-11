@@ -5555,5 +5555,68 @@
    "language": null,
    "written": null
   }
+ },
+ "305841": {
+  "at": "2026-10-11 22:26",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305841.html",
+  "source": "직원(수습직-약무직) 공개채용 공고.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "약무직 약사 5명, 방사성의약품 제조(품질)관리자 1명을 뽑아요.",
+    "columns": [
+     "약사",
+     "방사성의약품 제조(품질)관리자"
+    ],
+    "rows": [
+     {
+      "label": "약무직",
+      "values": [
+       5,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 23일~10월 29일",
+     "desc": "직무적합성·조직적합성 종합평가",
+     "note": "2배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "notice",
+     "label": "AI역량검사",
+     "date": "11월 4일~11월 8일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 11일~11월 17일",
+     "desc": "직업윤리·전문지식·표현력 등 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 24일(화)",
+     "desc": "신체검사 후 수습직으로 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
