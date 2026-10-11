@@ -5504,5 +5504,56 @@
    },
    "written": null
   }
+ },
+ "WK-179842": {
+  "at": "2026-10-11 15:21",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hanwha-wk179842.html",
+  "source": "기업 채용 페이지 이미지 5조각 (https://www.hanwhain.com/apply/recruit/detail?rtSeq=19809)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "인적성검사 없이 서류·면접전형으로 진행해요",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 입사",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
