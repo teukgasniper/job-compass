@@ -1932,6 +1932,21 @@
    "thread_id": "18103672603993592",
    "comment_id": "18287371480291482",
    "at": "2026-10-12 05:29"
+  },
+  {
+   "id": "WK-180342",
+   "instNm": "에스케이브로드밴드",
+   "title": "2026년 Junior Talent 채용(Infra)",
+   "combo_idx": 7,
+   "combo_cat": "urgent",
+   "hook": "⚠️내일이면 마감인데\n아직 안 본 사람 많을 듯",
+   "closer": "마감 하루 전, 지금이 마지막 확인 타이밍임",
+   "hook_type": "plain",
+   "tier": 1,
+   "logo": true,
+   "thread_id": "18108220421625675",
+   "comment_id": "18116986091070735",
+   "at": "2026-10-12 07:19"
   }
  ],
  "logo_tried": {
