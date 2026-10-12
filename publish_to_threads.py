@@ -121,6 +121,28 @@ def is_cleaneye(job: dict) -> bool:
     return job.get("_source") == "cleaneye"
 
 
+SALARY_MIN = 3000   # [2026-10-12] 연봉 3천만원 미만은 쓰레드에 안 씀 (외부 유입 후킹이 안 됨, 본문에는 그대로 표시)
+
+
+def salary_manwon(text) -> int:
+    """'3200만원 이상', '3,200만원', '1억 200만원' → 만원 단위 숫자 (못 읽으면 0)"""
+    t = str(text or "").replace(",", "").replace(" ", "")
+    m = re.search(r"(?:(\d+)억)?(\d+)?만", t)
+    if m and (m.group(1) or m.group(2)):
+        return int(m.group(1) or 0) * 10000 + int(m.group(2) or 0)
+    m = re.search(r"(\d+)억", t)
+    return int(m.group(1)) * 10000 if m else 0
+
+
+def low_salary_in(text: str) -> bool:
+    """글에 3천만원 미만 연봉이 들어갔는지 (연봉·급여·보수 바로 뒤 금액 기준)"""
+    for m in re.finditer(r"(연봉|급여|보수|임금)[^\n\d]{0,12}((?:\d[\d,]*\s*억\s*)?\d[\d,]*\s*만)", text or ""):
+        v = salary_manwon(m.group(2))
+        if 0 < v < SALARY_MIN:
+            return True
+    return False
+
+
 def cleaneye_kind(job: dict) -> str:
     """[2026-10-12] 클린아이 기관 성격 한 줄 — 리스트에 넣어 공공기관임을 보여줌 (예: '경상북도 출연 공공기관')"""
     rgn = re.split(r"[ ,]", (job.get("workRgnNmLst") or "").strip())[0]
@@ -816,6 +838,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     for k_src, k_out in (("yearIncome", "공고 제시 연봉(클린아이)"), ("judgeMethod", "전형방법(클린아이)")):
         if job.get(k_src):
             data[k_out] = job[k_src]
+    low_pay = 0 < salary_manwon(job.get("yearIncome")) < SALARY_MIN
+    if low_pay:                                   # [2026-10-12] 3천만원 미만 제시 연봉은 넘기지 않음
+        data.pop("공고 제시 연봉(클린아이)", None)
     if is_private(job):
         data["기업구분"] = f"민간 {job.get('bizType') or '기업'} (공기업 아님)"
     if job.get("localYn") == "Y":                 # [2026-10-12] 클린아이 지역제한 — 리스트에 반드시 명시
@@ -855,7 +880,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력조건' 괄호 안 내용을 그대로 쓰고, '누구나 지원' 류 금지")
     if edu_unknown(job, post_text):
         lines.append("- 이 공고는 학력 정보가 없음 → 훅·리스트·클로저에 학력·블라인드·'누구나 지원' 언급 금지. "
-                     "리스트는 인원·고용형태·공고 제시 연봉·근무지(지역제한)·마감일로 채울 것")
+                     "리스트는 인원·고용형태·" + ("" if low_pay else "공고 제시 연봉·") + "근무지(지역제한)·마감일로 채울 것")
+    if low_pay or low_salary_in(post_text):
+        lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 인원·고용형태·근무지·전형으로 채울 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
 
@@ -983,6 +1010,8 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         return None, "링크/해시태그"
     if public_kind and not any(re.search(r"공공|공기업|출연|출자", x) for x in items):
         return None, "공공기관 표시 없음"   # [2026-10-12] 클린아이: 회사처럼 보이지 않게
+    if low_salary_in(body):
+        return None, "3천만원 미만 연봉 언급"   # [2026-10-12] 외부 유입 후킹이 안 됨
     if no_edu and re.search(r"학력|학벌|고졸|대졸|학사|블라인드|누구나\s*지원", body):
         return None, "학력 정보 없는 공고에 학력 언급"   # [2026-10-12] 클린아이
     if len(body) > 490:
@@ -1465,7 +1494,9 @@ def git_push(paths, msg):
         subprocess.run(["git", "add", *paths], check=True)
         subprocess.run(["git", "commit", "-m", msg], check=True)
         for _ in range(3):
-            if subprocess.run(["git", "pull", "--rebase"]).returncode == 0 and \
+            # [2026-10-12] --autostash: 학력 기록(edu_cache)·logos_missing.txt 같은 저장 안 된 변경이 있으면
+            #              pull --rebase가 실패해서 로고 주소를 못 받고 글만 발행되던 문제
+            if subprocess.run(["git", "pull", "--rebase", "--autostash"]).returncode == 0 and \
                subprocess.run(["git", "push"]).returncode == 0:
                 return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
             time.sleep(5)
