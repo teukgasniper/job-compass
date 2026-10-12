@@ -5718,5 +5718,112 @@
    "language": null,
    "written": null
   }
+ },
+ "305651": {
+  "at": "2026-10-12 20:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305651.html",
+  "source": "2026-16차 직원 공개채용 계획.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "업무지원직 청소 1명, 외래보조 1명을 뽑아요.",
+    "columns": [
+     "청소",
+     "외래보조"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 1일~15일(목) 10:00까지",
+     "desc": "필수 자격요건 충족 여부 확인",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": "10월 16일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 21일(수)",
+     "desc": "100점 만점 기준 60점 이상자(가점 포함) 합격",
+     "note": "면접 60% 미만 불합격"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 결과발표",
+     "date": "10월 22일(목)"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "10월 22일(목)",
+     "desc": "신체검사·신원조회 후 임용(청소 11.2, 외래보조 12.1)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305593": {
+  "at": "2026-10-12 20:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305593.html",
+  "source": "1. [채용공고 2026-12호] 공고문.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 다섯째 주",
+     "desc": "교육이수경력·전공적합성·경력경험·연구실적·자기소개서 평가",
+     "note": "평균 80점 이상자 중 4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "10월 30일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "11월 첫째 주",
+     "desc": "공통직업기초능력·직무직업기초능력 평가",
+     "note": "평균 80점 이상자 중 고득점 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 10일(화)",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
