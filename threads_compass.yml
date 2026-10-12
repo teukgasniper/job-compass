@@ -1,0 +1,65 @@
+name: 쓰레드 자동발행 (compass)
+
+on:
+  schedule:
+    - cron: "11 * * * *"  # 매시간 11분 — jami(41분)와 30분 어긋나게. 발행 간격은 MIN_GAP_MIN으로 약 2시간 유지
+  repository_dispatch:            # 외부 예약(cron-job.org)이 깨우는 자동 실행 — GitHub 예약이 빠져도 발행되게
+    types: [threads-compass]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "테스트만 (글 생성해서 보여주기만, 발행 X)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: threads-publish   # [2026-10-12] 모든 자동발행 계정이 같은 그룹 — 동시에 돌면서 같은 공고를 고르지 않게
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # 자동 실행(GitHub 예약·외부 예약)은 Variables의 THREADS_AUTO_COMPASS 가 'on' 일 때만 동작 (수동 실행은 항상 가능)
+    if: github.event_name == 'workflow_dispatch' || vars.THREADS_AUTO_COMPASS == 'on'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install requests beautifulsoup4 pillow cairosvg pypdf pyhwp pypdfium2 olefile   # pypdf~olefile: 클린아이 공고문 학력 확인 [2026-10-12]
+      - run: sudo apt-get install -y -qq fonts-nanum   # 로고 실패 시 기관명 텍스트 카드용 한글 폰트
+
+      - name: 후킹글 생성 + 발행
+        env:
+          ACCOUNT: compass
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN_COMPASS }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_COMPASS }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+          COMMENT_LINK: ${{ vars.COMMENT_LINK_COMPASS || 'profile' }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
+          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '100' || '60' }}   # 자동 실행은 100분 → 실제 평균 약 2시간 간격
+        run: python publish_to_threads.py
+
+      - name: 사용 기록 저장
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in threads_state logos logos_text logos_missing.txt; do
+            [ -e "$p" ] && git add "$p"
+          done
+          if git diff --cached --quiet; then
+            echo "기록 변경 없음"; exit 0
+          fi
+          git commit -m "threads(compass): 발행 기록 업데이트"
+          for i in 1 2 3; do
+            git pull --rebase && git push && exit 0
+            sleep 5
+          done
+          exit 1
