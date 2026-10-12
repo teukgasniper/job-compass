@@ -304,6 +304,11 @@ def thread_eligible(job, now=None):
         return False
     if not_newbie(title):
         return False
+    # [2026-10-12] 쓰레드와 같은 기준: 지원 대상 제한 공고(보훈·장애인 전형)와 강사·아르바이트성 공고 제외
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title):
+        return False
+    if re.search(r"강사|프로그램\s*운영자|아르바이트|단기\s*근로|공모\s*직위|(과|국|부|팀)장급", title):
+        return False
     return True
 
 def score(job, now=None):
