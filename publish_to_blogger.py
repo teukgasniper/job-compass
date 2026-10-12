@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from post_template import build_html, make_title, make_labels, days_left, clean_inst, ncs_list, hire_list, regions, KST
 import random
+from edu_lookup import apply_edu
 
 JOBS_FILE, MAPPING_FILE = "jobs.json", "job_posts.json"
 PER_RUN = int(os.environ.get("PUBLISH_PER_RUN", "5"))   # 1회 평균 발행 개수 (실제는 ±2 랜덤)
@@ -271,10 +272,28 @@ def slug_for(job):
             return f"{v}-{sn}"
     return f"job-{sn}"
 
+# [2026-10-12] 취준생 대상이 아닌 공고 (임원·개방형·경력경쟁·교수·박사급·시험 안내 공지 등)
+NOT_NEWBIE_RE = re.compile(
+    r"개방형|선임이사|상임이사|비상임|이사\s*및\s*감사|감사\s*공개모집|감사관|임원|본부장|사장\s*(공모|모집)|대표\s*\(|"
+    r"원장\s*(공모|모집|선발|\()|관장|보건소장|경력경쟁|전임교원|교수|연구위원|박사후|박사급|"
+    r"위촉연구원|추천선발|단원\s*모집|필기시험\s*일시|시험\s*장소|일정\s*변경|합격자")
+# 계약직·경력직은 제목에 정규직·채용형·신입이 같이 있으면 통과 (예: "경력직 및 채용형인턴", "정규직 조리사, 계약직…")
+SOFT_NOT_NEWBIE_RE = re.compile(r"(?<!무기)계약직|경력직(?!원)")
+
+
+def not_newbie(title: str) -> bool:
+    if NOT_NEWBIE_RE.search(title):
+        return True
+    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title):   # "공개, 제한경쟁"처럼 섞인 공고는 통과
+        return True
+    return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
+
+
 def thread_eligible(job, now=None):
     """쓰레드 글감 조건 (지침서 4장): 정규직·무기계약직·채용형인턴 + 신입 가능 + 의사직 제외"""
     hl = hire_list(job)
-    if not any(h in ("정규직", "무기계약직", "청년인턴(채용형)") for h in hl):
+    # [2026-10-12] 정규직전환형(채용형 인턴) 추가 — 쓰레드 자동발행은 이미 통과시키고 있어 본문 없이 나가던 문제
+    if not any(h in ("정규직", "무기계약직", "청년인턴(채용형)", "정규직전환형") for h in hl):
         # 나라일터 공고는 고용형태가 비어있을 수 있으므로 일단 통과시킴
         if not is_gojobs(job):
             return False
@@ -282,6 +301,8 @@ def thread_eligible(job, now=None):
         return False
     title = job.get("recrutPbancTtl") or ""
     if any(w in title for w in DOCTOR_WORDS):
+        return False
+    if not_newbie(title):
         return False
     return True
 
@@ -358,6 +379,8 @@ def publish(job, jobs, now, token):
     if is_work24(job):
         job = enrich_work24(job)
 
+    job = apply_edu(job)       # [2026-10-12] 클린아이: 저장된 학력(쓰레드·보강 확인값)이 있으면 채움 — Claude 호출 없음
+
     slug = slug_for(job)
     src = job.get("srcUrl") or "https://www.gojobs.go.kr"
     html = build_html(job, src, related_jobs(job, jobs, now))
@@ -404,12 +427,40 @@ def recover_mapping(token, jobs, mapping):
     return found
 
 
+# [2026-10-12] 누구나 아는 대기업 공고는 본문을 먼저 발행 (쓰레드 자동발행 민간 = 대기업만과 맞춤)
+FAMOUS_PREFIX = ("삼성", "현대", "기아", "에스케이", "SK", "엘지", "LG", "롯데", "한화", "씨제이", "CJ",
+                 "포스코", "지에스", "GS", "신세계", "이마트", "케이티", "KT", "에이치디", "HD", "두산",
+                 "농협", "엔에이치", "NH", "하나", "신한", "케이비", "KB", "토스", "비바리퍼블리카")
+FAMOUS_NAMES = ("네이버", "카카오", "쿠팡", "대한항공", "아시아나항공", "우리은행", "우리금융", "우리카드",
+                "아모레퍼시픽", "오뚜기", "농심", "오리온", "하이브", "우아한형제들", "배달의민족", "당근",
+                "엔씨소프트", "넥슨", "넷마블", "크래프톤", "셀트리온", "미래에셋", "한국투자증권", "키움증권",
+                "에쓰오일", "S-OIL", "스타벅스", "무신사", "야놀자", "컬리", "빙그레", "매일유업", "풀무원",
+                "동원", "교보", "메리츠", "한진", "효성", "삼양", "대한전선", "코웨이", "하이트진로", "SPC",
+                "파리크라상", "이랜드")
+NOT_FAMOUS = ("굿네이버스", "엔에이치엔", "엘에스이")
+FAMOUS_BONUS = 40
+
+
+def is_famous_private(job):
+    if not is_private_job(job):
+        return False
+    name = clean_inst(job["instNm"]).replace("(주)", "").replace("주식회사", "").strip()
+    if name.startswith(NOT_FAMOUS):
+        return False
+    return name.startswith(FAMOUS_PREFIX) or name.startswith(FAMOUS_NAMES)   # 앞부분 일치
+
+
+def queue_score(job, now):
+    return score(job, now) + (15 if is_new(job, now) else 0) + (FAMOUS_BONUS if is_famous_private(job) else 0)
+
+
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
     todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)
             and not is_manual(j)]   # [2026-10-08] 수동 공고는 수동 공고 발행 액션에서만
     # 1순위 쓰레드 글감 후보(정규직·신입 등) → 그 안에서 점수순 (새 공고는 +15점 가산)
-    todo.sort(key=lambda j: (not thread_eligible(j, now), -(score(j, now) + (15 if is_new(j, now) else 0))))
+    # [2026-10-12] 누구나 아는 대기업은 +40 (공공 대규모 공채와 비슷한 순위로 앞당김)
+    todo.sort(key=lambda j: (not thread_eligible(j, now), -queue_score(j, now)))
     n_hot = sum(1 for j in todo if thread_eligible(j, now))
     n_new = sum(1 for j in todo if is_new(j, now))
     return todo, n_hot, n_new

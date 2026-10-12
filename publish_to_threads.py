@@ -33,6 +33,9 @@
                   민간 공고 학력은 본문 '지원 자격 상세' 기준 (공채속보 학력 값 오류 대응, 확인 안 되면 건너뜀)
                   특가 '포기 방지'는 학력무관 같은 열린 조건이 있는 공고에서만 / '대기업'은 누구나 아는 그룹사만
                   코드 검사에 학력 하한·장벽·전문 용어 정규식 추가 (훅+클로저) / 실패 사례를 프롬프트에 예시로
+[2026-10-12 수정] 클린아이(지방공기업) 편입 — 발행 직전 공고문을 Sonnet으로 읽어 학력 확인(edu_lookup.py), 못 찾으면 학력 없이 발행, 학력 언급 금지·지역제한 명시 /
+                  공공 차례에 공공 신규가 없으면 공공 재발행(민간으로 안 샘) / 민간은 누구나 아는 대기업만 /
+                  조회수(views.json) 가산으로 핫한 공고 우선 / 진료전담교수 등 의사직 제외 추가
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
@@ -40,9 +43,11 @@
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
 import requests
+from edu_lookup import apply_edu, lookup_edu   # [2026-10-12] 클린아이 학력 확인 (공고문 → Sonnet)
 
 JOBS_URL = "https://teukgasniper.github.io/job-compass/jobs.json"
 POSTS_URL = "https://teukgasniper.github.io/job-compass/job_posts.json"
+VIEWS_URL = "https://teukgasniper.github.io/job-compass/views.json"   # [2026-10-12] 핫한 공고 우선용
 HIRING_URL = "https://hiring.ddolbestory.com/"
 THREADS_API = "https://graph.threads.net/v1.0"
 
@@ -68,7 +73,8 @@ KST = dt.timezone(dt.timedelta(hours=9))
 # ─────────────────────────── 필터·스코어링 (지침서 4장) ───────────────────────────
 GOOD_HIRE = ("정규직", "무기계약직", "청년인턴(채용형)")
 NEWBIE_OK = ("신입",)
-DOCTOR_WORDS = ("전임의", "레지던트", "전공의", "수련의", "의사직", "전문의", "임상강사", "일반의")
+DOCTOR_WORDS = ("전임의", "레지던트", "전공의", "수련의", "의사직", "전문의", "임상강사", "일반의",
+                "진료전담", "전담의", "진료교수")   # [2026-10-12] 진료전담교수 등 추가
 BRANDS = (
     "한국전력", "한전", "한국토지주택공사", "한국수자원공사", "한국철도공사", "코레일",
     "한국가스공사", "한국도로공사", "국민건강보험공단", "국민연금공단", "근로복지공단",
@@ -107,8 +113,35 @@ def is_private(job: dict) -> bool:
     return job.get("_source") == "work24"
 
 
+def is_cleaneye(job: dict) -> bool:
+    """[2026-10-12] 클린아이 = 지방공기업·출자출연기관 (학력 항목이 원래 없는 출처)"""
+    return job.get("_source") == "cleaneye"
+
+
+def edu_unknown(job: dict, post_text: str = "") -> bool:
+    """학력을 확인할 수 없는 클린아이 공고 — 리스트·훅에서 학력 언급 금지"""
+    return is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")) and not private_edu_ok(post_text)
+
+
 def has_value(v) -> bool:
     return str(v if v is not None else "").strip() not in EMPTY_VALS
+
+
+# [2026-10-12] 취준생 대상이 아닌 공고 (임원·개방형·경력경쟁·교수·박사급·시험 안내 공지 등)
+NOT_NEWBIE_RE = re.compile(
+    r"개방형|선임이사|상임이사|비상임|이사\s*및\s*감사|감사\s*공개모집|감사관|임원|본부장|사장\s*(공모|모집)|대표\s*\(|"
+    r"원장\s*(공모|모집|선발|\()|관장|보건소장|경력경쟁|전임교원|교수|연구위원|박사후|박사급|"
+    r"위촉연구원|추천선발|단원\s*모집|필기시험\s*일시|시험\s*장소|일정\s*변경|합격자")
+# 계약직·경력직은 제목에 정규직·채용형·신입이 같이 있으면 통과 (예: "경력직 및 채용형인턴", "정규직 조리사, 계약직…")
+SOFT_NOT_NEWBIE_RE = re.compile(r"(?<!무기)계약직|경력직(?!원)")
+
+
+def not_newbie(title: str) -> bool:
+    if NOT_NEWBIE_RE.search(title):
+        return True
+    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title):   # "공개, 제한경쟁"처럼 섞인 공고는 통과
+        return True
+    return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
 
 
 def eligible(job: dict, today: dt.date) -> bool:
@@ -119,7 +152,8 @@ def eligible(job: dict, today: dt.date) -> bool:
         return False
     # [2026-10-06] 공채속보(민간)는 학력 값이 비거나 마지막 값(석사·박사)만 들어오는 수집 오류가 있음
     #              → 민간은 여기서 거르지 않고 본문 '지원 자격 상세'로 다시 확인 (main → private_edu_ok)
-    if not is_private(job) and not has_value(job.get("acbgCondNmLst")):
+    # [2026-10-12] 클린아이는 학력 항목이 원래 없음 → 학력 없이 발행 (리스트·훅에서 학력 언급 금지)
+    if not is_private(job) and not is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
         return False
     if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
         if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
@@ -132,6 +166,8 @@ def eligible(job: dict, today: dt.date) -> bool:
         return False
     title = job.get("recrutPbancTtl") or ""
     if any(w in title for w in DOCTOR_WORDS):
+        return False
+    if not_newbie(title):
         return False
     # [2026-10-05] 학력이 석사·박사뿐인 공고는 일반 취준생 대상이 아니라 제외
     edu = [e.strip() for e in (job.get("acbgCondNmLst") or "").split(",") if e.strip()]
@@ -223,40 +259,95 @@ def want_private_now(history) -> bool:
     return priv < round(10 * PRIVATE_RATIO)
 
 
+# [2026-10-12] 민간은 '누구나 아는 대기업'만 — 그룹(GROUPS 키) 또는 이름 포함
+FAMOUS_GROUPS = {"삼성", "현대차", "SK", "LG", "롯데", "한화", "CJ", "포스코", "GS", "신세계",
+                 "KT", "HD", "두산", "농협", "하나", "신한", "KB", "토스"}
+FAMOUS_NAMES = ("네이버", "카카오", "쿠팡", "대한항공", "아시아나항공", "우리은행", "우리금융", "우리카드",
+                "아모레퍼시픽", "오뚜기", "농심", "오리온", "하이브", "우아한형제들", "배달의민족", "당근",
+                "엔씨소프트", "넥슨", "넷마블", "크래프톤", "셀트리온", "미래에셋", "한국투자증권", "키움증권",
+                "에쓰오일", "S-OIL", "스타벅스", "무신사", "야놀자", "컬리", "빙그레", "매일유업", "풀무원",
+                "동원", "교보", "메리츠", "한진", "효성", "삼양", "대한전선", "코웨이", "하이트진로", "SPC",
+                "파리크라상", "이랜드", "현대백화점", "에이치디현대", "기아")
+
+NOT_FAMOUS = ("굿네이버스",)                  # 이름에 대기업 단어가 들어간 다른 곳
+
+_VIEWS = None
+
+
+def views_of(job) -> int:
+    """hiring03 본문 조회수 (views.json) — 실패하면 0"""
+    global _VIEWS
+    if _VIEWS is None:
+        try:
+            _VIEWS = requests.get(VIEWS_URL, timeout=20).json().get("views", {})
+        except Exception as e:
+            print(f"[참고] views.json 읽기 실패 → 조회수 가산 없이 진행 ({e})")
+            _VIEWS = {}
+    return int(_VIEWS.get(str(job.get("recrutPblntSn")), 0) or 0)
+
+
+def hot_score(job, today) -> float:
+    """[2026-10-12] 핫한 공고 우선: 기본 점수 + 조회수 가산 (20회당 1점, 최대 +60 — 카드 추천순과 같은 상한)"""
+    return score(job, today) + min(views_of(job) / 20, 60)
+
+
+def is_famous(job: dict) -> bool:
+    if str(job.get("recrutPblntSn", "")).startswith("MN-"):     # 수동 공고 = 직접 고른 핫한 공고
+        return True
+    g = group_key(job.get("instNm"))
+    if g.startswith("G:") and g[2:] in FAMOUS_GROUPS:
+        return True
+    name = norm_inst(job.get("instNm"))
+    if name.startswith(NOT_FAMOUS):
+        return False
+    return name.startswith(FAMOUS_NAMES)          # 앞부분 일치 ('하이브리드…' 같은 오탐 방지)
+
+
 def pick_job(jobs, posts, state, today, exclude=None):
     history = state["posts"]
     used_ids = {str(p["id"]) for p in history}
     used_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
     recent_insts = {group_key(p["instNm"]) for p in history[-6:]}   # [2026-10-07] 그룹 단위
-    want_priv = want_private_now(history)
-    print(f"이번 회차: {'민간' if want_priv else '공공'} 차례 (최근 10건 중 민간 "
-          f"{sum(1 for p in history[-10:] if is_private_id(p['id']))}건, 목표 {int(PRIVATE_RATIO*100)}%)")
-
-    def side(cands):
-        """정한 쪽(공공/민간) 후보만 — 그쪽이 비면 반대쪽으로"""
-        return [j for j in cands if is_private(j) == want_priv] or cands
-
+    recent_ids = {str(p["id"]) for p in history[-12:]}
     exclude = exclude or set()
     live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
-    new = [j for j in live if str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys]
-    tier1 = side([j for j in new if str(j["recrutPblntSn"]) in posts])
-    tier2 = side([j for j in new if str(j["recrutPblntSn"]) not in posts])
+
+    want_priv = want_private_now(history)
+    n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
+    pool = []
+    def is_new(j):
+        return str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys
+
+    if want_priv:
+        pool = [j for j in live if is_private(j) and is_famous(j)]
+        if not any(is_new(j) for j in pool):            # 대기업 재발행보다 공공 신규가 우선
+            print("민간 차례지만 새 대기업 공고가 없어 공공으로")
+            want_priv = False
+    if not want_priv:
+        # [2026-10-12] 공공 차례에 공공 신규가 없으면 민간으로 새지 않고 공공 인기순 재발행
+        #              (이전엔 side()가 민간으로 넘겨서 민간이 연속 9건 나감)
+        pool = [j for j in live if not is_private(j)] or [j for j in live if is_private(j) and is_famous(j)]
+    print(f"이번 회차: {'민간(대기업)' if want_priv else '공공'} 차례 (최근 10건 중 민간 {n_priv}건, "
+          f"목표 {int(PRIVATE_RATIO*100)}%) / 후보 {len(pool)}개")
+    if not pool:
+        return None, 0, 0
+
+    new = [j for j in pool if is_new(j)]
+    tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
+    tier2 = [j for j in new if str(j["recrutPblntSn"]) not in posts]
 
     def choose(cands):
         fresh = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
-        fresh.sort(key=lambda j: score(j, today), reverse=True)
+        fresh.sort(key=lambda j: hot_score(j, today), reverse=True)
         top = fresh[:5]
-        return random.choices(top, weights=[max(score(j, today), 1) for j in top], k=1)[0]
+        return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
 
     if tier1:
         return choose(tier1), 1, len(tier1)
     if tier2:
         return choose(tier2), 2, len(tier2)
 
-    recent_ids = {str(p["id"]) for p in history[-12:]}
-    repeat = side([j for j in live if str(j["recrutPblntSn"]) not in recent_ids] or live)
-    if not repeat:
-        return None, 0, 0
+    repeat = [j for j in pool if str(j["recrutPblntSn"]) not in recent_ids] or pool
 
     def times(j):
         return sum(1 for p in history if str(p["id"]) == str(j["recrutPblntSn"]))
@@ -265,11 +356,11 @@ def pick_job(jobs, posts, state, today, exclude=None):
         ts = [p["at"] for p in history if str(p["id"]) == str(j["recrutPblntSn"])]
         return max(ts) if ts else ""
 
-    repeat.sort(key=lambda j: (
-        times(j),
+    repeat.sort(key=lambda j: (                    # [2026-10-12] 인기순 재발행 — 2번 이상 올린 공고만 뒤로
+        times(j) >= 2,
         str(j["recrutPblntSn"]) not in posts,
+        -hot_score(j, today),
         last_at(j),
-        -score(j, today),
     ))
     fresh = [j for j in repeat if group_key(j["instNm"]) not in recent_insts] or repeat
     return fresh[0], 3, len(repeat)
@@ -315,6 +406,8 @@ def clean_post_text(text: str) -> str:
     text = "\n".join(l for l in text.split("\n") if "초봉" not in l)
     # [2026-10-06] 공채속보 학력 값 오류(석사·박사만 표기) 문구 제거 — 학력은 '지원 자격 상세' 원문 문장으로만 판단
     text = re.sub(r"공고 데이터 기준(으로)? 학력 조건은 「[^」]*」(이에요|예요)?[,.]?\s*", "", text)
+    # [2026-10-12] 학력 미확인 공고 안내 문구(일반론)가 학력 언급을 유도하지 않게 제거
+    text = re.sub(r"학력 조건은 원문 공고의 응시 자격 칸에 나와 있어요\.[^\n]*", "", text)
     text = re.sub(r"학력 조건은 「(석사|박사)」(이에요|예요)?\.?", "", text)
     text = re.sub(r"지원 자격:\s*(석사|박사)\s*·\s*", "지원 자격: ", text)
     text = re.sub(r"✅\s*(석사|박사)", "", text)
@@ -585,6 +678,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         "신입/경력": job.get("recrutSeNm"),
         "모집인원": job.get("recrutNope"),
         "학력조건": edu_for_prompt(job),
+        "학력 근거(공고문)": job.get("_edu_text"),          # [2026-10-12] 클린아이 공고문에서 확인한 문장
         "근무지역": job.get("workRgnNmLst"),
         ("모집분야" if is_private(job) else "직무분야(NCS)"): job.get("ncsCdNmLst"),
         "마감일": f"{end.month}월 {end.day}일",
@@ -598,6 +692,10 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
             data[k_out] = job[k_src]
     if is_private(job):
         data["기업구분"] = f"민간 {job.get('bizType') or '기업'} (공기업 아님)"
+    if job.get("localYn") == "Y":                 # [2026-10-12] 클린아이 지역제한 — 리스트에 반드시 명시
+        data["지역제한(리스트에 반드시 명시)"] = (job.get("localName") if has_value(job.get("localName")) else "있음 (거주·연고자 한정)")
+    if is_cleaneye(job) and job.get("entGb"):
+        data["기관구분"] = job["entGb"]
     # 빈 값('공고 참조', 0, '기타')은 아예 넘기지 않음 — 리스트·훅 소재로 쓰지 못하게
     data = {k: v for k, v in data.items() if has_value(v)}
 
@@ -623,6 +721,13 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         lines.append("- 민간 기업 공고: 훅 무기는 브랜드·평균연봉·하는 일(쉬운 말)·열린 직무·입사 시기. "
                      "전형 단계·학력 하한·어학 기준은 훅·클로저에 쓰지 말 것")
         lines.append("- '대기업'은 누구나 아는 그룹사 계열일 때만. 아니면 업종(증권사·패션 회사 등)으로 부를 것")
+    if is_cleaneye(job):
+        lines.append("- 클린아이 공고: '기관구분'에 맞게 부를 것 (지방공사·지방공단 = 지방공기업 / 출자·출연기관·재단·의료원은 '공기업'이라 부르지 말 것)")
+    if is_cleaneye(job) and job.get("acbgCondNmLst") == "면허·자격 필수":
+        lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력 근거(공고문)' 내용을 그대로 쓰고, '누구나 지원' 류 금지")
+    if edu_unknown(job, post_text):
+        lines.append("- 이 공고는 학력 정보가 없음 → 훅·리스트·클로저에 학력·블라인드·'누구나 지원' 언급 금지. "
+                     "리스트는 인원·고용형태·공고 제시 연봉·근무지(지역제한)·마감일로 채울 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
 
@@ -697,7 +802,7 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
-def validate_candidate(d: dict, inst: str = ""):
+def validate_candidate(d: dict, inst: str = "", no_edu: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
@@ -742,6 +847,8 @@ def validate_candidate(d: dict, inst: str = ""):
     body = "\n".join(hook_lines) + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
     if re.search(r"https?://|#\S", body):
         return None, "링크/해시태그"
+    if no_edu and re.search(r"학력|학벌|고졸|대졸|학사|블라인드|누구나\s*지원", body):
+        return None, "학력 정보 없는 공고에 학력 언급"   # [2026-10-12] 클린아이
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
     return {"hook": "\n".join(hook_lines), "items": items, "closer": closer, "text": body,
@@ -799,7 +906,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
             errs.append("JSON 해석 실패")
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
-            r, err = validate_candidate(c, inst)
+            r, err = validate_candidate(c, inst, edu_unknown(job, post_text))
             if r:
                 valid.append(r)
             else:
@@ -1478,6 +1585,17 @@ def main():
             excluded.add(str(job["recrutPblntSn"]))
             job = None
             continue
+        # [2026-10-12] 클린아이는 학력 칸이 없음 → 공고문을 읽어 확인 (저장값 있으면 그대로, 못 찾으면 학력 언급 없이 발행)
+        if is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
+            job = apply_edu(job)
+            if not has_value(job.get("acbgCondNmLst")):
+                lookup_edu(job)
+                job = apply_edu(job)
+            if job.get("acbgCondNmLst") in ("석사 이상", "박사"):
+                print(f"[제외] 클린아이 공고 석사·박사 전용: {job['instNm']} / {job['recrutPbancTtl']}")
+                excluded.add(str(job["recrutPblntSn"]))
+                job = None
+                continue
         break
     if not job:
         print("발행할 공고 없음 — 이번 회차는 건너뜀")

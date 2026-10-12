@@ -607,6 +607,8 @@ def build_html(job, src, related=None, enh=None):
     end, bg = job["pbancEndYmd"], job["pbancBgngYmd"]
     se = job.get("recrutSeNm") or "공고 참조"
     acbg = (job.get("acbgCondNmLst") or "공고 참조").replace(",", ", ")
+    edu_src = job.get("_edu_text") or ""                 # [2026-10-12] 클린아이: 공고문에서 확인한 학력 근거
+    edu_basis = "공고문 기준으로" if edu_src else "공고 데이터 기준으로"
     repl = job.get("replmprYn") == "Y"
     nl = [x.replace(".", "·") for x in ncs_list(job)]
     ncs_main = nl[0] if nl else ""
@@ -728,7 +730,7 @@ def build_html(job, src, related=None, enh=None):
     # H2-3 지원 자격
     sec_n += 1
     s3 = (h2(sec_n, toc_items[sec_n - 1])
-          + p(f"공고 데이터 기준으로 학력 조건은 「{acbg}」, 경력 구분은 「{se}」이에요.")
+          + p(f"{edu_basis} 학력 조건은 「{acbg}」" + (f"({_e(edu_src)})" if edu_src else "") + f", 경력 구분은 「{se}」이에요.")
           + table(["항목", "기준"], [
               ["학력", acbg], ["경력", se],
               ["모집분야" if priv else "직무분야", ncs_text(job)]]
@@ -740,6 +742,11 @@ def build_html(job, src, related=None, enh=None):
              if priv and (wk.get("common") or wk.get("support")) else "")
           + (box("blue", "📌 핵심 포인트", "학력무관 공고라도 자격증·면허·어학 같은 필수 요건이 따로 붙을 수 있어요. 지원 전에 원문 공고의 응시 자격 칸을 꼭 확인하세요.")
              if "학력무관" in acbg else
+             # [2026-10-12] 학력 정보가 없는 공고(클린아이·나라일터)에 "학력 요건이 있는 공고"라고 단정하지 않음
+             box("blue", "📌 핵심 포인트", "학력 조건은 원문 공고의 응시 자격 칸에 나와 있어요. 학력 제한이 없는 공고도 많으니 포기하기 전에 꼭 확인하세요.")
+             if acbg == "공고 참조" else
+             box("blue", "📌 핵심 포인트", "학력보다 면허·자격증이 필수인 공고예요. 취득 예정자도 지원할 수 있는지 원문 공고에서 확인하세요.")
+             if acbg == "면허·자격 필수" else
              box("blue", "📌 핵심 포인트", "학력 요건이 있는 공고예요. 졸업 예정자 인정 여부와 전공 제한이 있는지 원문 공고에서 확인하세요."))
           + p("그런데 가장 중요한 건 우대사항과 결격사유예요. 가산점을 받을 수 있는 조건은 원문 공고에만 자세히 나와 있어요.")
           + p("이 조건 보고 포기하시는 분 많은데, 막상 원문을 보면 해당되는 경우가 훨씬 많아요.")
@@ -844,7 +851,9 @@ def build_html(job, src, related=None, enh=None):
         (("언제까지 접수할 수 있나요?", f"이 공고는 {r(end_label(job))}이라 정해진 마감일이 없어요. 채용이 끝나면 예고 없이 닫힐 수 있으니 준비되는 대로 빨리 지원하는 게 좋아요.")
          if always else
          ("마감 당일 몇 시까지 접수되나요?", f"마감일은 {r(md_w(end))}이에요. 마감 시각은 기관마다 달라서 원문 공고에서 꼭 확인하고, 하루 전 제출을 권해요.")),
-        ("학력 조건이 어떻게 되나요?", f"공고 데이터 기준 학력 조건은 「{acbg}」이에요. 전공이나 졸업 예정자 인정 여부는 원문 공고를 확인하세요."),
+        (("학력 조건이 어떻게 되나요?", "학력 조건은 원문 공고의 응시 자격 칸에 나와 있어요. 전공이나 졸업 예정자 인정 여부도 함께 확인하세요.")
+         if acbg == "공고 참조" else
+         ("학력 조건이 어떻게 되나요?", f"{edu_basis.replace('으로', '')} 학력 조건은 「{acbg}」이에요. 전공이나 졸업 예정자 인정 여부는 원문 공고를 확인하세요.")),
         q3,
         (("다른 회사와 중복 지원할 수 있나요?", "다른 회사와는 대부분 중복 지원할 수 있어요. 다만 같은 그룹 계열사끼리는 중복 지원을 제한하는 경우가 있으니 원문 공고의 유의사항을 확인하세요.")
          if priv else
