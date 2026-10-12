@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - run: pip install requests beautifulsoup4 pillow cairosvg
+      - run: pip install requests beautifulsoup4 pillow cairosvg pypdf pyhwp pypdfium2 olefile   # pypdf~olefile: 클린아이 공고문 학력 확인 [2026-10-12]
       - run: sudo apt-get install -y -qq fonts-nanum   # 로고 실패 시 기관명 텍스트 카드용 한글 폰트
 
       - name: 후킹글 생성 + 발행
