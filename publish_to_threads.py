@@ -36,6 +36,9 @@
 [2026-10-12 수정] 클린아이(지방공기업) 편입 — 발행 직전 공고문을 Sonnet으로 읽어 학력 확인(edu_lookup.py), 못 찾으면 학력 없이 발행, 학력 언급 금지·지역제한 명시 /
                   공공 차례에 공공 신규가 없으면 공공 재발행(민간으로 안 샘) / 민간은 누구나 아는 대기업만 /
                   조회수(views.json) 가산으로 핫한 공고 우선 / 진료전담교수 등 의사직 제외 추가
+[2026-10-12 수정] 멀티 계정 — threads_state/의 다른 계정 기록을 같이 읽어 같은 공고(같은 기관+같은 공고)는 다른 계정에서 안 올림
+                  (같은 기관 다른 공고는 가능) / 새 공고 소진 시 ① 다른 계정에서 터진 글(조회수가 그 계정 평균 이상)을
+                  가져와 다른 유형으로 각색 ② 그래도 없으면 내 계정 글만 재발행 / 내 글 조회수를 6시간마다 기록(views)
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
@@ -219,6 +222,93 @@ def save_state(state: dict):
         json.dump(state, f, ensure_ascii=False, indent=1)
 
 
+VIEWS_REFRESH_HOURS = 6
+BORROW_MIN_DLEFT = 2          # 다른 계정 글을 가져올 때 마감까지 최소 남은 일수
+
+
+def load_other_states() -> dict:
+    """[2026-10-12] 다른 자동발행 계정 기록 {계정: posts} — 계정 간 중복 소거·터진 글 각색용"""
+    out = {}
+    if not os.path.isdir(STATE_DIR):
+        return out
+    for fn in sorted(os.listdir(STATE_DIR)):
+        if not fn.endswith(".json") or fn == f"{ACCOUNT}.json":
+            continue
+        try:
+            with open(os.path.join(STATE_DIR, fn), encoding="utf-8") as f:
+                d = json.load(f)
+        except Exception:
+            continue
+        if isinstance(d, dict) and isinstance(d.get("posts"), list) and d.get("account"):
+            out[d["account"]] = d["posts"]
+    return out
+
+
+def refresh_my_views(state: dict) -> bool:
+    """[2026-10-12] 최근 3주 내 내 글의 조회수를 기록 — 다른 계정이 '터진 글'을 고를 때 씀.
+    threads_manage_insights 권한이 없는 토큰이면 조용히 건너뜀. 기록이 바뀌면 True"""
+    uid, token = os.environ.get("THREADS_USER_ID"), os.environ.get("THREADS_TOKEN")
+    if not uid or not token:
+        return False
+    now = dt.datetime.now(KST)
+    last = state.get("views_refreshed_at")
+    if last:
+        try:
+            if now - dt.datetime.strptime(last, "%Y-%m-%d %H:%M").replace(tzinfo=KST) < dt.timedelta(hours=VIEWS_REFRESH_HOURS):
+                return False
+        except Exception:
+            pass
+    cutoff = (now - dt.timedelta(days=21)).strftime("%Y-%m-%d %H:%M")
+    targets = [p for p in state["posts"] if p.get("thread_id") and (p.get("at") or "") >= cutoff][-60:]
+    n = 0
+    for p in targets:
+        try:
+            r = requests.get(f"{THREADS_API}/{p['thread_id']}/insights",
+                             params={"metric": "views", "access_token": token}, timeout=20)
+            if not r.ok:
+                if "permission" in r.text.lower() or r.status_code in (400, 403):
+                    print(f"[참고] 조회수 권한 없음(threads_manage_insights) → 조회수 기록 건너뜀: {r.text[:150]}")
+                    break
+                continue
+            data = r.json().get("data", [])
+            v = data[0].get("values", [{}])[0].get("value") if data else None
+            if v is None and data:
+                v = (data[0].get("total_value") or {}).get("value")
+            if v is not None:
+                p["views"] = int(v)
+                n += 1
+        except Exception as e:
+            print(f"[warn] 조회수 조회 실패: {e}")
+            break
+    state["views_refreshed_at"] = now.strftime("%Y-%m-%d %H:%M")
+    print(f"내 글 조회수 기록: {n}/{len(targets)}건")
+    return True
+
+
+def borrow_candidates(others: dict, pool: list, mine_ids: set, mine_keys: set, today) -> list:
+    """[2026-10-12] 다른 계정에서 터진 글 — 그 계정 평균 조회수 이상 + 마감 2일 이상 + 내가 안 올린 공고.
+    반환: [(job, 원글 post, 계정)] 조회수 높은 순"""
+    by_id = {str(j["recrutPblntSn"]): j for j in pool}
+    out, seen = [], set()
+    for acct, posts in others.items():
+        viewed = [p for p in posts if (p.get("views") or 0) > 0]
+        if not viewed:
+            continue
+        avg = sum(p["views"] for p in viewed) / len(viewed)
+        for p in viewed:
+            j = by_id.get(str(p.get("id")))
+            if not j or p["views"] < avg or str(p["id"]) in seen:
+                continue
+            if str(p["id"]) in mine_ids or job_key(j) in mine_keys:
+                continue
+            if not j.get("always") and dday(j.get("pbancEndYmd", ""), today) < BORROW_MIN_DLEFT:
+                continue
+            seen.add(str(p["id"]))
+            out.append((j, p, acct))
+    out.sort(key=lambda x: -(x[1].get("views") or 0))
+    return out
+
+
 def job_key(j: dict) -> str:
     return norm_key(norm_inst(j.get("instNm"))) + "|" + norm_key(j.get("recrutPbancTtl"))
 
@@ -303,10 +393,16 @@ def is_famous(job: dict) -> bool:
     return name.startswith(FAMOUS_NAMES)          # 앞부분 일치 ('하이브리드…' 같은 오탐 방지)
 
 
-def pick_job(jobs, posts, state, today, exclude=None):
+def pick_job(jobs, posts, state, today, exclude=None, others=None):
+    """반환: (job, tier, 후보 수, borrow) — borrow는 다른 계정 원글 정보 (tier 3일 때만)"""
     history = state["posts"]
-    used_ids = {str(p["id"]) for p in history}
-    used_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
+    others = others or {}
+    my_ids = {str(p["id"]) for p in history}
+    my_keys = {norm_key(norm_inst(p["instNm"])) + "|" + norm_key(p["title"]) for p in history}
+    # [2026-10-12] 다른 계정이 올린 공고(같은 기관+같은 공고)도 '사용됨' — 같은 기관 다른 공고는 그대로 후보
+    other_posts = [p for ps in others.values() for p in ps]
+    used_ids = my_ids | {str(p["id"]) for p in other_posts}
+    used_keys = my_keys | {norm_key(norm_inst(p.get("instNm"))) + "|" + norm_key(p.get("title")) for p in other_posts}
     recent_insts = {group_key(p["instNm"]) for p in history[-6:]}   # [2026-10-07] 그룹 단위
     recent_ids = {str(p["id"]) for p in history[-12:]}
     exclude = exclude or set()
@@ -330,7 +426,7 @@ def pick_job(jobs, posts, state, today, exclude=None):
     print(f"이번 회차: {'민간(대기업)' if want_priv else '공공'} 차례 (최근 10건 중 민간 {n_priv}건, "
           f"목표 {int(PRIVATE_RATIO*100)}%) / 후보 {len(pool)}개")
     if not pool:
-        return None, 0, 0
+        return None, 0, 0, None
 
     new = [j for j in pool if is_new(j)]
     tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
@@ -343,11 +439,24 @@ def pick_job(jobs, posts, state, today, exclude=None):
         return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
 
     if tier1:
-        return choose(tier1), 1, len(tier1)
+        return choose(tier1), 1, len(tier1), None
     if tier2:
-        return choose(tier2), 2, len(tier2)
+        return choose(tier2), 2, len(tier2), None
 
-    repeat = [j for j in pool if str(j["recrutPblntSn"]) not in recent_ids] or pool
+    # [2026-10-12] 새 공고 소진 → ① 다른 계정에서 터진 글을 가져와 각색
+    borrows = borrow_candidates(others, pool, my_ids, my_keys, today)
+    if borrows:
+        fresh_b = [b for b in borrows if group_key(b[0]["instNm"]) not in recent_insts] or borrows
+        j, src, acct = fresh_b[0]
+        return j, 3, len(borrows), {"account": acct, "hook": src.get("hook") or "", "closer": src.get("closer") or "",
+                                    "cat": src.get("combo_cat"), "views": src.get("views"),
+                                    "thread_id": src.get("thread_id")}
+
+    # ② 그래도 없으면 내 계정이 올렸던 공고만 재발행 (다른 계정 공고를 그대로 가져오면 중복)
+    mine = [j for j in pool if str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys]
+    if not mine:
+        return None, 0, 0, None
+    repeat = [j for j in mine if str(j["recrutPblntSn"]) not in recent_ids] or mine
 
     def times(j):
         return sum(1 for p in history if str(p["id"]) == str(j["recrutPblntSn"]))
@@ -363,7 +472,7 @@ def pick_job(jobs, posts, state, today, exclude=None):
         last_at(j),
     ))
     fresh = [j for j in repeat if group_key(j["instNm"]) not in recent_insts] or repeat
-    return fresh[0], 3, len(repeat)
+    return fresh[0], 4, len(repeat), None
 
 
 # ─────────────────────────── 본문 글에서 팩트 보강 ───────────────────────────
@@ -534,8 +643,10 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 
 [포맷]
 - 훅: 최대 2줄, 줄당 26자 이내. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말 절대 넣지 않음.
-- 리스트: 정확히 5개. 1번은 반드시 '기관(기업) 정식명칭' 작은따옴표 + 핵심 팩트.
+- 리스트: 정확히 5개. 1번은 반드시 '기관(기업) 정식명칭' 작은따옴표 + 핵심 팩트 1개(인원·고용형태 정도).
   필수 팩트: 고용형태, 학력조건, 마감일. 지역 제한(거주·연고자 한정)이 있으면 반드시 명시. 각 항목 짧게 한 줄.
+  한 항목에 팩트 1개. 같은 팩트를 두 항목에 반복 금지 — 학력은 한 항목에만, 날짜(마감일·접수기간)는 5번 한 곳에만.
+  5개가 모두 서로 다른 정보여야 함 (1번에 여러 팩트를 몰아넣고 아래에서 다시 쓰지 말 것).
 - 클로저: 1줄. 과장 OK. 인물형이면 훅과 스토리 연결.
 - 반말 구어체. 링크·해시태그 금지. 훅 앞 이모지 외 이모지 금지.
 
@@ -677,8 +788,8 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         "고용형태": job.get("hireTypeNmLst"),
         "신입/경력": job.get("recrutSeNm"),
         "모집인원": job.get("recrutNope"),
-        "학력조건": edu_for_prompt(job),
-        "학력 근거(공고문)": job.get("_edu_text"),          # [2026-10-12] 클린아이 공고문에서 확인한 문장
+        # [2026-10-12] 클린아이 공고문 근거는 학력조건 한 칸에 합침 (두 칸이면 리스트에 학력이 두 번 들어감)
+        "학력조건": edu_for_prompt(job) + (f" ({job['_edu_text']})" if job.get("_edu_text") else ""),
         "근무지역": job.get("workRgnNmLst"),
         ("모집분야" if is_private(job) else "직무분야(NCS)"): job.get("ncsCdNmLst"),
         "마감일": f"{end.month}월 {end.day}일",
@@ -724,7 +835,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     if is_cleaneye(job):
         lines.append("- 클린아이 공고: '기관구분'에 맞게 부를 것 (지방공사·지방공단 = 지방공기업 / 출자·출연기관·재단·의료원은 '공기업'이라 부르지 말 것)")
     if is_cleaneye(job) and job.get("acbgCondNmLst") == "면허·자격 필수":
-        lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력 근거(공고문)' 내용을 그대로 쓰고, '누구나 지원' 류 금지")
+        lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력조건' 괄호 안 내용을 그대로 쓰고, '누구나 지원' 류 금지")
     if edu_unknown(job, post_text):
         lines.append("- 이 공고는 학력 정보가 없음 → 훅·리스트·클로저에 학력·블라인드·'누구나 지원' 언급 금지. "
                      "리스트는 인원·고용형태·공고 제시 연봉·근무지(지역제한)·마감일로 채울 것")
@@ -842,6 +953,12 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False):
         return None, "1번에 '기관명' 없음"
     if any(re.search(r"공고\s*참조|^기타$|초봉", x) for x in items):
         return None, "리스트에 빈 값·초봉"
+    # [2026-10-12] 같은 팩트 반복 금지 — 학력은 한 항목, 같은 날짜는 한 항목에만
+    if sum(1 for x in items if re.search(r"학력|학벌", x)) >= 2:
+        return None, "리스트에 학력 반복"
+    dates = [set(re.findall(r"(\d{1,2})월\s*(\d{1,2})일", x)) | set(re.findall(r"(?<![\d.])(\d{1,2})/(\d{1,2})(?![\d/])", x)) for x in items]
+    if any(dates[i] & dates[j] for i in range(5) for j in range(i + 1, 5)):
+        return None, "리스트에 같은 날짜 반복"
     if not closer or "\n" in closer:
         return None, "클로저 오류"
     body = "\n".join(hook_lines) + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
@@ -1568,14 +1685,19 @@ def main():
     posts = requests.get(POSTS_URL, timeout=30).json()
     state = load_state()
     sync_from_threads(state, jobs)
+    others = load_other_states()                     # [2026-10-12] 다른 계정 기록
+    if others:
+        print("다른 계정 기록: " + ", ".join(f"{a} {len(ps)}건" for a, ps in others.items()))
+    if refresh_my_views(state) and not DRY_RUN:
+        save_state(state)                            # 건너뛰는 회차에도 조회수는 저장
     if not DRY_RUN and too_soon(state, "시작 전"):   # 생성 비용도 아끼려고 먼저 확인
         return
 
     # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
     excluded = set()
-    job, post, post_text = None, None, ""
+    job, post, post_text, borrow = None, None, "", None
     for _ in range(6):
-        job, tier, n_cands = pick_job(jobs, posts, state, today, excluded)
+        job, tier, n_cands, borrow = pick_job(jobs, posts, state, today, excluded, others)
         if not job:
             break
         post = posts.get(str(job["recrutPblntSn"]))
@@ -1601,7 +1723,7 @@ def main():
         print("발행할 공고 없음 — 이번 회차는 건너뜀")
         summary("### ⏭️ 건너뜀\n진행 중인 공고 없음 (또는 학력 확인 불가)")
         return
-    tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 재발행"}[tier]
+    tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 다른 계정 터진 글 각색", 4: "4순위 내 글 재발행"}[tier]
 
     inst = norm_inst(job["instNm"])
     d_left = dday(job["pbancEndYmd"], today)
@@ -1609,6 +1731,12 @@ def main():
         d_left = 99                               # [2026-10-08] 상시채용 → 시한폭탄·막차 조합 제외
     open_fact = has_open_fact(job, post_text)
     combo_idx, combo = pick_combo(state, d_left, open_fact)
+    if borrow and borrow.get("cat"):                 # [2026-10-12] 원글과 다른 유형으로 각색
+        for _ in range(8):
+            if combo["cat"] != borrow["cat"]:
+                break
+            combo_idx, combo = pick_combo(state, d_left, open_fact)
+        print(f"각색 원글 [{borrow['account']} · 조회 {borrow.get('views')}]: {borrow['hook'].replace(chr(10), ' / ')} (유형 {borrow['cat']})")
     print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")
     print(f"조합: {combo['cat']} / {combo['person']} / {combo['structure']}" + ("" if open_fact else " (열린 조건 없음 → 포기 방지형 제외)"))
 
@@ -1616,6 +1744,9 @@ def main():
     hook_src = state["posts"][-10:] + [p for p in same_job if p not in state["posts"][-10:]]
     recent_hooks = [p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else "")
                     for p in hook_src if p.get("hook")]
+    if borrow and borrow.get("hook"):                # 원글 훅·클로저를 반복 금지 목록 맨 앞에
+        recent_hooks.insert(0, "[다른 계정 원글 — 이 공고의 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
+                            + borrow["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {borrow['closer']}" if borrow.get("closer") else ""))
     result = generate(job, inst, d_left, combo, post_text, recent_hooks)
     if result is None:
         return
@@ -1670,6 +1801,7 @@ def main():
         "combo_idx": combo_idx, "combo_cat": result.get("cat") or combo["cat"], "hook": result["hook"],
         "closer": result["closer"], "hook_type": result.get("type"),
         "tier": tier, "logo": bool(logo_url),
+        **({"borrowed_from": borrow["account"], "orig_thread_id": borrow.get("thread_id")} if borrow else {}),
         "thread_id": thread_id, "comment_id": comment_id,
         "at": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
     })
