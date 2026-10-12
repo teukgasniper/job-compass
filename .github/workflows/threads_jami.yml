@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: threads-jami
+  group: threads-publish   # [2026-10-12] 모든 자동발행 계정이 같은 그룹 — 동시에 돌면서 같은 공고를 고르지 않게
   cancel-in-progress: false
 
 jobs:
