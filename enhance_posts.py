@@ -25,7 +25,7 @@
 import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.parse, urllib.error
 from datetime import datetime
 from post_template import build_html, clean_inst, crew_rows, KST
-from edu_lookup import apply_edu, is_cleaneye, LABELS as EDU_LABELS
+from edu_lookup import apply_edu, is_cleaneye, LABELS as EDU_LABELS, _wrong_track as wrong_track
 from publish_to_blogger import access_token, api, related_jobs, enrich_gojobs, enrich_work24, is_gojobs, is_work24
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
@@ -383,7 +383,7 @@ SCHEMA = """아래 형식으로 출력해. 해당 정보가 공고문에 없으�
    "rows": [{"label": "대졸(일반)", "values": [10, null, 15]}],   // 행 최대 10개, 값 순서=columns, 없는 칸 null. 총계·합계·소계 행은 넣지 말 것 (코드가 계산)
    "note": "별정직 4명(기술담당원 1, 후생담당원 2, 보건관리원 1) 별도"   // 표에 못 넣은 인원 설명, 없으면 null
  },
- "edu": {"label": "학력무관", "text": "학력·연령 제한 없음", "open": true},   // [2026-10-12] 신입 기준 학력 조건. label은 "학력무관"/"고졸 이상"/"전문대졸 이상"/"대졸 이상"/"석사 이상"/"박사"/"면허·자격 필수" 중 하나 그대로 (학력 제한 없음이 명시됐을 때만 학력무관, 면허·자격증이 필수면 면허·자격 필수). text는 공고문 근거 40자 이내. 공고문에 학력 조건이 없으면 null
+ "edu": {"label": "학력무관", "text": "학력·연령 제한 없음", "open": true},   // [2026-10-12] 신입 기준 학력 조건. label은 "학력무관"/"고졸 이상"/"전문대졸 이상"/"대졸 이상"/"석사 이상"/"박사"/"면허·자격 필수" 중 하나 그대로 (학력 제한 없음이 명시됐을 때만 학력무관, 면허·자격증이 필수면 면허·자격 필수). 정규직·계약직을 같이 뽑으면 정규직·무기계약직 분야 기준(계약직 요건만 있으면 null). text는 공고문 근거 40자 이내. 공고문에 학력 조건이 없으면 null
  "restriction": "취업지원대상자(보훈) 또는 장애인만 지원할 수 있어요.",   // 공고 전체가 특정 대상만 지원 가능할 때만 1문장 해요체 (보훈·장애 전용, 지역인재 전용, 고졸 전용 등). 일부 분야만 제한이거나 제한 없으면 null
  "steps": [                                  // 전형 순서대로. 중간 발표일은 notice로 단계 사이에 끼움
    {"type": "step", "title": "1단계 — 서류심사", "date": null, "desc": "외국어성적(50점) + 자격증 가점(최대 50점)", "note": "30배수 선발"},
@@ -524,7 +524,7 @@ def main():
         # [2026-10-12] 클린아이: 공고문에서 뽑은 학력으로 본문 '학력' 칸 채움 (없으면 쓰레드 확인값)
         edu = data.get("edu") if isinstance(data.get("edu"), dict) else {}
         if is_cleaneye(job) and not (job.get("acbgCondNmLst") or "").strip():
-            if edu.get("label") in EDU_LABELS:
+            if edu.get("label") in EDU_LABELS and not wrong_track(edu.get("text")):   # 계약직 요건이면 안 씀
                 job["acbgCondNmLst"], job["_edu_text"] = edu["label"], edu.get("text") or ""
                 # 저장은 enhanced_posts.json(data.edu)에만 — 쓰레드·본문 발행이 거기서도 읽음 (edu_lookup.cached_edu)
             else:

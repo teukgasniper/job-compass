@@ -121,6 +121,21 @@ def is_cleaneye(job: dict) -> bool:
     return job.get("_source") == "cleaneye"
 
 
+def cleaneye_kind(job: dict) -> str:
+    """[2026-10-12] 클린아이 기관 성격 한 줄 — 리스트에 넣어 공공기관임을 보여줌 (예: '경상북도 출연 공공기관')"""
+    rgn = re.split(r"[ ,]", (job.get("workRgnNmLst") or "").strip())[0]
+    gb, kind = job.get("entGb") or "", job.get("entKind") or ""
+    if gb in ("지방공사", "지방공단"):
+        what = "지방공기업"
+    elif "의료" in kind or "의료원" in (job.get("instNm") or ""):
+        what = "공공병원"
+    elif "출자" in gb:
+        what = "출자 공공기관"
+    else:
+        what = "출연 공공기관"
+    return f"{rgn} {what}".strip()
+
+
 def edu_unknown(job: dict, post_text: str = "") -> bool:
     """학력을 확인할 수 없는 클린아이 공고 — 리스트·훅에서 학력 언급 금지"""
     return is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")) and not private_edu_ok(post_text)
@@ -807,6 +822,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         data["지역제한(리스트에 반드시 명시)"] = (job.get("localName") if has_value(job.get("localName")) else "있음 (거주·연고자 한정)")
     if is_cleaneye(job) and job.get("entGb"):
         data["기관구분"] = job["entGb"]
+        data["기관 성격(리스트에 반드시 한 번 명시)"] = cleaneye_kind(job)
     # 빈 값('공고 참조', 0, '기타')은 아예 넘기지 않음 — 리스트·훅 소재로 쓰지 못하게
     data = {k: v for k, v in data.items() if has_value(v)}
 
@@ -834,6 +850,7 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         lines.append("- '대기업'은 누구나 아는 그룹사 계열일 때만. 아니면 업종(증권사·패션 회사 등)으로 부를 것")
     if is_cleaneye(job):
         lines.append("- 클린아이 공고: '기관구분'에 맞게 부를 것 (지방공사·지방공단 = 지방공기업 / 출자·출연기관·재단·의료원은 '공기업'이라 부르지 말 것)")
+        lines.append(f"- 이름만 봐선 회사처럼 보일 수 있으니 리스트 2번에 '{cleaneye_kind(job)}'라고 꼭 적을 것 (공공기관이라는 게 이 글의 핵심 무기)")
     if is_cleaneye(job) and job.get("acbgCondNmLst") == "면허·자격 필수":
         lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력조건' 괄호 안 내용을 그대로 쓰고, '누구나 지원' 류 금지")
     if edu_unknown(job, post_text):
@@ -913,7 +930,7 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
-def validate_candidate(d: dict, inst: str = "", no_edu: bool = False):
+def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
@@ -964,6 +981,8 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False):
     body = "\n".join(hook_lines) + "\n\n" + "\n".join(f"{i+1}. {x}" for i, x in enumerate(items)) + "\n\n" + closer
     if re.search(r"https?://|#\S", body):
         return None, "링크/해시태그"
+    if public_kind and not any(re.search(r"공공|공기업|출연|출자", x) for x in items):
+        return None, "공공기관 표시 없음"   # [2026-10-12] 클린아이: 회사처럼 보이지 않게
     if no_edu and re.search(r"학력|학벌|고졸|대졸|학사|블라인드|누구나\s*지원", body):
         return None, "학력 정보 없는 공고에 학력 언급"   # [2026-10-12] 클린아이
     if len(body) > 490:
@@ -1023,7 +1042,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
             errs.append("JSON 해석 실패")
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
-            r, err = validate_candidate(c, inst, edu_unknown(job, post_text))
+            r, err = validate_candidate(c, inst, edu_unknown(job, post_text), is_cleaneye(job))
             if r:
                 valid.append(r)
             else:

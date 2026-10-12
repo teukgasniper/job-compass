@@ -28,6 +28,9 @@ EDU_SCHEMA = """공고문에서 신입 지원자 기준 학력 조건을 찾아 
   · 학력 제한 없음·학력 무관·블라인드라 학력 미기재가 '명시'돼 있으면 "학력무관"
   · 학력 대신 간호사 면허·자격증 등이 필수 조건이면 "면허·자격 필수"
   · 분야마다 다르면 가장 인원이 많은 분야 기준
+  · [중요] 정규직·무기계약직과 계약직·기간제를 같이 뽑는 공고면 반드시 정규직·무기계약직 분야의 학력 조건만 쓸 것.
+    공고문에 계약직·기간제 분야 요건만 있고 정규직 분야 학력이 안 보이면 null
+  · 위 '고용형태'에 맞는 분야 기준으로 쓸 것
 - text: 공고문 근거를 40자 이내로 (예: "학력·연령·성별 제한 없음", "간호사 면허 소지자")
 - open: label이 "학력무관"일 때만 true
 - 공고문에서 학력 조건을 찾을 수 없으면 {"label": null, "text": null, "open": false}"""
@@ -61,10 +64,10 @@ def cached_edu(sn) -> dict:
     """저장된 학력 (쓰레드 확인값 → 본문 보강값 순). 없으면 {}"""
     sn = str(sn)
     hit = load_cache().get(sn) or {}
-    if hit.get("label"):
+    if hit.get("label") and not _wrong_track(hit.get("text")):   # 계약직 요건으로 저장된 옛 값은 무시 → 다시 확인
         return hit
     enh = ((_load(ENHANCED).get(sn) or {}).get("data") or {}).get("edu") or {}
-    if enh.get("label") in LABELS:
+    if enh.get("label") in LABELS and not _wrong_track(enh.get("text")):
         return {**enh, "source": "본문 보강"}
     return {}
 
@@ -82,6 +85,11 @@ def apply_edu(job: dict) -> dict:
     return job
 
 
+def _wrong_track(text: str) -> bool:
+    """[2026-10-12] 계약직·기간제 분야 요건을 가져온 경우 (예: 경북테크노파크 '(계약직 자격요건)') — 쓰지 않고 다시 확인"""
+    return bool(re.search(r"(?<!무기)계약직|기간제|단시간|대체인력", text or ""))
+
+
 def _parse(raw: str) -> dict:
     m = re.search(r"\{.*\}", re.sub(r"```(json)?", "", raw or ""), re.S)
     if not m:
@@ -91,7 +99,7 @@ def _parse(raw: str) -> dict:
     except Exception:
         return {}
     label = (d.get("label") or "").strip()
-    if label not in LABELS:
+    if label not in LABELS or _wrong_track(d.get("text")):
         return {}
     return {"label": label, "text": (d.get("text") or "").strip()[:60], "open": label == "학력무관"}
 
@@ -116,7 +124,8 @@ def lookup_edu(job: dict, save: bool = True) -> dict:
         import enhance_posts as ep                          # 공고문 내려받기·읽기는 본문 보강과 같은 코드 사용
         doc, tiles, src = ep.get_notice(job)
         if doc or tiles:
-            head = f"기관: {job.get('instNm')}\n공고명: {job.get('recrutPbancTtl')}\n\n{EDU_SCHEMA}\n\n"
+            head = (f"기관: {job.get('instNm')}\n공고명: {job.get('recrutPbancTtl')}\n"
+                    f"고용형태: {job.get('hireTypeNmLst')} / 신입·경력: {job.get('recrutSeNm')}\n\n{EDU_SCHEMA}\n\n")
             if tiles:
                 user = [{"type": "text", "text": head + f"공고문은 이미지라 {len(tiles)}조각으로 보내. 이미지에서 읽히는 내용만 써."}]
                 user += [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": t}} for t in tiles]
