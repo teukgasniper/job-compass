@@ -18,6 +18,7 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 """
 import json, os, sys, time, re, urllib.request, urllib.parse, urllib.error
 import xml.etree.ElementTree as ET
+import html as html_lib   # [2026-10-13] 나라일터 contents의 &nbsp; 등 HTML 엔티티 해제용
 from datetime import datetime
 from post_template import build_html, make_title, make_labels, days_left, clean_inst, ncs_list, hire_list, regions, KST
 import random
@@ -210,6 +211,10 @@ def parse_contents(text):
     """공고 전문 텍스트에서 고용형태·인원·학력·경력 추출"""
     result = {}
 
+    # [2026-10-13] HTML 태그·엔티티 정리 — "정수시설관리사&nbsp;1명"처럼 &nbsp;가 끼면 인원을 못 읽어 0으로 남던 문제
+    text = html_lib.unescape(re.sub(r"<[^>]+>", " ", text or ""))
+    text = re.sub(r"\s+", " ", text)   # \xa0(nbsp 문자) 포함 모든 공백을 한 칸으로
+
     # 고용형태 추출
     hire_keywords = ["정규직", "무기계약직", "계약직", "기간제", "임기제", "공무직", "인턴"]
     found_hires = [k for k in hire_keywords if k in text]
@@ -217,11 +222,13 @@ def parse_contents(text):
         result["hire_type"] = ",".join(found_hires)
 
     # 모집인원 추출 (예: "총 6명", "00명", "0명 채용", "채용인원 : 0명")
-    m = re.search(r'(?:총\s*)?(\d{1,4})\s*명', text)
-    if m:
+    # [2026-10-13] 첫 번째 "N명"만 보던 것을 → 1명 이상인 첫 값을 찾을 때까지 계속 확인
+    #   (앞쪽에 "0명"·"00명" 같은 자리표시가 있으면 뒤의 "정수시설관리사 1명"을 못 읽고 0으로 남던 문제)
+    for m in re.finditer(r'(?:총\s*)?(\d{1,4})\s*명', text):
         n = int(m.group(1))
         if 1 <= n <= 5000:
             result["headcount"] = n
+            break
 
     # 학력 추출
     edu_keywords = ["학력무관", "학력제한없음", "고졸", "대졸", "석사", "박사", "전문대졸"]
@@ -377,9 +384,20 @@ def api(method, path, token, body=None):
             raise RuntimeError("발행 한도/권한 문제 → 이번 실행 중단")
         return None
 
+def gojobs_skip_reason(job):
+    """[2026-10-13] 보충 후에도 쓸 만한 정보가 없는 나라일터 공고는 발행하지 않음
+    (쓰레드 지침 4장과 같은 기준: 인원 0(정보 없음)·1명 공고, 고용형태 빈 값 제외)"""
+    n = job.get("recrutNope") or 0
+    if n <= 1:
+        return f"인원 {n}명" if n else "인원 정보 없음"
+    if not (job.get("hireTypeNmLst") or "").strip():
+        return "고용형태 빈 값"
+    return ""
+
+
 def publish(job, jobs, now, token):
-    # 나라일터 공고면 발행 직전에 상세 정보 보충
-    if is_gojobs(job):
+    # 나라일터 공고면 발행 직전에 상세 정보 보충 (main에서 이미 보충했으면 생략 — API 중복 호출 방지)
+    if is_gojobs(job) and "_gojobs_contents" not in job:
         job = enrich_gojobs(job)
     if is_work24(job):
         job = enrich_work24(job)
@@ -507,11 +525,23 @@ def main():
     if recover_mapping(token, jobs, mapping):
         queue, n_hot, n_new = pick_queue(jobs, mapping, now)
         json.dump(mapping, open(MAPPING_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    done = 0
+    done = skipped = attempted = 0
     try:
-        for i, job in enumerate(queue[:count]):
-            if i and JITTER:
+        # [2026-10-13] 건너뛴 나라일터 공고만큼 다음 순번으로 채워서 count개를 맞춤 (기존: queue[:count] 고정)
+        for job in queue:
+            if attempted >= count:
+                break
+            # [2026-10-13] 나라일터는 먼저 보충해서 인원·고용형태 확인 → 부족하면 발행하지 않고 다음 공고로
+            if is_gojobs(job):
+                job = enrich_gojobs(job)
+                reason = gojobs_skip_reason(job)
+                if reason:
+                    skipped += 1
+                    print(f"[건너뜀] {job['instNm']} | {reason} [나라일터]")
+                    continue
+            if attempted and JITTER:
                 time.sleep(random.randint(GAP_MIN, GAP_MAX))
+            attempted += 1
             info = publish(job, jobs, now, token)
             if info:
                 mapping[str(job["recrutPblntSn"])] = info
@@ -524,7 +554,7 @@ def main():
         print(f"[중단] {e}")
     finally:
         json.dump(mapping, open(MAPPING_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        print(f"[완료] 이번 {done}개 발행 / 누적 {len(mapping)}개")
+        print(f"[완료] 이번 {done}개 발행 / 나라일터 건너뜀 {skipped}개 / 누적 {len(mapping)}개")
 
 if __name__ == "__main__":
     main()
