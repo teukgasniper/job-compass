@@ -5825,5 +5825,222 @@
    "language": null,
    "written": null
   }
+ },
+ "CE-80315": {
+  "at": "2026-10-13 20:01",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80315.html",
+  "source": "(공고 2026-69호) 2026년 제3회 정규직원 채용 재공고.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반직 5급 경력직 1명, 일반직 6급 신입 5명, 공무직 6급 신입 1명을 뽑아요.",
+    "columns": [
+     "청정수소·가스",
+     "기술실증(R&DB)",
+     "발전·설비",
+     "IT",
+     "행정지원"
+    ],
+    "rows": [
+     {
+      "label": "일반직 5급(경력)",
+      "values": [
+       1,
+       null,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "일반직 6급(신입)",
+      "values": [
+       2,
+       1,
+       1,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "공무직 6급(신입)",
+      "values": [
+       null,
+       null,
+       null,
+       null,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 필기전형",
+     "date": "10월 24일(토)",
+     "desc": "인성검사(200문항)+NCS 직업기초능력평가(50문항)+전공시험(50문항)",
+     "note": "3배수 이내 결정"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "10월 29일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류전형",
+     "date": "11월 4일(수)",
+     "desc": "자격요건 및 경력, 제출서류 적격여부 심사",
+     "note": "적격자 전원 합격"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 11일(수)",
+     "desc": "인성·PT면접(1대多), PT 주제는 당일 배부",
+     "note": "1배수 이내 결정"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 13일(금)",
+     "desc": "임용등록 후 결격사유 조회 거쳐 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사(200문항) + NCS 직업기초능력평가(50문항) + 전공시험(50문항)으로 봐요.",
+    "highlight": "NCS 직업기초능력평가",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "200문항",
+      "scope": null,
+      "note": "적격·부적격만 판단",
+      "ncs": false
+     },
+     {
+      "name": "NCS 직업기초능력평가",
+      "count": "50문항",
+      "scope": "의사소통, 문제해결, 정보, 자원관리, 조직이해, 수리, 직업윤리, 영어상식",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "전공시험(청정수소·가스)",
+      "count": "50문항",
+      "scope": "가스일반, 기계일반(통합전공)",
+      "note": "분야별로 전공과목 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-180660": {
+  "at": "2026-10-13 20:01",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-180660.html",
+  "source": "기업 채용 페이지 (https://cgbest.incruit.com/hire/viewhire.asp?projectid=105)",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 6일~10월 26일",
+     "desc": "채용 홈페이지 온라인 접수",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기고사",
+     "date": "11월 15일(일)",
+     "desc": "분야별 전공과목 시험(법학·경영학 등)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무진 면접고사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 임원 면접고사",
+     "date": null,
+     "desc": "신체검사 포함",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (전체 분야)",
+    "text": "토익 750점, 텝스 322점, 토플(IBT) 85점 이상 공인영어성적이 있어야 지원할 수 있어요. 원서접수 마감일 기준 최근 2년 이내 성적만 인정돼요.",
+    "highlight": "토익 750점"
+   },
+   "written": {
+    "summary": "필기고사는 분야별 전공과목으로 봐요. 법정은 법학, 상경은 경영학·경제학·회계학, 데이터분석은 데이터분석학, 건축은 건축학, IT는 전산학이에요.",
+    "highlight": "분야별 전공과목",
+    "subjects": [
+     {
+      "name": "법학(법정)",
+      "count": null,
+      "scope": "민법(친족, 상속 제외), 상법(해상, 항공운송 제외)",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "경영학·경제학·회계학(상경)",
+      "count": null,
+      "scope": "경영학(원론·전략·조직·인사·마케팅·재무관리), 경제학(원론·미시거시·화폐금융론), 회계학(원리·재무·원가·관리)",
+      "note": "혼합출제",
+      "ncs": false
+     },
+     {
+      "name": "데이터분석학(데이터분석)",
+      "count": null,
+      "scope": "데이터이해, 데이터분석 기획, 데이터분석",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "건축학(건축)",
+      "count": null,
+      "scope": "건축구조, 건축시공, 건축계획, 건축설비, 건축법규",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "전산학(IT)",
+      "count": null,
+      "scope": "프로그래밍언어, 데이터베이스, 네트워크, 소프트웨어공학, 정보보호",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
