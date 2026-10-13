@@ -6042,5 +6042,217 @@
     "callout": null
    }
   }
+ },
+ "CE-80279": {
+  "at": "2026-10-14 04:30",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80279.html",
+  "source": "화성도시공사 2026년 하반기 화성시 공공기관 신규직원 공개채용 시행계획 공고.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "행정 3명, 전기 1명, 전산 1명, 기계 2명을 뽑아요.",
+    "columns": [
+     "행정",
+     "전기",
+     "전산",
+     "기계"
+    ],
+    "rows": [
+     {
+      "label": "일반직",
+      "values": [
+       3,
+       1,
+       1,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~27일",
+     "desc": "채용분야별 자격기준 충족여부 심사(적부심사)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 28일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "10월 31일",
+     "desc": "전공과목+필수과목(NCS 등) 총 110문항",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 4일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인·적성검사",
+     "date": "11월 7일",
+     "desc": "인성검사 합격자 중 적성검사 고득점순 선발",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "인·적성검사 합격자 발표",
+     "date": "11월 12일"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "11월 23일~26일",
+     "desc": "개별면접, 평점 70점 이상자 선발",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 2일",
+     "desc": "결격사유 조회 후 2027.01.01 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 전공과목, NCS 기반 직업기초능력평가, 일반상식, 영어로 총 110문항이에요.",
+    "highlight": "110문항",
+    "subjects": [
+     {
+      "name": "전공과목",
+      "count": "20문항",
+      "scope": "행정일반/경영일반 또는 직렬별 전공(전기·전산·기계)",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "NCS 기반 직업기초능력평가",
+      "count": "50문항",
+      "scope": "문제해결능력, 의사소통능력, 대인관계능력, 정보능력",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "일반상식",
+      "count": "20문항",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "영어",
+      "count": "20문항",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "CE-80340": {
+  "at": "2026-10-14 04:30",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80340.html",
+  "source": "2026년 1차 (재)군위문화관광재단 직원 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "임기직(6급상당) 1명, 일반직 9급 1명을 뽑아요.",
+    "columns": [
+     "임기직(6급상당)",
+     "일반직(9급)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학사학위 이상 또는 관련 경력·자격증 중 하나 충족(9급 기준)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 23일(금)",
+     "desc": "자격요건 적격 여부 심사(적격자 전원 합격)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "10월 26일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 30일(금)",
+     "desc": "NCS직업공통능력평가(50문항, 사지선다)",
+     "note": "5배수 선발(일반직)"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 5일(목)",
+     "desc": "전문성·직무분석·비전·친화력·윤리관 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 6일(금)",
+     "desc": "결격사유 조회·신체검사 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS직업공통능력평가 50문항으로 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "NCS직업공통능력평가",
+      "count": "50문항",
+      "scope": "의사소통, 수리, 문제해결, 디지털, 대인관계",
+      "note": "영역별 10문항",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
