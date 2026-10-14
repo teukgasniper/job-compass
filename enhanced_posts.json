@@ -6914,5 +6914,161 @@
    },
    "written": null
   }
+ },
+ "306006": {
+  "at": "2026-10-15 06:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/redcross-306006.html",
+  "source": "6. 채용공고문(270301_2027년도 정규직 졸업예정 간호사).hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "간호학(최소학력) 졸업예정자 또는 국가고시 응시자, 면허 소지자 지원 불가",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "2026.11.27.(금)",
+     "desc": "자격증·어학·봉사 등 가점 합산 심사",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "2026.12.01.(화)~2026.12.03.(목)",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2026.12.11.(금)",
+     "desc": "신체검사 불합격 시 합격 취소 가능",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "CE-80037": {
+  "at": "2026-10-15 06:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80037.html",
+  "source": "채용 공고문(2026 하반기 통합채용).pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "청소년지도사, 일반행정A, 일반행정B 각 1명씩 총 3명을 뽑아요.",
+    "columns": [
+     "청소년지도사(취업지원)",
+     "일반행정A(장애인)",
+     "일반행정B(공개경쟁)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~10월 27일",
+     "desc": "채용분야별 자격기준 충족 여부 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 28일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "10월 31일",
+     "desc": "NCS평가 50문항, 일반상식 40문항, 전공 20문항",
+     "note": "각 과목 40%·총점 60% 이상, 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 4일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인·적성검사",
+     "date": "11월 7일",
+     "desc": "인성검사 적격 및 적성검사 고득점자 선발",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "인·적성검사 합격자 발표",
+     "date": "11월 12일"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접시험",
+     "date": "11월 23일~11월 26일",
+     "desc": "직무중심의 블라인드 면접, 5개 항목 평가",
+     "note": "만점 70% 미만 불합격"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 2일",
+     "desc": "면접 고득점자 순 선발",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS평가, 일반상식, 전공과목으로 보고 총 110문항이에요.",
+    "highlight": "110문항",
+    "subjects": [
+     {
+      "name": "NCS평가",
+      "count": "50문항",
+      "scope": null,
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "일반상식",
+      "count": "40문항",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "전공과목",
+      "count": "20문항",
+      "scope": "청소년지도사는 청소년학개론, 일반행정A·B는 행정학",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
