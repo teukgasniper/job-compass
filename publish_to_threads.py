@@ -217,6 +217,10 @@ def eligible(job: dict, today: dt.date) -> bool:
     # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
     if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title):
         return False
+    # [2026-10-14] 요양보호사(요양보호직)는 자격증 필수 + 실제 지원층이 40~60대라 20~30대 취준생 대상이 아님 → 제외
+    #              ('보훈요양원' 같은 기관 이름은 '요양보호'가 아니라서 걸리지 않음)
+    if "요양보호" in title:
+        return False
     if dday(job.get("pbancEndYmd", ""), today) < 1:
         return False
     return True
