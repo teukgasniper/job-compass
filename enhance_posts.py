@@ -29,6 +29,7 @@ from edu_lookup import apply_edu, is_cleaneye, LABELS as EDU_LABELS, _wrong_trac
 from publish_to_blogger import access_token, api, related_jobs, enrich_gojobs, enrich_work24, is_gojobs, is_work24
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
+MANUAL_ENH_FILE = "manual_enhanced.json"   # [2026-10-14] 수동 보강 목록 — 자동·수동 실행 모두 건너뜀 (--force로도 안 덮어씀)
 TRIED_FILE = "enhance_tried.json"   # [2026-10-08] 자동 보강: 시도했다가 실패한 공고 (3일 뒤 재시도, fetch_views.py가 읽음)
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
@@ -464,6 +465,16 @@ def extract(job, doc, tiles=None):
 
 
 # ───────── 3. 실행 ─────────
+def load_manual_enhanced():
+    """[2026-10-14] 수동 보강한 공고번호 (manual_enhanced.json) — 자동 보강이 절대 건드리지 않음
+    형식: {"305890": "2026-10-14 분당서울대병원 업무지원직 — 채팅에서 직접 보강"} (값은 메모, 아무거나)"""
+    try:
+        d = json.load(open(MANUAL_ENH_FILE, encoding="utf-8"))
+        return {str(k) for k in (d.keys() if isinstance(d, dict) else d)}
+    except Exception:
+        return set()
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     ids = args or [x.strip() for x in re.split(r"[,\s]+", os.environ.get("ENHANCE_IDS", "")) if x.strip()]
@@ -483,6 +494,7 @@ def main():
     # [2026-10-08] 자동 보강: 후보를 넉넉히 받아서 TARGET개 성공할 때까지 다음 후보로 넘어감 (0이면 받은 공고 전부)
     target = int(os.environ.get("ENHANCE_TARGET") or 0)
     attempted, succeeded = [], set()
+    manual = load_manual_enhanced()
 
     for sn in ids:
         sn = str(sn)
@@ -493,6 +505,8 @@ def main():
         post, job = mapping.get(sn), by_id.get(sn)
         if sn.startswith("MN-") or (job or {}).get("_manual") or (post or {}).get("manual"):   # [2026-10-08]
             print("  건너뜀: 수동 공고 글은 보강하지 않아요 (직접 쓴 본문·Claude 작성 본문 보호)"); continue
+        if sn in manual:                                  # [2026-10-14] 채팅에서 직접 보강한 글 보호
+            print("  건너뜀: 수동 보강한 글이에요 (manual_enhanced.json) — 다음 후보로"); continue
         if not post:
             print("  건너뜀: hiring03에 발행된 글이 없어요"); continue
         if not job:

@@ -10,6 +10,7 @@ GA4 Data API → hiring03.ddolbestory.com 페이지 경로별 누적 조회수
   ③ 아직 보강 안 됨 (enhanced_posts.json 에 없음)
   ④ 마감까지 2일 이상 남음 (곧 닫힐 글은 보강해도 효과 없음)
   ⑤ 최근 3일 안에 시도했다가 실패한 공고는 건너뜀 (enhance_tried.json)
+  ⑥ [2026-10-14] 수동 보강한 공고(manual_enhanced.json)는 건너뛰고 다음 순위로
   [2026-10-08] 글 주소 → 공고번호를 job_posts.json 기준으로 찾음 (GJ-·WK-·CE- 공고가 숫자만 남아 매칭 안 되던 문제)
   → 조회수 높은 순으로 AUTO_ENHANCE_PER_RUN 개 (기본 3)
   [2026-10-08] 예비 후보까지 5배를 넘기고, 건너뛰거나 실패하면 다음 후보로 넘어가 목표 개수를 채움
@@ -25,6 +26,7 @@ KST = timezone(timedelta(hours=9))
 HOST = "hiring03.ddolbestory.com"
 VIEWS_FILE, TRIED_FILE = "views.json", "enhance_tried.json"
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
+MANUAL_ENH_FILE = "manual_enhanced.json"   # [2026-10-14] 수동 보강 목록 (사람이 직접 관리)
 
 MIN_VIEWS = int(os.environ.get("AUTO_ENHANCE_MIN_VIEWS") or 50)
 PER_RUN = int(os.environ.get("AUTO_ENHANCE_PER_RUN") or 3)
@@ -32,6 +34,16 @@ CAND_MULT = 5   # [2026-10-08] 실패 대비 예비 후보 배수
 MIN_DAYS_LEFT = 2
 RETRY_DAYS = 3
 DRY = os.environ.get("ENHANCE_DRY_RUN") == "true"
+
+
+def load_manual_enhanced():
+    """[2026-10-14] 수동 보강한 공고번호 (manual_enhanced.json) — 자동 보강이 절대 건드리지 않음
+    형식: {"305890": "2026-10-14 분당서울대병원 업무지원직 — 채팅에서 직접 보강"} (값은 메모, 아무거나)"""
+    try:
+        d = json.load(open(MANUAL_ENH_FILE, encoding="utf-8"))
+        return {str(k) for k in (d.keys() if isinstance(d, dict) else d)}
+    except Exception:
+        return set()
 
 
 def post_json(url, data, headers=None, form=False):
@@ -121,13 +133,16 @@ def main():
     mapping = load(MAPPING_FILE, {})
     state = load(STATE_FILE, {})
     tried = load(TRIED_FILE, {})
+    manual = load_manual_enhanced()
 
-    cands, skipped = [], {"보강완료": 0, "마감임박": 0, "마감/본문없음": 0, "최근실패": 0}
+    cands, skipped = [], {"보강완료": 0, "수동보강": 0, "마감임박": 0, "마감/본문없음": 0, "최근실패": 0}
     for sn, v in views.items():
         if v < MIN_VIEWS:
             continue
         if sn in state:
             skipped["보강완료"] += 1; continue
+        if sn in manual:                            # [2026-10-14] 수동 보강 글 → 다음 순위로
+            skipped["수동보강"] += 1; continue
         if sn.startswith("MN-"):                    # [2026-10-08] 수동 공고 글은 보강 안 함
             continue
         if sn not in jobs or sn not in mapping:
