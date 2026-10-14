@@ -405,8 +405,17 @@ NOT_GROUP = ("엔에이치엔", "엘에스이")          # 이름만 비슷한 �
 PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
 
 
+# [2026-10-14] 나라일터 기관은 기록에 짧은 이름('진천우체국')으로 남아서 앞글자 일치가 안 됨 → 끝글자로도 묶음
+GOV_SUFFIX = (("G:우정", ("우체국", "우편집중국", "우정청")),
+              ("G:법무부", ("교도소", "구치소", "소년원", "보호관찰소", "교정청", "출입국외국인사무소", "출입국외국인청")),
+              ("G:기상청", ("기상청", "기상지청", "기상위성센터")))
+
+
 def group_key(name: str) -> str:
     n = norm_key(norm_inst(name))
+    for g, suffixes in GOV_SUFFIX:
+        if n.endswith(suffixes):
+            return g
     if not n.startswith(NOT_GROUP):
         for g, prefixes in GROUPS.items():
             if any(n.startswith(px) for px in prefixes):
@@ -622,6 +631,8 @@ OPEN_FACT_RE = r"학력\s*(및\s*경력\s*)?무관|학력·?나이·?경력\s*�
 
 def has_open_fact(job: dict, post_text: str) -> bool:
     """[2026-10-06] '포기 방지'형을 쓸 근거 — 모두에게 열린 조건(학력무관·자소서 없음 등)이 있는지"""
+    if is_gojobs(job):                            # [2026-10-14] 나라일터는 학력 확인 불가 → 열린 조건 근거로 쓰지 않음
+        return False
     return "무관" in (job.get("acbgCondNmLst") or "") or bool(re.search(OPEN_FACT_RE, post_text or ""))
 
 
