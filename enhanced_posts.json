@@ -6489,5 +6489,258 @@
     "callout": null
    }
   }
+ },
+ "CE-80055": {
+  "at": "2026-10-14 21:18",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80055.html",
+  "source": "2026년도 하반기 화성시 공공기관 직원 통합채용 - 제5회 (재)화성시문화관광재단 직원 채용.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "공개경쟁 무대기계 1명, 제한경쟁(장애인) 문화예술 1명을 뽑아요.",
+    "columns": [
+     "무대기계(공개경쟁)",
+     "문화예술(장애인 제한경쟁)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~27일",
+     "desc": "채용분야 자격기준 적격 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과공고",
+     "date": "10월 28일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "10월 31일(토)",
+     "desc": "NCS·일반상식·전공과목(분야별 상이)",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 결과공고",
+     "date": "11월 4일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인·적성검사",
+     "date": "11월 7일(토)",
+     "desc": "인성검사 적격 및 적성검사 60% 이상",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "인·적성검사 결과공고",
+     "date": "11월 12일(목)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접시험",
+     "date": "11월 23일~26일",
+     "desc": "정신자세·전문지식 등 5개 항목 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 2일(수)",
+     "desc": "임용후보자 등록 후 12월 21일 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS평가(50문항) + 일반상식(40문항) + 전공과목(20문항)으로 봐요. 총 110문항이에요.",
+    "highlight": "110문항",
+    "subjects": [
+     {
+      "name": "NCS평가",
+      "count": "50문항",
+      "scope": null,
+      "note": "공통과목",
+      "ncs": true
+     },
+     {
+      "name": "일반상식",
+      "count": "40문항",
+      "scope": null,
+      "note": "공통과목",
+      "ncs": false
+     },
+     {
+      "name": "전공과목",
+      "count": "20문항",
+      "scope": "무대기술일반·무대기계 / 문화예술·행정학",
+      "note": "분야별 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305949": {
+  "at": "2026-10-14 21:18",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305949.html",
+  "source": "[KCTI] 2026년 하반기 직원 채용 공고문.jpg (이미지 공고문 → 14조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "연구직(문화예술정책 1명, 지역관광개발 1명)과 통계직(통계 생산 및 데이터분석 1명)을 뽑아요.",
+    "columns": [
+     "문화예술정책(연구원)",
+     "지역관광개발(연구원)",
+     "통계 생산·데이터분석(차석전문원)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "석사 이상",
+    "text": "연구직은 관련분야 석사 이상 또는 학사+2년 이상 연구경력, 통계직은 석사 이상이에요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 2일~5일",
+     "desc": "자기소개서·경험경력기술서 등 100점 만점 심사",
+     "note": "10배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 11일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 21일(토)",
+     "desc": "모집분야 관련 논술형 평가(3문항)",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 26일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 온라인 인성검사",
+     "date": "11월 27일~30일",
+     "desc": "온라인 전문검사, 최종면접 참고자료로 활용",
+     "note": "2차 합격자만 실시"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "12월 7일~8일",
+     "desc": "정책연구계획서 발표면접 및 직무중심 경험면접",
+     "note": "일대다 대면면접"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 17일",
+     "desc": "신규 임용일은 12월 29일이에요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 논술형 평가로, 모집분야 관련 주제 3문항을 출제해요.",
+    "highlight": "3문항",
+    "subjects": [
+     {
+      "name": "논술형 평가",
+      "count": "3문항",
+      "scope": "논리적 사고력, 전공지식 응용능력, 창의력, 원고작성능력",
+      "note": "모집분야 관련 주제 출제",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "CE-80215": {
+  "at": "2026-10-14 21:18",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80215.html",
+  "source": "(재)광진문화재단 2026년도 제5회 직원 공개채용 공고.pdf (글자 없는 PDF → 이미지 10조각)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "학력 및 경력제한 없음, 무대예술전문인 3급 이상 자격소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 22일(목)",
+     "desc": "자기소개서30+근무경력20+임용적합성45+자격증5점",
+     "note": "3배수 이상 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 26일(월)",
+     "desc": "자질·인성 등 6개 항목 평가(100점)",
+     "note": "고득점 순위에 따라 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 28일(수)",
+     "desc": "예정, 임용예정일 11월 3일(화)",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
