@@ -121,6 +121,27 @@ def is_cleaneye(job: dict) -> bool:
     return job.get("_source") == "cleaneye"
 
 
+def is_gojobs(job: dict) -> bool:
+    """[2026-10-14] 나라일터 = 중앙부처·지자체 (고용형태·학력·인원·신입 구분이 전부 빈 값으로 들어오는 출처)"""
+    return job.get("_source") == "gojobs"
+
+
+# [2026-10-14] 나라일터는 제목으로만 판단 — '공무직'(무기계약 근로자)이 들어간 공고만 통과, 기간제·대체·시간제 등은 제외
+GOJOBS_OK_RE = re.compile(r"공무직|상시계약집배원|상시집배원|무기계약")
+GOJOBS_BAD_RE = re.compile(r"기간제|대체|육아휴직|한시|단시간|시간제|시간선택|(?<!무기)계약직|임기제|인턴|장애인\s*구분|결과|면접\s*안내")
+_GOJOBS_UNIT_RE = re.compile(r"(팀|과|실|담당관|대변인|정책관|연구부|사업부|지원단|관리국)$")
+
+
+def gojobs_inst(name: str) -> str:
+    """'과학기술정보통신부 우정사업본부 충청지방우정청 진천우체국' → '진천우체국' (리스트 1번·카드 검색용 짧은 이름)
+    맨 끝이 부서명(○○팀·○○과 등)이면 그 앞 기관명을 씀"""
+    parts = (name or "").split()
+    for t in reversed(parts):
+        if not _GOJOBS_UNIT_RE.search(t):
+            return t
+    return parts[0] if parts else (name or "")
+
+
 SALARY_MIN = 3000   # [2026-10-12] 연봉 3천만원 미만은 쓰레드에 안 씀 (외부 유입 후킹이 안 됨, 본문에는 그대로 표시)
 
 
@@ -184,27 +205,37 @@ def not_newbie(title: str) -> bool:
     return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
 
 
+# [2026-10-14] 20~30대 취준생이 거의 안 가는 현장 단순직 (제목 기준)
+YOUTH_MISS_RE = re.compile(r"미화|청소(?!년)|환경관리원|경비|방호원|조리원|조리실무|취사|급식|주차|간병|요양보호")   # 청소년·조리사(요리사)는 제외 안 함
+
+
 def eligible(job: dict, today: dt.date) -> bool:
     if job.get("ongoingYn") != "Y":
         return False
-    # 빈 값 공고 제외 (리스트에 '공고 참조'가 들어가는 걸 원천 차단)
-    if not has_value(job.get("hireTypeNmLst")):
-        return False
-    # [2026-10-06] 공채속보(민간)는 학력 값이 비거나 마지막 값(석사·박사)만 들어오는 수집 오류가 있음
-    #              → 민간은 여기서 거르지 않고 본문 '지원 자격 상세'로 다시 확인 (main → private_edu_ok)
-    # [2026-10-12] 클린아이는 학력 항목이 원래 없음 → 학력 없이 발행 (리스트·훅에서 학력 언급 금지)
-    if not is_private(job) and not is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
-        return False
-    if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
-        if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
-            return False
-    hire = job.get("hireTypeNmLst") or ""
-    if not any(h in hire for h in GOOD_HIRE):
-        return False
-    se = job.get("recrutSeNm") or ""
-    if not (any(n in se for n in NEWBIE_OK) or "무관" in se):
-        return False
     title = job.get("recrutPbancTtl") or ""
+    if is_gojobs(job):
+        # [2026-10-14] 나라일터는 고용형태·학력·인원·신입 구분이 전부 빈 값 → 아래 데이터 칸 검사 대신 제목으로 판단
+        #              '공무직'이 들어간 공고만 무기계약직으로 보고 통과 (인원·학력은 글에서 아예 안 씀)
+        if not GOJOBS_OK_RE.search(title) or GOJOBS_BAD_RE.search(title):
+            return False
+    else:
+        # 빈 값 공고 제외 (리스트에 '공고 참조'가 들어가는 걸 원천 차단)
+        if not has_value(job.get("hireTypeNmLst")):
+            return False
+        # [2026-10-06] 공채속보(민간)는 학력 값이 비거나 마지막 값(석사·박사)만 들어오는 수집 오류가 있음
+        #              → 민간은 여기서 거르지 않고 본문 '지원 자격 상세'로 다시 확인 (main → private_edu_ok)
+        # [2026-10-12] 클린아이는 학력 항목이 원래 없음 → 학력 없이 발행 (리스트·훅에서 학력 언급 금지)
+        if not is_private(job) and not is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
+            return False
+        if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
+            if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
+                return False
+        hire = job.get("hireTypeNmLst") or ""
+        if not any(h in hire for h in GOOD_HIRE):
+            return False
+        se = job.get("recrutSeNm") or ""
+        if not (any(n in se for n in NEWBIE_OK) or "무관" in se):
+            return False
     if any(w in title for w in DOCTOR_WORDS):
         return False
     if not_newbie(title):
@@ -220,6 +251,10 @@ def eligible(job: dict, today: dt.date) -> bool:
     # [2026-10-14] 요양보호사(요양보호직)는 자격증 필수 + 실제 지원층이 40~60대라 20~30대 취준생 대상이 아님 → 제외
     #              ('보훈요양원' 같은 기관 이름은 '요양보호'가 아니라서 걸리지 않음)
     if "요양보호" in title:
+        return False
+    # [2026-10-14] 미화·청소·경비·조리 등 현장 단순직은 실제 지원층이 중장년이라 20~30대 취준생 대상이 아님 → 제외
+    #              (알바·단시간은 원래 고용형태 필터와 나라일터 제외 규칙에서 빠짐)
+    if YOUTH_MISS_RE.search(title):
         return False
     if dday(job.get("pbancEndYmd", ""), today) < 1:
         return False
@@ -363,6 +398,8 @@ GROUPS = {
     "농협": ["농협", "엔에이치", "NH"], "호반": ["호반"], "DB": ["디비", "DB"], "하나": ["하나"],
     "신한": ["신한"], "KB": ["케이비", "KB"], "코오롱": ["코오롱"], "대한전선": ["대한전선"],
     "토스": ["토스", "비바리퍼블리카"],
+    # [2026-10-14] 나라일터 — 같은 부처 소속(우체국 여러 곳 등)이 연달아 나가지 않게
+    "우정": ["과학기술정보통신부우정사업본부"], "법무부": ["법무부"], "기상청": ["기상청"],
 }
 NOT_GROUP = ("엔에이치엔", "엘에스이")          # 이름만 비슷한 비계열사
 PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
@@ -479,10 +516,11 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         top = fresh[:5]
         return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
 
+    # [2026-10-14] 같은 순위 안에서 나라일터(인원·학력 없는 공고)는 잡알리오·클린아이가 없을 때만
     if tier1:
-        return choose(tier1), 1, len(tier1), None
+        return choose([j for j in tier1 if not is_gojobs(j)] or tier1), 1, len(tier1), None
     if tier2:
-        return choose(tier2), 2, len(tier2), None
+        return choose([j for j in tier2 if not is_gojobs(j)] or tier2), 2, len(tier2), None
 
     # [2026-10-12] 새 공고 소진 → ① 다른 계정에서 터진 글을 가져와 각색
     borrows = borrow_candidates(others, pool, my_ids, my_keys, today)
@@ -852,6 +890,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     if is_cleaneye(job) and job.get("entGb"):
         data["기관구분"] = job["entGb"]
         data["기관 성격(리스트에 반드시 한 번 명시)"] = cleaneye_kind(job)
+    if is_gojobs(job):                            # [2026-10-14] 나라일터 — 빈 칸 대신 확인된 것만
+        data["고용형태"] = "공무직 (무기계약 근로자 — 공무원 아님)"
+        data["소속(전체 기관명)"] = job.get("instNm")
     # 빈 값('공고 참조', 0, '기타')은 아예 넘기지 않음 — 리스트·훅 소재로 쓰지 못하게
     data = {k: v for k, v in data.items() if has_value(v)}
 
@@ -880,6 +921,12 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
     if is_cleaneye(job):
         lines.append("- 클린아이 공고: '기관구분'에 맞게 부를 것 (지방공사·지방공단 = 지방공기업 / 출자·출연기관·재단·의료원은 '공기업'이라 부르지 말 것)")
         lines.append(f"- 이름만 봐선 회사처럼 보일 수 있으니 리스트 2번에 '{cleaneye_kind(job)}'라고 꼭 적을 것 (공공기관이라는 게 이 글의 핵심 무기)")
+    if is_gojobs(job):
+        lines.append("- 나라일터(중앙부처·지자체) 공무직 공고: 데이터에 인원·학력·신입 여부가 없음 → 훅·리스트·클로저에 "
+                     "인원(○명·대규모·여러 명), 학력·블라인드·'누구나 지원', 신입 언급 금지")
+        lines.append("- '공무원'이라고 쓰지 말 것 — 공무직은 공무원이 아니라 정부기관 소속 무기계약 근로자. 리스트에 '공무직'을 꼭 한 번 쓸 것")
+        lines.append("- 리스트는 '기관명' 공무직 채용 / 소속(○○부 산하 등) / 직무(공고명 괄호 속 직무를 쉬운 말로) / 근무 기관·지역 / 마감일로 채울 것")
+        lines.append("- 직무가 집배·경비·시설·미화·운전·조리 같은 현장직이면 사무직처럼 쓰지 말 것")
     if is_cleaneye(job) and job.get("acbgCondNmLst") == "면허·자격 필수":
         lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력조건' 괄호 안 내용을 그대로 쓰고, '누구나 지원' 류 금지")
     if edu_unknown(job, post_text):
@@ -961,7 +1008,7 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
-def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False):
+def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
@@ -989,6 +1036,8 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
     if re.search(r"(그곳|그 곳|하는 곳|하던 곳|던 그|알고 보니|알고보니|이 공단이|이 기관이|이 공사가|이 재단이|거기였음|곳이었음|거였음)", hook):
         return None, "생활 연결형"
     for pat, name in BANNED_HOOK:
+        if name == "절차 디테일" and re.search(r"우체국|우편", inst or ""):
+            pat = r"등기|수입인지"            # [2026-10-14] 우체국 공무직 공고는 '우체국'이 소재 자체라 허용
         if re.search(pat, hook) or (name in CLOSER_CHECKED and re.search(pat, closer)):
             return None, f"제외 패턴: {name}"
     if d.get("cat") != "person" and re.search(r"(했더니|하길래|보여줬|보여드렸|말했더니)", hook):
@@ -1018,6 +1067,13 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         return None, "3천만원 미만 연봉 언급"   # [2026-10-12] 외부 유입 후킹이 안 됨
     if no_edu and re.search(r"학력|학벌|고졸|대졸|학사|블라인드|누구나\s*지원", body):
         return None, "학력 정보 없는 공고에 학력 언급"   # [2026-10-12] 클린아이
+    if gongmu:                                    # [2026-10-14] 나라일터 공무직
+        if re.search(r"\d+\s*명|대규모|여러\s*명|신입", body):
+            return None, "나라일터 공고에 인원·신입 언급"
+        if "공무원" in body:
+            return None, "공무직을 공무원으로 씀"
+        if not any("공무직" in x for x in items):
+            return None, "리스트에 공무직 표시 없음"
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
     return {"hook": "\n".join(hook_lines), "items": items, "closer": closer, "text": body,
@@ -1075,7 +1131,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
             errs.append("JSON 해석 실패")
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
-            r, err = validate_candidate(c, inst, edu_unknown(job, post_text), is_cleaneye(job))
+            r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job))
             if r:
                 valid.append(r)
             else:
@@ -1779,7 +1835,7 @@ def main():
         return
     tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 다른 계정 터진 글 각색", 4: "4순위 내 글 재발행"}[tier]
 
-    inst = norm_inst(job["instNm"])
+    inst = gojobs_inst(job["instNm"]) if is_gojobs(job) else norm_inst(job["instNm"])   # [2026-10-14] 나라일터는 짧은 이름
     d_left = dday(job["pbancEndYmd"], today)
     if job.get("always"):
         d_left = 99                               # [2026-10-08] 상시채용 → 시한폭탄·막차 조합 제외
