@@ -6742,5 +6742,177 @@
    "language": null,
    "written": null
   }
+ },
+ "CE-80195": {
+  "at": "2026-10-15 02:33",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80195.html",
+  "source": "공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "사업장(테니스장 등) 운영 관리 1명, 청년체험형 인턴 3명을 뽑아요.",
+    "columns": [
+     "사업장 운영 관리",
+     "청년체험형 인턴"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "연령·학력·전공 제한 없이 지원 가능해요",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 20일(화)",
+     "desc": "제출서류(자격·경력·자기소개서·직무계획서) 심사",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 21일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — CPI 인성검사",
+     "date": "10월 21일~10월 26일",
+     "desc": "서류합격자 대상 인성검사(미실시 시 불합격)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "10월 27일(화)",
+     "desc": "기본소양·창의력·전문지식 등 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 28일(수)",
+     "desc": "임용예정일 11월 2일(월)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "CE-80345": {
+  "at": "2026-10-15 02:33",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80345.html",
+  "source": "공고문(제2026-50호).pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "사무직 8급 1명, 기술직 8급 1명, 계약직(공부방 관장) 3명, 계약직(공부방 총무) 3명을 뽑아요.",
+    "columns": [
+     "사무직 8급",
+     "기술직 8급",
+     "공부방 관장",
+     "공부방 총무"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       3,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 26일(월)",
+     "desc": "자격, 경력, 발전성, 적합성, 업무수행능력 평가",
+     "note": "계약직 5배수, 일반직 20배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 27일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "10월 28일(수)",
+     "desc": "정신자세, 전문지식, 의사발표, 태도, 발전가능성 평가",
+     "note": "일반직은 NCS 필기 후 11/5 면접"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 30일(금)",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "일반직(사무직·기술직)은 NCS 직업기초능력평가와 인성검사를 봐요. 계약직은 필기 없이 면접만 진행돼요.",
+    "highlight": "NCS 직업기초능력평가",
+    "subjects": [
+     {
+      "name": "NCS 직업기초능력평가",
+      "count": null,
+      "scope": null,
+      "note": "인성검사 포함",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-180567": {
+  "at": "2026-10-15 02:33",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-180567.html",
+  "source": "기업 채용 페이지 (https://www.hanjin.com/kor/CMS/RecruitMgr/view.do?mCode=MN052&recruit_seq=146)",
+  "parts": [
+   "language"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상으로 모집대상 전공자(기졸업자 또는 '27년 2월 졸업예정자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 800점, 토익스피킹 140점, OPIc IH 중 1개 이상 충족해야 해요(2025.01.01 이후 취득 자격에 한함).",
+    "highlight": "토익 800점"
+   },
+   "written": null
+  }
  }
 }
