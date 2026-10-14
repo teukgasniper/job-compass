@@ -910,8 +910,37 @@ def dedup_key(inst, title):
     return f"{normalize_inst(inst)}|{normalize_title(title)}"
 
 
+# [2026-10-14] 같은 공고가 출처마다 제목이 조금 달라 카드 2장으로 뜨던 문제
+#   예) 잡알리오 "…직원 채용 공고(연구직 2명…)" vs 나라일터 "…직원 채용(연구직 2명…)"
+#   → 같은 기관 + 같은 접수 시작일·마감일 + 제목이 비슷하면(60% 이상) 같은 공고로 봄
+#   ※ 다른 출처끼리만 비교 (같은 출처 안의 분야별 공고 — 예: 구리시청소년재단 3개 분야 — 는 그대로 둠)
+def _loose_title(title):
+    return re.sub(r'[\s\-·~\[\]()<>「」『』,.:]|공고|채용|모집|안내|알림', '', title or '')
+
+def same_posting(x, seen_items):
+    import difflib
+    inst = normalize_inst(x.get("instNm", ""))
+    bg, end = x.get("pbancBgngYmd"), x.get("pbancEndYmd")
+    if not inst or not bg or not end:
+        return False
+    t = _loose_title(x.get("recrutPbancTtl"))
+    src = x.get("_source")
+    for y in seen_items.get(inst, ()):
+        if y["src"] == src:
+            continue
+        if y["bg"] == bg and y["end"] == end and difflib.SequenceMatcher(None, t, y["t"]).ratio() >= 0.6:
+            return True
+    return False
+
+def remember(x, seen_items):
+    seen_items.setdefault(normalize_inst(x.get("instNm", "")), []).append(
+        {"bg": x.get("pbancBgngYmd"), "end": x.get("pbancEndYmd"), "t": _loose_title(x.get("recrutPbancTtl")),
+         "src": x.get("_source")})
+
+
 def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=()):
     seen = set()
+    seen_items = {}   # [2026-10-14] 기관별 (접수기간·느슨한 제목) — 출처 간 같은 공고 판별용
     merged = []
 
     # 1순위: 잡알리오
@@ -922,14 +951,16 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
             item = {k: x.get(k) for k in KEEP}
             item["_source"] = "alio"
             merged.append(item)
+            remember(item, seen_items)
 
     # 2순위: 클린아이
     ce_added, ce_skipped = 0, 0
     for x in cleaneye_items:
         key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
-        if key not in seen:
+        if key not in seen and not same_posting(x, seen_items):
             seen.add(key)
             merged.append(x)  # 이미 잡알리오 포맷 + 추가 필드 포함
+            remember(x, seen_items)
             ce_added += 1
         else:
             ce_skipped += 1
@@ -939,9 +970,10 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
     for gj in gojobs_items:
         converted = gojobs_to_alio_format(gj)
         key = dedup_key(converted["instNm"], converted["recrutPbancTtl"])
-        if key not in seen:
+        if key not in seen and not same_posting(converted, seen_items):
             seen.add(key)
             merged.append(converted)
+            remember(converted, seen_items)
             gj_added += 1
         else:
             gj_skipped += 1
@@ -950,9 +982,10 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
     wk_added, wk_skipped = 0, 0
     for x in gongchae_items:
         key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
-        if key not in seen:
+        if key not in seen and not same_posting(x, seen_items):
             seen.add(key)
             merged.append(x)
+            remember(x, seen_items)
             wk_added += 1
         else:
             wk_skipped += 1
