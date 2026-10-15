@@ -7070,5 +7070,128 @@
     "callout": null
    }
   }
+ },
+ "CE-80166": {
+  "at": "2026-10-15 14:06",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80166.html",
+  "source": "(공고) 2026년 제2회 완주군시설관리공단 일반직 직원 채용 공고(최종).hwpx",
+  "parts": [
+   "written",
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력 제한 없음",
+    "open": true
+   },
+   "restriction": "공고일 전일 기준 전북특별자치도 내 주소를 둔 사람만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격·자격증·경력 적격심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격발표",
+     "date": "10월 28일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 31일(토)",
+     "desc": "NCS 50문항(60분)+인성검사 230문항(30분)",
+     "note": "과목별 40점 이상, 인성 D등급 불합격"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 2일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 4일(수)",
+     "desc": "블라인드 구조화 면접(5개 평정요소)",
+     "note": "필기합격자 3배수 대상"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 9일(월)",
+     "desc": "신체검사·임용등록 후 2027년 1월 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS 50문항과 인성검사 230문항으로 봐요.",
+    "highlight": "230문항",
+    "subjects": [
+     {
+      "name": "NCS",
+      "count": "50문항(60분)",
+      "scope": "의사소통, 조직이해, 문제해결, 대인관계, 직업윤리",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": "230문항(30분)",
+      "scope": null,
+      "note": "D등급 시 불합격",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "GJ-305152": {
+  "at": "2026-10-15 14:06",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305152.html",
+  "source": "(게시) 경인교육대학교 시설공무직원 채용 공고문.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "경력·자격증 등 종합평가(100점)+우대사항(10점)",
+     "note": "70점 미만 과락, 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 23일(금) 예정"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "10월 27일(화) 예정",
+     "desc": "소통·헌신·창의·윤리·전문지식 5개 항목 상·중·하 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "10월 28일(수) 예정",
+     "desc": "채용예정일은 11월 중(예정)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
