@@ -48,11 +48,15 @@
                         → 훅 맨 앞 ⚠️ + 마감 임박 강조로만 작성 (후보 4개 전부), 코드 검사로 강제
                         → 1순위가 계속 있어도 최근 URGENT_EVERY건(기본 3) 안에 마감 임박 글이 없으면 2순위 먼저
                   3순위 나머지 안 올린 공고 / 4순위 우리 다른 계정에서 터진 글 각색 / 5순위 내 글 재발행
+[2026-10-15 수정] 클린아이 공고는 학력 확인 때 실제 모집 직무·주력 고용형태도 같이 확인 (edu_lookup.py)
+                  → 인원 가장 많은 직무가 요양보호·미화·경비·조리 등이거나 주력 분야가 계약직·시간제면 제외
+                  (제목에 직무가 없고 고용형태가 '정규직'으로만 들어오는 공고 대응 — 인천광역시사회서비스원 요양보호사 계약직 사례)
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
 import requests
 from edu_lookup import apply_edu, lookup_edu   # [2026-10-12] 클린아이 학력 확인 (공고문 → Sonnet)
+from edu_lookup import blocked_reason, cached_block   # [2026-10-15] 클린아이 실제 직무·고용형태 확인 → 현장직·계약직 주력 공고 제외
 
 JOBS_URL = "https://teukgasniper.github.io/job-compass/jobs.json"
 POSTS_URL = "https://teukgasniper.github.io/job-compass/job_posts.json"
@@ -264,6 +268,9 @@ def eligible(job: dict, today: dt.date) -> bool:
     # [2026-10-14] 미화·청소·경비·조리 등 현장 단순직은 실제 지원층이 중장년이라 20~30대 취준생 대상이 아님 → 제외
     #              (알바·단시간은 원래 고용형태 필터와 나라일터 제외 규칙에서 빠짐)
     if YOUTH_MISS_RE.search(title):
+        return False
+    # [2026-10-15] 클린아이: 공고문 확인 결과 현장직·계약직 주력으로 저장된 공고는 후보에서 바로 뺌 (저장값만 봄, 호출 없음)
+    if is_cleaneye(job) and cached_block(job.get("recrutPblntSn")):
         return False
     if dday(job.get("pbancEndYmd", ""), today) < 1:
         return False
@@ -1889,11 +1896,17 @@ def main():
             job = None
             continue
         # [2026-10-12] 클린아이는 학력 칸이 없음 → 공고문을 읽어 확인 (저장값 있으면 그대로, 못 찾으면 학력 언급 없이 발행)
-        if is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
+        # [2026-10-15] 같은 호출로 실제 모집 직무·주력 고용형태도 확인 → 요양보호사·미화 등 현장직이나 계약직·시간제가 주력이면 제외
+        #              (제목이 '직원 채용 공고'뿐이고 고용형태가 '정규직'으로 들어오는 클린아이 공고 대응 — 인천광역시사회서비스원 사례)
+        if is_cleaneye(job):
+            info = lookup_edu(job)
+            why = blocked_reason(info)
+            if why:
+                print(f"[제외] 클린아이 공고 {why}: {job['instNm']} / {job['recrutPbancTtl']}")
+                excluded.add(str(job["recrutPblntSn"]))
+                job = None
+                continue
             job = apply_edu(job)
-            if not has_value(job.get("acbgCondNmLst")):
-                lookup_edu(job)
-                job = apply_edu(job)
             if job.get("acbgCondNmLst") in ("석사 이상", "박사"):
                 print(f"[제외] 클린아이 공고 석사·박사 전용: {job['instNm']} / {job['recrutPbancTtl']}")
                 excluded.add(str(job["recrutPblntSn"]))

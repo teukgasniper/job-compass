@@ -7,6 +7,12 @@
 
 저장: threads_state/edu_cache.json  {공고번호: {"label": "학력무관", "text": "...", "open": true, "source": "...", "at": "..."}}
       (확인 실패도 {"label": ""}로 저장해서 같은 공고를 반복해서 읽지 않음 — 7일 뒤 재시도)
+
+[2026-10-15] 학력과 같이 '실제 모집 직무'와 '주력 분야 고용형태'도 뽑음 (같은 호출, 추가 비용 없음)
+  - 클린아이는 제목이 "제13회 직원 채용 공고"처럼 직무가 안 보이고, 고용형태도 '정규직'으로만 들어오는 경우가 있음
+    (예: 인천광역시사회서비스원 — 데이터는 정규직 14명인데 실제는 요양보호사 계약직 12명 + 생활지도원 2명, 시간제)
+  - 저장: duty(인원 많은 직무), main_regular(인원 가장 많은 분야가 정규직·무기계약직 전일제인지)
+  - blocked_reason(): 요양보호·미화·경비·조리 등 현장 단순직이 주력이거나, 주력 분야가 계약직·시간제면 쓰레드에서 제외
 """
 import json, os, re
 from datetime import datetime, timedelta, timezone
@@ -33,7 +39,15 @@ EDU_SCHEMA = """공고문에서 신입 지원자 기준 학력 조건을 찾아 
   · 위 '고용형태'에 맞는 분야 기준으로 쓸 것
 - text: 공고문 근거를 40자 이내로 (예: "학력·연령·성별 제한 없음", "간호사 면허 소지자")
 - open: label이 "학력무관"일 때만 true
-- 공고문에서 학력 조건을 찾을 수 없으면 {"label": null, "text": null, "open": false}"""
+- 공고문에서 학력 조건을 찾을 수 없으면 {"label": null, "text": null, "open": false}
+
+[학력과 별개로 아래 두 항목도 같은 JSON에 반드시 넣을 것 — 학력을 못 찾아도 채울 것]
+- duty: 이 공고에서 모집 인원이 많은 직무 순으로 1~3개, 인원과 함께 40자 이내
+  (예: "요양보호사 12명, 생활지도원 2명" / "행정 3명, 기계 1명, 전기 1명"). 공고문에 직무명이 없으면 null
+- main_regular: 모집 인원이 가장 많은 분야의 고용형태가 정규직 또는 무기계약직(전일제)이면 true,
+  계약직·기간제·시간제·단시간·육아휴직 대체면 false, 알 수 없으면 null
+
+전체 예시: {"label": "학력무관", "text": "학력 제한 없음", "open": true, "duty": "행정 3명, 기계 1명", "main_regular": true}"""
 
 LABELS = ("학력무관", "고졸 이상", "전문대졸 이상", "대졸 이상", "석사 이상", "박사", "면허·자격 필수")
 
@@ -91,6 +105,7 @@ def _wrong_track(text: str) -> bool:
 
 
 def _parse(raw: str) -> dict:
+    """학력(label·text·open) + 직무(duty·main_regular). 학력이 무효여도 직무 정보는 살림 [2026-10-15]"""
     m = re.search(r"\{.*\}", re.sub(r"```(json)?", "", raw or ""), re.S)
     if not m:
         return {}
@@ -98,20 +113,52 @@ def _parse(raw: str) -> dict:
         d = json.loads(m.group(0))
     except Exception:
         return {}
+    out = {}
     label = (d.get("label") or "").strip()
-    if label not in LABELS or _wrong_track(d.get("text")):
-        return {}
-    return {"label": label, "text": (d.get("text") or "").strip()[:60], "open": label == "학력무관"}
+    if label in LABELS and not _wrong_track(d.get("text")):
+        out = {"label": label, "text": (d.get("text") or "").strip()[:60], "open": label == "학력무관"}
+    duty = (d.get("duty") or "").strip()[:60] if isinstance(d.get("duty"), str) else ""
+    mr = d.get("main_regular")
+    out["duty"] = duty
+    out["main_regular"] = mr if isinstance(mr, bool) else None
+    return out
+
+
+# [2026-10-15] 쓰레드 제외 직무 — publish_to_threads.YOUTH_MISS_RE + 요양보호·간병 (20~30대 취준생 대상이 아님)
+BLOCK_DUTY_RE = re.compile(r"요양보호|간병|미화|청소(?!년)|환경관리원|경비|방호원|조리원|조리실무|취사|급식|주차")
+
+
+def blocked_reason(entry: dict) -> str:
+    """저장된 확인값으로 쓰레드 제외 사유 판단 (없으면 ""). 인원 가장 많은 직무가 현장 단순직이거나 주력 분야가 계약직·시간제"""
+    entry = entry or {}
+    duty = entry.get("duty") or ""
+    first = re.split(r"[,·/]", duty)[0] if duty else ""
+    if first and BLOCK_DUTY_RE.search(first):
+        return f"주력 직무가 현장 단순직({first.strip()})"
+    if entry.get("main_regular") is False:
+        return f"주력 분야가 계약직·시간제({duty or '직무 미상'})"
+    return ""
+
+
+_CACHE_MEMO = None
+
+
+def cached_block(sn) -> str:
+    """쓰레드 후보 거르기용 — 저장값만 봄 (Claude 호출 없음). 파일은 실행당 1번만 읽음"""
+    global _CACHE_MEMO
+    if _CACHE_MEMO is None:
+        _CACHE_MEMO = load_cache()
+    return blocked_reason(_CACHE_MEMO.get(str(sn)))
 
 
 def lookup_edu(job: dict, save: bool = True) -> dict:
     """공고문을 Sonnet으로 읽어 학력 확인 (저장값 있으면 그대로). 실패하면 {}"""
     sn = str(job["recrutPblntSn"])
-    hit = cached_edu(sn)
-    if hit:
-        return hit
     cache = load_cache()
     old = cache.get(sn) or {}
+    if "duty" in old:                                      # [2026-10-15] 직무까지 확인한 공고는 다시 안 읽음
+        return {**old, **cached_edu(sn)}
+    # [2026-10-15] 예전(학력만 확인) 저장값은 직무 확인을 위해 1번 더 읽음 — 그 전에 실패 기록이면 7일 규칙 그대로
     if old and not old.get("label"):                       # 최근에 못 찾은 공고는 7일 동안 다시 안 읽음
         try:
             if datetime.now(KST) - datetime.strptime(old["at"], "%Y-%m-%d %H:%M").replace(tzinfo=KST) < timedelta(days=RETRY_DAYS):
@@ -137,12 +184,21 @@ def lookup_edu(job: dict, save: bool = True) -> dict:
                 result = _parse(ep.call_claude(user))
             finally:
                 ep.SYSTEM = saved
+            result.setdefault("duty", "")                   # [2026-10-15] 공고문을 읽었으면 '직무 확인함' 표시 (같은 공고 반복 호출 방지)
+            result.setdefault("main_regular", None)
     except Exception as e:                                  # 접속 오류·API 오류 = 일시적 실패 → 저장 안 하고 다음 회차에 다시
         failed = True
         print(f"  [학력 확인] 실패: {e}")
     print(f"  [학력 확인] {job.get('instNm')} → {result.get('label') or '확인 안 됨'}"
           + (f" ({result.get('text')})" if result.get("text") else "") + (f" / {src}" if src else ""))
+    if result.get("duty") or result.get("main_regular") is not None:
+        print(f"  [직무 확인] {result.get('duty') or '직무 미상'} / 주력 분야 "
+              + {True: "정규·무기", False: "계약·시간제", None: "고용형태 미상"}[result.get("main_regular")])
+    if not result.get("label") and old.get("label"):        # 예전에 찾은 학력은 유지 (이번에 학력만 못 찾은 경우)
+        result = {**{k: old[k] for k in ("label", "text", "open") if k in old}, **{k: v for k, v in result.items() if k not in ("label", "text", "open")}}
     if save and not failed:                                 # 정상적으로 읽었는데 못 찾은 경우만 '못 찾음'으로 저장 (7일 뒤 재시도)
-        cache[sn] = {**(result or {"label": ""}), "source": src, "at": now}
+        cache[sn] = {"label": "", **result, "source": src, "at": now}
         save_cache(cache)
+        global _CACHE_MEMO
+        _CACHE_MEMO = None
     return result
