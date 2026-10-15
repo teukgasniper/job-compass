@@ -21,6 +21,9 @@
 필요한 패키지: pypdf, pyhwp, pypdfium2, pillow, olefile(pyhwp와 함께 설치됨)
 [2026-10-08] 공고문이 이미지(jpg·png)면 조각내서 Claude가 읽음 / hwp5html 변환 실패 시 HWP 본문을 직접 읽는 방식으로 재시도
 기록: enhanced_posts.json (공고번호 → 보강 시각·추출 데이터)
+[2026-10-15] 수동 보강 표시 — 글 HTML 안에 MANUAL_MARK(숨김 태그)가 있거나 Blogger 라벨에 '수동보강'이 있으면
+             그 글은 자동·수동 실행 모두 건너뜀 (--force로도 안 덮어씀). manual_enhanced.json에 따로 적을 필요 없음
+             → 발견하면 enhanced_posts.json에 manual 기록을 남겨서 다음부터는 후보 단계(fetch_views)에서 바로 빠짐
 """
 import json, os, re, sys, io, time, html, zipfile, tempfile, subprocess, urllib.request, urllib.parse, urllib.error
 from datetime import datetime
@@ -30,6 +33,9 @@ from publish_to_blogger import access_token, api, related_jobs, enrich_gojobs, e
 
 JOBS_FILE, MAPPING_FILE, STATE_FILE = "jobs.json", "job_posts.json", "enhanced_posts.json"
 MANUAL_ENH_FILE = "manual_enhanced.json"   # [2026-10-14] 수동 보강 목록 — 자동·수동 실행 모두 건너뜀 (--force로도 안 덮어씀)
+MANUAL_MARK = '<span data-manual-enhanced="1" style="display:none"></span>'   # [2026-10-15] 채팅에서 직접 보강한 HTML에 넣는 표시
+MANUAL_MARK_RE = re.compile(r"data-manual-enhanced|<!--\s*(manual-enhanced|수동보강)\s*-->")
+MANUAL_LABEL = "수동보강"                    # [2026-10-15] Blogger 글 편집 화면에서 라벨로 달아도 같은 효과
 TRIED_FILE = "enhance_tried.json"   # [2026-10-08] 자동 보강: 시도했다가 실패한 공고 (3일 뒤 재시도, fetch_views.py가 읽음)
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
@@ -511,8 +517,23 @@ def main():
             print("  건너뜀: hiring03에 발행된 글이 없어요"); continue
         if not job:
             print("  건너뜀: jobs.json에 없는 공고예요 (마감돼서 빠졌을 수 있음)"); continue
+        if (state.get(sn) or {}).get("manual"):            # [2026-10-15] 수동 보강 표시가 확인된 글 — --force로도 안 덮어씀
+            print("  건너뜀: 수동 보강 표시가 있는 글이에요 — 다음 후보로"); continue
         if sn in state and not force:
             print(f"  건너뜀: {state[sn]['at']}에 이미 보강했어요 (--force로 다시 가능)"); continue
+        # [2026-10-15] 지금 올라가 있는 글에 수동 보강 표시(숨김 태그·'수동보강' 라벨)가 있는지 Blogger에서 확인 — 시도 기록 전에
+        if not dry:
+            try:
+                if token is None:
+                    token = access_token()
+                cur = api("GET", f"posts/{post['postId']}", token) or {}
+            except Exception as e:
+                cur = {}
+                print(f"  [참고] 현재 글 확인 실패 → 표시 확인 없이 진행: {e}")
+            if MANUAL_MARK_RE.search(cur.get("content") or "") or MANUAL_LABEL in (cur.get("labels") or []):
+                print("  건너뜀: 글에 수동 보강 표시가 있어요 (기록해두고 다음부터 후보에서 제외) — 다음 후보로")
+                state[sn] = {"at": now.strftime("%Y-%m-%d %H:%M"), "url": post.get("url", ""), "manual": True}
+                continue
         print(f"  {clean_inst(job['instNm'])} | {post.get('url', '')}")
         attempted.append(sn)                              # 여기부터는 실제 시도 (실패하면 3일 뒤 재시도)
         # [2026-10-08] 발행 때와 같은 상세 보충을 다시 해야 기존 본문 내용(지원 자격 상세·접수 방법 등)이 안 빠짐
