@@ -5,7 +5,8 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 - 랜덤 발행: 시작 전 0~30분 대기 + 글 사이 1~5분 간격 (몰아치기 방지)
 - 우선순위: ① 쓰레드 글감 후보(정규직·무기계약직·채용형인턴 + 신입 + 의사직 제외)
             ② 점수순: 모집인원 + 브랜드 + 마감임박 + 학력무관 + 전국 + 새 공고 가산
-- 마감 2일 이내 공고는 건너뜀 / 마감된 글은 삭제하지 않음(축적)
+- 마감 당일(D-0) 공고만 건너뜀 / 마감된 글은 삭제하지 않음(축적)
+  [2026-10-15] D-1·D-2도 발행 (쓰레드 2순위 '마감 임박' 글이 본문으로 연결되게) + 쓰레드 후보인 D-1~2는 큐 맨 앞(+40)
 - 퍼머링크: 영문 제목으로 먼저 발행해 주소 고정 → 한글 제목으로 수정
 - 나라일터(GJ-) 공고: getItem API로 상세 정보 보충 후 발행
 - 공채속보(WK-) 공고 [2026-10-02]: 고용24 상세 API로 모집분야·담당업무·전형단계 보충 후 발행
@@ -26,7 +27,9 @@ from edu_lookup import apply_edu
 
 JOBS_FILE, MAPPING_FILE = "jobs.json", "job_posts.json"
 PER_RUN = int(os.environ.get("PUBLISH_PER_RUN", "5"))   # 1회 평균 발행 개수 (실제는 ±2 랜덤)
-MIN_DAYS_LEFT = 2
+MIN_DAYS_LEFT = 1      # [2026-10-15] 2 → 1 (D-1·D-2도 발행, D-0만 제외)
+URGENT_DAYS = 2        # [2026-10-15] 마감 D-1~D-2 쓰레드 후보는 우선 발행
+URGENT_BONUS = 40
 NEW_WITHIN_DAYS = 2   # 접수 시작 2일 이내 = 새 공고
 JITTER = os.environ.get("PUBLISH_JITTER", "1") != "0"    # 랜덤 발행 (끄려면 0)
 START_WAIT_MAX = 30 * 60      # 시작 전 0~30분 랜덤 대기
@@ -473,8 +476,14 @@ def is_famous_private(job):
     return name.startswith(FAMOUS_PREFIX) or name.startswith(FAMOUS_NAMES)   # 앞부분 일치
 
 
+def is_urgent(job, now):
+    """[2026-10-15] 마감 D-1~D-2 — 쓰레드 2순위(마감 임박) 글이 본문 없이 나가지 않게 먼저 발행"""
+    return not job.get("always") and 1 <= days_left(job, now) <= URGENT_DAYS
+
+
 def queue_score(job, now):
-    return score(job, now) + (15 if is_new(job, now) else 0) + (FAMOUS_BONUS if is_famous_private(job) else 0)
+    return (score(job, now) + (15 if is_new(job, now) else 0) + (FAMOUS_BONUS if is_famous_private(job) else 0)
+            + (URGENT_BONUS if is_urgent(job, now) else 0))
 
 
 # ───────── 실행 ─────────

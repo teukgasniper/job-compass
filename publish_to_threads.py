@@ -42,6 +42,12 @@
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
+[2026-10-15 수정] 발행 순위 변경 (공공 8 : 민간 2 비율은 그대로, 각 차례 안에서 아래 순서)
+                  1순위 신규 — 접수 시작 3일 이내 + 어느 계정에도 안 올린 공고 (본문 있는 것 먼저, 점수순)
+                  2순위 마감 임박 — 마감 D-1~D-2 공고 (안 올린 공고 + 내가 올렸던 공고의 마감 알림 1회, 본문 있는 공고 먼저)
+                        → 훅 맨 앞 ⚠️ + 마감 임박 강조로만 작성 (후보 4개 전부), 코드 검사로 강제
+                        → 1순위가 계속 있어도 최근 URGENT_EVERY건(기본 3) 안에 마감 임박 글이 없으면 2순위 먼저
+                  3순위 나머지 안 올린 공고 / 4순위 우리 다른 계정에서 터진 글 각색 / 5순위 내 글 재발행
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -62,6 +68,9 @@ CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
 MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
+NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] 접수 시작 N일 이내 = 1순위 신규
+URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "2") or 2)      # [2026-10-15] 마감 D-1 ~ D-N = 2순위 마감 임박
+URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
 REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
@@ -481,7 +490,8 @@ def is_famous(job: dict) -> bool:
 
 
 def pick_job(jobs, posts, state, today, exclude=None, others=None):
-    """반환: (job, tier, 후보 수, borrow) — borrow는 다른 계정 원글 정보 (tier 3일 때만)"""
+    """반환: (job, tier, 후보 수, borrow) — borrow는 다른 계정 원글 정보 (tier 4일 때만)
+    tier: 1 신규 / 2 마감 임박 / 3 나머지 새 공고 / 4 다른 계정 터진 글 각색 / 5 내 글 재발행 [2026-10-15]"""
     history = state["posts"]
     others = others or {}
     my_ids = {str(p["id"]) for p in history}
@@ -515,32 +525,67 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     if not pool:
         return None, 0, 0, None
 
-    new = [j for j in pool if is_new(j)]
-    tier1 = [j for j in new if str(j["recrutPblntSn"]) in posts]
-    tier2 = [j for j in new if str(j["recrutPblntSn"]) not in posts]
+    # [2026-10-15] 순위: ① 신규(접수 시작 NEW_DAYS일 이내) ② 마감 임박(D-1~D-URGENT_DAYS) ③ 나머지 새 공고
+    #              ④ 우리 다른 계정에서 터진 글 각색 ⑤ 내 글 재발행
+    def opened_days(j):
+        try:
+            return (today - dt.datetime.strptime(j.get("pbancBgngYmd", ""), "%Y%m%d").date()).days
+        except Exception:
+            return 999
+
+    def is_urgent(j):
+        return not j.get("always") and 1 <= dday(j.get("pbancEndYmd", ""), today) <= URGENT_DAYS
+
+    def posts_first(cands):
+        """같은 순위 안에서 본문 있는 공고 → 본문 없는 공고, 나라일터(인원·학력 없음)는 맨 뒤 [2026-10-14]"""
+        for c in ([j for j in cands if str(j["recrutPblntSn"]) in posts and not is_gojobs(j)],
+                  [j for j in cands if not is_gojobs(j)],
+                  cands):
+            if c:
+                return c
+        return cands
 
     def choose(cands):
+        cands = posts_first(cands)
         fresh = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
         fresh.sort(key=lambda j: hot_score(j, today), reverse=True)
         top = fresh[:5]
         return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
 
-    # [2026-10-14] 같은 순위 안에서 나라일터(인원·학력 없는 공고)는 잡알리오·클린아이가 없을 때만
-    if tier1:
-        return choose([j for j in tier1 if not is_gojobs(j)] or tier1), 1, len(tier1), None
-    if tier2:
-        return choose([j for j in tier2 if not is_gojobs(j)] or tier2), 2, len(tier2), None
+    new = [j for j in pool if is_new(j)]
+    tier1 = [j for j in new if opened_days(j) <= NEW_DAYS and not is_urgent(j)]
+    # 마감 임박: 안 올린 공고 + 내가 올렸던 공고(마감 알림으로 아직 안 올린 것만). 다른 계정이 올린 공고는 제외(중복 방지)
+    urgent_done = {str(p["id"]) for p in history if p.get("urgent")}
+    urgent_new = [j for j in new if is_urgent(j)]
+    urgent_mine = [j for j in pool if is_urgent(j) and not is_new(j)
+                   and (str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys)
+                   and str(j["recrutPblntSn"]) not in urgent_done and str(j["recrutPblntSn"]) not in recent_ids]
+    # 안 올린 공고가 나라일터(인원·학력 없음)뿐이면 내가 올렸던 본문 있는 공고의 마감 알림이 더 나음 → 합쳐서 posts_first로 고름
+    tier2 = urgent_new + urgent_mine
+    tier3 = [j for j in new if j not in tier1 and not is_urgent(j)]
 
-    # [2026-10-12] 새 공고 소진 → ① 다른 계정에서 터진 글을 가져와 각색
+    recent_n = history[-max(URGENT_EVERY - 1, 0):] if URGENT_EVERY > 1 else []
+    urgent_due = not any(p.get("urgent") for p in recent_n)
+    print(f"순위별 후보: 신규 {len(tier1)} / 마감 임박 {len(tier2)} (안 올린 {len(urgent_new)}·알림 {len(urgent_mine)}) "
+          f"/ 나머지 {len(tier3)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due else ""))
+
+    if tier2 and (urgent_due or not tier1):
+        return choose(tier2), 2, len(tier2), None
+    if tier1:
+        return choose(tier1), 1, len(tier1), None
+    if tier3:
+        return choose(tier3), 3, len(tier3), None
+
+    # [2026-10-12] 새 공고 소진 → ④ 우리 다른 계정에서 터진 글을 가져와 각색
     borrows = borrow_candidates(others, pool, my_ids, my_keys, today)
     if borrows:
         fresh_b = [b for b in borrows if group_key(b[0]["instNm"]) not in recent_insts] or borrows
         j, src, acct = fresh_b[0]
-        return j, 3, len(borrows), {"account": acct, "hook": src.get("hook") or "", "closer": src.get("closer") or "",
+        return j, 4, len(borrows), {"account": acct, "hook": src.get("hook") or "", "closer": src.get("closer") or "",
                                     "cat": src.get("combo_cat"), "views": src.get("views"),
                                     "thread_id": src.get("thread_id")}
 
-    # ② 그래도 없으면 내 계정이 올렸던 공고만 재발행 (다른 계정 공고를 그대로 가져오면 중복)
+    # ⑤ 그래도 없으면 내 계정이 올렸던 공고만 재발행 (다른 계정 공고를 그대로 가져오면 중복)
     mine = [j for j in pool if str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys]
     if not mine:
         return None, 0, 0, None
@@ -560,7 +605,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         last_at(j),
     ))
     fresh = [j for j in repeat if group_key(j["instNm"]) not in recent_insts] or repeat
-    return fresh[0], 4, len(repeat), None
+    return fresh[0], 5, len(repeat), None
 
 
 # ─────────────────────────── 본문 글에서 팩트 보강 ───────────────────────────
@@ -870,7 +915,7 @@ def edu_for_prompt(job):
     return v
 
 
-def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
+def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
     end = dt.datetime.strptime(job["pbancEndYmd"], "%Y%m%d")
     data = {
         ("기업 정식명칭(리스트 1번에 '따옴표'로)" if is_private(job) else "기관 정식명칭(리스트 1번에 '따옴표'로)"): inst,
@@ -947,6 +992,12 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks):
         lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 인원·고용형태·근무지·전형으로 채울 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
+    if urgent:                                    # [2026-10-15] 2순위 마감 임박 — 후보 4개 전부 ⚠️ + 마감 강조
+        when = {1: "내일 마감", 2: "모레 마감"}.get(d_left, f"D-{d_left}")
+        lines.append(f"- [마감 임박 글] 이 공고는 {when}(D-{d_left}, {end.month}월 {end.day}일)임. 후보 4개 전부 훅 맨 앞 이모지는 ⚠️ "
+                     "(지정 유형·담백형 구분 없이 전부). 훅에 마감이 코앞이라는 걸 반드시 드러낼 것 "
+                     "(예: '내일 마감', 'D-1', '모레면 닫힘', '이번 주 막차' — 실제 날짜와 맞게). "
+                     "리스트 5번은 마감일(시각을 알면 시각까지)로. 클로저도 마감 임박 톤 (예: 오늘 안 넣으면 끝)")
 
     lines += [
         "",
@@ -1019,9 +1070,15 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
-def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False):
+URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막차|닫힘|닫혀|끝남|끝나|이번\s*주|며칠|이틀|하루")
+
+
+def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
+                       urgent: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
+    if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
+        hook = "⚠️" + re.sub(r"^(📍|⚠️|⚠)\s*", "", hook)
     if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
         emo = (d.get("emoji") or "").strip()
         hook = (emo if emo in ("📍", "⚠️", "⚠") else "📍") + hook   # 이모지를 따로 준 경우 훅 앞에 붙임
@@ -1037,6 +1094,8 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         body_l = re.sub(r"^(📍|⚠️|⚠)", "", l).strip() if i == 0 else l
         if len(body_l) > HOOK_LINE_MAX:
             return None, f"훅 {i+1}줄이 {len(body_l)}자 (최대 {HOOK_LINE_MAX}자)"
+    if urgent and not URGENT_HOOK_RE.search(hook):   # [2026-10-15] 마감 임박 글은 훅에서 마감을 강조해야 통과
+        return None, "마감 임박 글인데 훅에 마감 강조 없음"
     if inst:
         full = norm_key(inst)
         short = re.sub(r"^(한국|국가|국립|재단법인|대한)", "", full)
@@ -1130,8 +1189,8 @@ def judge(cands, recent_hooks):
         return (plain or [0])[0], None
 
 
-def generate(job, inst, d_left, combo, post_text, recent_hooks):
-    user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks)
+def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
+    user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent)
     errs = []
     for attempt in range(3):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
@@ -1142,7 +1201,8 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks):
             errs.append("JSON 해석 실패")
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
-            r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job))
+            r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
+                                        urgent)
             if r:
                 valid.append(r)
             else:
@@ -1844,14 +1904,21 @@ def main():
         print("발행할 공고 없음 — 이번 회차는 건너뜀")
         summary("### ⏭️ 건너뜀\n진행 중인 공고 없음 (또는 학력 확인 불가)")
         return
-    tier_label = {1: "1순위 본문 있음", 2: "2순위 본문 없음", 3: "3순위 다른 계정 터진 글 각색", 4: "4순위 내 글 재발행"}[tier]
+    tier_label = {1: "1순위 신규", 2: "2순위 마감 임박", 3: "3순위 나머지 새 공고",
+                  4: "4순위 다른 계정 터진 글 각색", 5: "5순위 내 글 재발행"}[tier]   # [2026-10-15]
+    tier_label += " · 본문 " + ("있음" if post else "없음")
 
     inst = gojobs_inst(job["instNm"]) if is_gojobs(job) else norm_inst(job["instNm"])   # [2026-10-14] 나라일터는 짧은 이름
     d_left = dday(job["pbancEndYmd"], today)
     if job.get("always"):
         d_left = 99                               # [2026-10-08] 상시채용 → 시한폭탄·막차 조합 제외
     open_fact = has_open_fact(job, post_text)
-    combo_idx, combo = pick_combo(state, d_left, open_fact)
+    urgent = tier == 2                               # [2026-10-15] 마감 임박 → 시한폭탄/막차 조합 고정 + ⚠️ 강제
+    if urgent:
+        combo_idx = next(i for i, c in enumerate(COMBOS) if c["structure"] == "시한폭탄 / 막차")
+        combo = COMBOS[combo_idx]
+    else:
+        combo_idx, combo = pick_combo(state, d_left, open_fact)
     if borrow and borrow.get("cat"):                 # [2026-10-12] 원글과 다른 유형으로 각색
         for _ in range(8):
             if combo["cat"] != borrow["cat"]:
@@ -1868,7 +1935,7 @@ def main():
     if borrow and borrow.get("hook"):                # 원글 훅·클로저를 반복 금지 목록 맨 앞에
         recent_hooks.insert(0, "[다른 계정 원글 — 이 공고의 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
                             + borrow["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {borrow['closer']}" if borrow.get("closer") else ""))
-    result = generate(job, inst, d_left, combo, post_text, recent_hooks)
+    result = generate(job, inst, d_left, combo, post_text, recent_hooks, urgent)
     if result is None:
         return
     comment = build_comment(post, d_left)
@@ -1921,7 +1988,7 @@ def main():
         "id": job["recrutPblntSn"], "instNm": inst, "title": job["recrutPbancTtl"],
         "combo_idx": combo_idx, "combo_cat": result.get("cat") or combo["cat"], "hook": result["hook"],
         "closer": result["closer"], "hook_type": result.get("type"),
-        "tier": tier, "logo": bool(logo_url),
+        "tier": tier, "logo": bool(logo_url), "urgent": urgent,
         **({"borrowed_from": borrow["account"], "orig_thread_id": borrow.get("thread_id")} if borrow else {}),
         "thread_id": thread_id, "comment_id": comment_id,
         "at": dt.datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
