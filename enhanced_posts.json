@@ -7193,5 +7193,96 @@
    "language": null,
    "written": null
   }
+ },
+ "CE-80441": {
+  "at": "2026-10-15 21:00",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80441.html",
+  "manual": true
+ },
+ "306032": {
+  "at": "2026-10-15 21:00",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306032.html",
+  "source": "1. 2027년 제1차 공무직사원 채용 공고문.zip",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기술분야(차량·전기·시설·경비) 153명, 환경분야(건물환경·역환경·차량환경) 443명, 총 596명을 뽑아요.",
+    "columns": [
+     "차량",
+     "전기",
+     "시설",
+     "경비",
+     "건물환경",
+     "역환경",
+     "차량환경"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       20,
+       14,
+       57,
+       62,
+       8,
+       255,
+       180
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 전공, 성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자기소개서 정성평가 또는 경력·자격 정량+정성평가",
+     "note": "10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 10일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 체력검증·실기전형",
+     "date": "11월 16일~18일",
+     "desc": "국민체력100 평가(소장·팀장 외) 또는 문서작성 실기(소장·팀장)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "11월 16일~18일",
+     "desc": "다대다 구술면접(질의응답)",
+     "note": "60점 이상 합격"
+    },
+    {
+     "type": "notice",
+     "label": "면접심사 합격자 발표",
+     "date": "11월 24일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 14일(월)",
+     "desc": "서류검증·신체검사 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
