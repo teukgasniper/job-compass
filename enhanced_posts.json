@@ -7517,5 +7517,67 @@
     "callout": null
    }
   }
+ },
+ "WK-180992": {
+  "at": "2026-10-16 06:43",
+  "url": "https://hiring03.ddolbestory.com/2026/10/sk-wk180992.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262175)",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상 학위 보유자(기졸업자) 또는 '27년 2월 졸업예정자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — SKCT",
+     "date": null,
+     "desc": "온라인 인성·적성검사, 4개월 내 이력 있으면 대체",
+     "note": "재응시 불가"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": null,
+     "desc": "동의 시 평판조회·생활기록부 제출 요청 가능",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 SKCT(인성검사와 적성검사)로 온라인으로 진행돼요.",
+    "highlight": "SKCT",
+    "subjects": [],
+    "callout": null
+   }
+  }
  }
 }
