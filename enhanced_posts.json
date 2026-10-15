@@ -7284,5 +7284,238 @@
    "language": null,
    "written": null
   }
+ },
+ "305669": {
+  "at": "2026-10-16 02:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305669.html",
+  "source": "붙임 1_(공고문) 2026년 4분기 공무직원 채용 재공고 (환경미화-보훈).hwp",
+  "parts": [
+   "written",
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "연령, 성별, 학력, 전공 등 자격 제한 없음",
+    "open": true
+   },
+   "restriction": "국가유공자 등 취업지원대상자(보훈)만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "입사지원서(100점) 평가, 가점기준 적용",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과 발표",
+     "date": "11월 17일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 26일",
+     "desc": "인성검사(적·부 판정)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "인성검사 결과 발표",
+     "date": "12월 3일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 27일",
+     "desc": "종합면접(100점), 1인 8분 내외 다대다 면접",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류검증·채용검진 결과 발표",
+     "date": "12월 14일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 14일",
+     "desc": "서류검증·채용검진 후 최종 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기전형은 인성검사로 진행되며, 적·부 판정 방식이에요.",
+    "highlight": "적·부 판정",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": "부적합(Fail) 시 탈락",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305992": {
+  "at": "2026-10-16 02:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305992.html",
+  "source": "채용공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "파트너(고객안내) 2명, 파트너(매점) 1명, 심판지원 2명을 뽑아요.",
+    "columns": [
+     "파트너(고객안내)",
+     "파트너(매점)",
+     "심판지원"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       2,
+       1,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 30일(금)",
+     "desc": "지원자격·자기소개서·직무수행계획서 평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접대상자 통지",
+     "date": "11월 1일(일)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 4일(수)",
+     "desc": "직무수행능력 및 인성·조직적합성 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 8일(일)",
+     "desc": "채용결격사유·비위면직자 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "CE-80042": {
+  "at": "2026-10-16 02:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-ce-80042.html",
+  "source": "2026년 하반기 공공기관 통합채용 세부 공고문(수원도시재단).pdf",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "거주지, 성별, 학력 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 필기시험",
+     "date": "11월 7일(토)",
+     "desc": "NCS 50문항 + 전공과목(경영학·일반상식) 각 20문항",
+     "note": "과목별 40%·총점 60% 이상"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "11월 18일~20일",
+     "desc": "온라인 인성검사 실시",
+     "note": "면접 참고자료로 활용"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 서류전형",
+     "date": "11월 30일(월)",
+     "desc": "응시자격 등 적격여부 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 1일(화)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": "12월 8일~9일",
+     "desc": "구술 면접, 총 15점 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 11일(금)",
+     "desc": "결격사유 확인 후 2027.1.1 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS(50문항)와 전공과목(경영학·일반상식, 각 20문항)으로 봐요. 총 90문항이에요.",
+    "highlight": "90문항",
+    "subjects": [
+     {
+      "name": "NCS(직업기초능력평가)",
+      "count": "50문항",
+      "scope": "의사소통, 문제해결, 정보, 조직이해, 직업윤리",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "경영학",
+      "count": "20문항",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "일반상식",
+      "count": "20문항",
+      "scope": "국어40%, 한국사40%, 시사20%",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
