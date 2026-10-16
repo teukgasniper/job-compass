@@ -24,6 +24,11 @@ GitHub Actions '수동 공고 발행' 버튼 전용. 예약 자동발행(publish
   - HTML 파일을 고쳐서 다시 올리면 → 다음 실행 때 같은 주소의 글 내용만 바꿈 (내용이 같으면 그대로 둠)
   - 이미 Claude가 자동 작성한 글이 있어도 → HTML 파일이 생기면 그 글을 HTML 내용으로 교체
   - post_url(블로거에 직접 올린 글)이 있는 공고는 HTML 파일이 있어도 건드리지 않음
+[2026-10-16 추가] 한 번 누르면 전부 발행 — 블로거 429(속도 제한)가 나면 멈추지 않고 기다렸다 다시 시도
+  (1·3·5분 대기 후 재시도, 그래도 막히면 하루 한도로 보고 중단 → 다음에 누르면 남은 것만 이어서 발행)
+  직접 쓴 본문끼리는 20초 간격 / 대학·대학병원 수동 공고는 '민간기업·공채' 대신 '대학'·'대학병원' 라벨
+[2026-10-16 추가] 3시간마다 예약 실행(manual_posts.yml) — MANUAL_HTML_ONLY=true면 HTML 파일 있는 공고만 발행
+  (한도에 걸려 못 올린 글을 버튼 없이 이어서 올림. Claude 자동 작성은 버튼으로 눌렀을 때만)
 
 실행
   python publish_manual.py                    # 새 공고 전부
@@ -49,6 +54,18 @@ CARD_SKIP = ("detail", "post_url", "post_id", "manual_post")      # 카드(jobs.
 MANUAL_HTML_DIR = "manual_posts"                                  # [2026-10-16] 직접 쓴 강화 본문 HTML 폴더 (공고번호.html)
 MANUAL_MARK = '<span data-manual-enhanced="1" style="display:none"></span>'   # 본문강화 건너뛰기 표시 (enhance_posts.py와 같은 값)
 MANUAL_LABEL = "수동보강"
+HTML_GAP_SEC = 20                       # [2026-10-16] 직접 쓴 본문끼리 발행 간격
+RETRY_WAITS = (60, 180, 300)            # [2026-10-16] 429 나면 이만큼 기다렸다 재시도 (초)
+
+
+def manual_labels(job):
+    """[2026-10-16] 대학·대학병원 수동 공고는 '민간기업·공채' 라벨 대신 '대학'·'대학병원'"""
+    labels = make_labels(job)
+    name = clean_inst(job.get("instNm") or "")
+    kind = "대학병원" if ("병원" in name and "대학" in name) else ("대학" if re.search(r"대학교?|대학원", name) else "")
+    if kind and not job.get("bizType"):
+        labels = [l for l in labels if l not in ("민간기업", "공채")] + [kind]
+    return list(dict.fromkeys(labels + [MANUAL_LABEL]))[:8]
 
 
 # ───────── 0. 공통 ─────────
@@ -418,7 +435,7 @@ def manual_html(sn):
 
 def publish_html(job, sn, cur, page, h, now, dry, state):
     """[2026-10-16] 직접 쓴 강화 본문 발행 (새 글) 또는 내용 교체 (기존 글). 반환: 1/0"""
-    labels = list(dict.fromkeys(make_labels(job) + [MANUAL_LABEL]))
+    labels = manual_labels(job)
     if dry:
         os.makedirs("preview", exist_ok=True)
         open(f"preview/{slug_for(job)}.html", "w", encoding="utf-8").write(page)
@@ -457,6 +474,7 @@ def main():
     ids = set(args or [x.strip() for x in re.split(r"[,\s]+", os.environ.get("MANUAL_IDS", "")) if x.strip()])
     dry = "--dry-run" in sys.argv or os.environ.get("MANUAL_DRY_RUN") == "true"
     force = "--force" in sys.argv or os.environ.get("MANUAL_FORCE") == "true"
+    html_only = os.environ.get("MANUAL_HTML_ONLY") == "true"   # [2026-10-16] 예약 실행: 직접 쓴 본문만
     now = datetime.now(KST)
 
     data = json.load(open(JOBS_FILE, encoding="utf-8"))
@@ -498,15 +516,29 @@ def main():
                 if cur.get("manual") == "html" and cur.get("html_hash") == h:
                     continue                                       # 내용 그대로 → 할 일 없음
                 print(f"\n[{sn}] {clean_inst(job['instNm'])} / {job['recrutPbancTtl']} (직접 쓴 본문)")
+                if state.get("html_done") and not dry:
+                    time.sleep(HTML_GAP_SEC)                       # 연달아 발행할 때 간격 (블로거 속도 제한 예방)
                 try:
-                    done += publish_html(job, sn, cur, page, h, now, dry, state)
+                    for n_try in range(len(RETRY_WAITS) + 1):     # [2026-10-16] 429 → 기다렸다 재시도
+                        try:
+                            got = publish_html(job, sn, cur, page, h, now, dry, state)
+                            break
+                        except RuntimeError as e:
+                            if "발행 한도" not in str(e) or n_try == len(RETRY_WAITS):
+                                raise
+                            print(f"  ⏳ 블로거 속도 제한 → {RETRY_WAITS[n_try] // 60}분 기다렸다 다시 시도 ({n_try + 1}/{len(RETRY_WAITS)})")
+                            time.sleep(RETRY_WAITS[n_try])
+                    done += got
+                    state["html_done"] = state.get("html_done", 0) + got
                 except RuntimeError as e:
                     if "발행 한도" in str(e):
-                        raise
+                        raise                                      # 재시도 다 실패 = 하루 한도 → 중단 (다음 실행 때 이어서)
                     print(f"  실패: {str(e)[:200]}")
                 except Exception as e:
                     print(f"  실패: {type(e).__name__}: {str(e)[:200]}")
                 continue
+            if html_only:
+                continue                                           # 예약 실행은 Claude 자동 작성 안 함 (버튼으로만)
             if job.get("manual_post"):
                 print(f"[건너뜀] {sn} 직접 쓸 예정 (manual_post)"); continue
             if cur.get("manual") == "user":
