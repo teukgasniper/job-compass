@@ -4,6 +4,10 @@ name: 수동 공고 발행
 #   ① 카드(jobs.json)에 바로 반영 → ② 글 없는 수동 공고를 Claude가 본문 작성·hiring03 발행 → ③ 카드 사이트 배포
 # 예약 자동발행·본문 보강은 수동 공고를 건드리지 않음
 on:
+  # [2026-10-16] 3시간마다 자동 실행 — 블로거 한도로 못 올린 '직접 쓴 본문(manual_posts/*.html)'을 알아서 이어서 발행
+  #              (예약 실행은 HTML 파일이 있는 공고만 발행, Claude 자동 작성은 버튼으로 눌렀을 때만)
+  schedule:
+    - cron: "40 */3 * * *"
   workflow_dispatch:
     inputs:
       ids:
@@ -52,6 +56,7 @@ jobs:
           MANUAL_IDS: ${{ inputs.ids }}
           MANUAL_DRY_RUN: ${{ inputs.dry_run }}
           MANUAL_FORCE: ${{ inputs.force }}
+          MANUAL_HTML_ONLY: ${{ github.event_name == 'schedule' }}
         run: python publish_manual.py
 
       - name: 미리보기 내려받기용 저장
