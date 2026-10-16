@@ -6266,5 +6266,55 @@
   "instNm": "비지에프푸드",
   "slug": "wk-180582",
   "published": "2026-10-16 17:41"
+ },
+ "MN-BSKS-01": {
+  "postId": "2418927092196559285",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bsks-mn01.html",
+  "title": "부산경상대학교 2026년 행정 직원(계약직) 채용 | 계약직 채용, 10월 19일 마감",
+  "instNm": "부산경상대학교",
+  "slug": "bsks-mn01",
+  "published": "2026-10-16 20:52",
+  "manual": "html",
+  "html_hash": "b0645b52ff65"
+ },
+ "MN-SSWU-01": {
+  "postId": "5474997476661554842",
+  "url": "https://hiring03.ddolbestory.com/2026/10/sswu-mn01.html",
+  "title": "성신여자대학교 대학 교학팀(각 교학팀) 계약직원 채용 (상시모집) | 계약직 1명, 10월 20일 마감",
+  "instNm": "성신여자대학교",
+  "slug": "sswu-mn01",
+  "published": "2026-10-16 20:52",
+  "manual": "html",
+  "html_hash": "aaaad677b6c9"
+ },
+ "MN-SSWU-02": {
+  "postId": "7740796883533200672",
+  "url": "https://hiring03.ddolbestory.com/2026/10/sswu-mn02.html",
+  "title": "성신여자대학교 국제교류지원팀 계약직원 채용 | 계약직 1명, 10월 20일 마감",
+  "instNm": "성신여자대학교",
+  "slug": "sswu-mn02",
+  "published": "2026-10-16 20:52",
+  "manual": "html",
+  "html_hash": "3e5d7bf7ade6"
+ },
+ "MN-SSWU-03": {
+  "postId": "6253219613754021830",
+  "url": "https://hiring03.ddolbestory.com/2026/10/sswu-mn03.html",
+  "title": "성신여자대학교 인재개발팀 계약직원 채용 | 계약직 1명, 10월 20일 마감",
+  "instNm": "성신여자대학교",
+  "slug": "sswu-mn03",
+  "published": "2026-10-16 20:52",
+  "manual": "html",
+  "html_hash": "fd1fb1b68037"
+ },
+ "MN-HYUMC-01": {
+  "postId": "3342726819565387092",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyumc-mn01.html",
+  "title": "한양대학교병원 2026년 하반기 사무원 (정규직) | 정규직 채용, 10월 21일 마감",
+  "instNm": "한양대학교병원",
+  "slug": "hyumc-mn01",
+  "published": "2026-10-16 20:52",
+  "manual": "html",
+  "html_hash": "994fb1196217"
  }
 }
