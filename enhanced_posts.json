@@ -7988,5 +7988,245 @@
    "language": null,
    "written": null
   }
+ },
+ "305973": {
+  "at": "2026-10-17 01:54",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kps-305973.html",
+  "source": "2026년도 하반기 신입사원 채용공고.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "신입사원 G4등급 51명, G3등급 61명, G2등급 35명으로 총 147명을 뽑아요.",
+    "columns": [
+     "사무(전산)",
+     "기계",
+     "전기",
+     "비파괴"
+    ],
+    "rows": [
+     {
+      "label": "신입사원(G4)",
+      "values": [
+       1,
+       30,
+       20,
+       null
+      ]
+     },
+     {
+      "label": "신입사원(G3·일반)",
+      "values": [
+       null,
+       33,
+       10,
+       8
+      ]
+     },
+     {
+      "label": "신입사원(G3·지역제한)",
+      "values": [
+       null,
+       7,
+       3,
+       null
+      ]
+     },
+     {
+      "label": "신입사원(G2)",
+      "values": [
+       null,
+       28,
+       7,
+       null
+      ]
+     }
+    ],
+    "note": "G3 지역제한(울진) 분야는 채용일로부터 해당 지역 사업장 10년 의무근무 조건부예요."
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "G3등급 기준 학력·연령 제한 없음(만60세 도달자는 지원불가)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "10월 29일~11월 4일",
+     "desc": "영어성적, 자격증, 가점사항",
+     "note": "10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 5일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 14일(토)",
+     "desc": "NCS 100점 + 전공 50점 + 인성검사(적부)",
+     "note": "3배수 또는 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 23일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 역량면접 등",
+     "date": "11월 30일~12월 9일",
+     "desc": "개별면접(100점) + 신체검사(적부)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 23일(수)",
+     "desc": "입사일 12월 28일(월) 예정"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (G3등급)",
+    "text": "TOEIC 500점 이상이면 지원 가능하고, 850점 이상은 만점으로 처리돼요. TOEFL·TEPS 성적도 환산 인정돼요.",
+    "highlight": "500점 이상"
+   },
+   "written": {
+    "summary": "필기시험은 직업기초능력(NCS) 100점과 전공 50점으로 봐요. 인성검사는 적부 판정으로 진행돼요.",
+    "highlight": "NCS 100점",
+    "subjects": [
+     {
+      "name": "직업기초능력(NCS)",
+      "count": "100점",
+      "scope": null,
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "전공(기계일반/전기일반/비파괴일반 등)",
+      "count": "50점",
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-180354": {
+  "at": "2026-10-17 01:54",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-180354.html",
+  "source": "기업 채용 페이지 이미지 7조각 (https://recruit.ourhome.co.kr/ohrecview.do?rec=13362)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "식품영양·조리 관련학과 정규대학 전공자(27년 2월 졸업예정자 포함)",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 입사지원",
+     "date": "10월 1일~19일",
+     "desc": "아워홈 채용홈페이지를 통해 입사지원서 제출",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류&인성검사",
+     "date": null,
+     "desc": "지원서 심사 및 인성검사 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1,2차 면접",
+     "date": null,
+     "desc": "1차·2차 면접 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": "신체검사를 통한 업무수행 가능 여부 확인",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 최종합격",
+     "date": null,
+     "desc": "최종 합격 후 임용",
+     "note": "영양사는 면허시험 합격 필요"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-305401": {
+  "at": "2026-10-17 01:54",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305401.html",
+  "source": "2026년 제1회 공무직 근로자 채용 공고문(법무부 김포공항출입국·외국인사무소).hwpx",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 경력 제한 없음이 응시자격으로 명시돼 있어요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 13일~19일",
+     "desc": "자기소개서, 경력, 무도자격증, 어학자격증 평가",
+     "note": "4배수 초과 시 성적순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 22일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "10월 26일(월)",
+     "desc": "정신자세, 전문지식, 의사표현, 품행, 발전가능성 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 30일(금)",
+     "desc": "합격자 등록 후 11월 중 채용 예정",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (우대사항)",
+    "text": "필수 요건은 아니고 우대사항이에요. 토익 700점 등 외국어성적 소지자는 서류전형에서 가점을 받아요.",
+    "highlight": "토익 700점"
+   },
+   "written": null
+  }
  }
 }
