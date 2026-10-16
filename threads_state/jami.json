@@ -2881,6 +2881,22 @@
    "thread_id": "17973720354149547",
    "comment_id": "18218372341345153",
    "at": "2026-10-16 20:28"
+  },
+  {
+   "id": "MN-SSWU-02",
+   "instNm": "성신여자대학교",
+   "title": "국제교류지원팀 계약직원 채용",
+   "combo_idx": 4,
+   "combo_cat": "urgent",
+   "hook": "⚠️이 공고 수시 평가라서\n마감 전에 벌써 끝날 수도 있음",
+   "closer": "수시 평가 공고는 마감일만 믿으면 늦음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17994067422051038",
+   "comment_id": "17912759241492695",
+   "at": "2026-10-16 22:27"
   }
  ],
  "logo_tried": {
