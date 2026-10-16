@@ -29,6 +29,7 @@ GitHub Actions '수동 공고 발행' 버튼 전용. 예약 자동발행(publish
   직접 쓴 본문끼리는 20초 간격 / 대학·대학병원 수동 공고는 '민간기업·공채' 대신 '대학'·'대학병원' 라벨
 [2026-10-16 추가] 3시간마다 예약 실행(manual_posts.yml) — MANUAL_HTML_ONLY=true면 HTML 파일 있는 공고만 발행
   (한도에 걸려 못 올린 글을 버튼 없이 이어서 올림. Claude 자동 작성은 버튼으로 눌렀을 때만)
+  → 예약 실행에서 새로 올린 글이 없으면 저장·배포 단계를 건너뜀 (GITHUB_OUTPUT changed=false)
 
 실행
   python publish_manual.py                    # 새 공고 전부
@@ -561,6 +562,10 @@ def main():
     finally:
         save()
         print(f"\n[완료] 이번 {done}개 {'미리보기' if dry else '발행'}")
+        out = os.environ.get("GITHUB_OUTPUT")              # [2026-10-16] 워크플로가 저장·배포를 할지 판단
+        if out:
+            with open(out, "a", encoding="utf-8") as f:
+                f.write(f"changed={'true' if (done or state['changed']) else 'false'}\n")
 
 
 if __name__ == "__main__":
