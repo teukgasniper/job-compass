@@ -8228,5 +8228,136 @@
    },
    "written": null
   }
+ },
+ "305814": {
+  "at": "2026-10-17 06:38",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305814.html",
+  "source": "[세종] 2026년 하반기 세종충남대학교병원 정규직 채용공고.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "행정직 2명, 보건직(물리치료사·작업치료사) 각 1명, 간호조무직 1명을 뽑아요.",
+    "columns": [
+     "행정사무(회계)",
+     "물리치료사",
+     "작업치료사",
+     "간호조무사"
+    ],
+    "rows": [
+     {
+      "label": "행정직",
+      "values": [
+       2,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "보건직",
+      "values": [
+       null,
+       1,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "간호조무직",
+      "values": [
+       null,
+       null,
+       null,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "공통 응시자격에 학력·성별 제한 없음이 명시돼 있어요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 7일~21일",
+     "desc": "응시자격 적부심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 29일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 14일(토)",
+     "desc": "직업기초능력평가(NCS)+회계학 등 과목별 40문항",
+     "note": "모집인원 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — AI역량검사",
+     "date": "11월 중",
+     "desc": "온라인 게임·과제형 역량검사, 인성검사 포함",
+     "note": "행정직(행정사무/회계)만 해당, 면접자료로 활용"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형(실무·관리자)",
+     "date": "12월 중",
+     "desc": "실무면접(1배수 선발)+관리자면접",
+     "note": "행정직 외 분야는 관리자면접만 실시"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 중",
+     "desc": "결격사유 조회 후 2027년 1월 1일자 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (행정직 행정사무/회계)",
+    "text": "토익 700점 이상이 필수예요. 뉴텝스 264점, 토플 79점, 토익스피킹 IM2 이상도 인정돼요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 행정직 기준 직업기초능력평가(NCS)와 회계학을 각각 40문항씩 봐요.",
+    "highlight": "40문항",
+    "subjects": [
+     {
+      "name": "직업기초능력평가(NCS)",
+      "count": "40문항",
+      "scope": null,
+      "note": "행정직(행정사무/회계) 대상",
+      "ncs": true
+     },
+     {
+      "name": "회계학",
+      "count": "40문항",
+      "scope": null,
+      "note": "행정직(행정사무/회계) 대상",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
