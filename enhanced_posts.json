@@ -7579,5 +7579,251 @@
     "callout": null
    }
   }
+ },
+ "305907": {
+  "at": "2026-10-16 13:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305907.html",
+  "source": "한국고전번역원 2026년 4분기 직원채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "행정직 정규직으로 일반행정 1명, 감사업무 1명 총 2명을 뽑아요.",
+    "columns": [
+     "일반행정",
+     "감사"
+    ],
+    "rows": [
+     {
+      "label": "행정직(정규직)",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·직무관련성·직무이해도·발전가능성·기관이해도 평가",
+     "note": "20배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과 발표",
+     "date": "11월 2일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 5일(목)",
+     "desc": "논술(서술형 시험) 및 인·적성 검사",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 결과 발표",
+     "date": "11월 10일(화)"
+    },
+    {
+     "type": "notice",
+     "label": "인·적성 검사(온라인)",
+     "date": "11월 11일~12일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 16일(월)",
+     "desc": "직무 수행 능력, 기본 소양 등 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 2일(수)",
+     "desc": "임용은 12월 7일(월) 예정이에요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 논술(서술형 시험)과 인·적성 검사로 봐요.",
+    "highlight": "논술(서술형 시험)",
+    "subjects": [
+     {
+      "name": "논술(서술형 시험)",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "인·적성 검사",
+      "count": null,
+      "scope": null,
+      "note": "대행업체 온라인 진행, 미응시 시 면접 불합격",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-181168": {
+  "at": "2026-10-16 13:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/sk-wk181168.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262188)",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상(기졸업자 또는 '27년 2월 졸업예정자)",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형(SKCT)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진/처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "영문 자료 작성·검토와 업무상 원활한 영어 커뮤니케이션이 가능한 영어 능통자여야 해요.",
+    "highlight": "영어 능통자"
+   },
+   "written": {
+    "summary": "필기전형은 SKCT로 진행돼요.",
+    "highlight": "SKCT",
+    "subjects": [],
+    "callout": null
+   }
+  }
+ },
+ "305729": {
+  "at": "2026-10-16 13:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305729.html",
+  "source": "정규직 행정직 사회복지사 모집 공고문.pdf",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "사회복지사 1급 및 의료사회복지사 자격 소지자만 지원 가능해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류적격 확인",
+     "date": "10월 21일~23일",
+     "desc": "응시자격 요건 심사(공인영어성적 확인 포함)",
+     "note": "요건 충족자 전원 통과"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 대상자 발표",
+     "date": "10월 27일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "10월 31일(토) 11:00",
+     "desc": "시험과목: 의료사회복지론",
+     "note": "선발예정인원 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 5일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 12일(목)",
+     "desc": null,
+     "note": "필기+면접 합산 1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 30일(월)",
+     "desc": "서류적격 확인 후 발표"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (행정직)",
+    "text": "토익 700점 이상, 토익스피킹 120점 이상, 토플iBT 79점 이상, 뉴텝스 300점 이상 중 하나를 충족해야 해요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 의료사회복지론 한 과목으로 봐요.",
+    "highlight": "의료사회복지론",
+    "subjects": [
+     {
+      "name": "의료사회복지론",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
