@@ -7825,5 +7825,168 @@
     "callout": null
    }
   }
+ },
+ "306048": {
+  "at": "2026-10-16 20:51",
+  "url": "https://hiring03.ddolbestory.com/2026/10/knps-306048.html",
+  "source": "채용공고문_금정산국립공원사무소 공무직(탐방시설).hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "전공, 학력 등 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "직업기초능력(40%)+직무수행능력(60%)",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 5일(목)",
+     "desc": "직업기초역량(40%)+직무수행역량(60%)",
+     "note": "청렴성 검증 문항 포함"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 12일(목)",
+     "desc": "서류(40%)+면접(60%) 합산 결정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306041": {
+  "at": "2026-10-16 20:51",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ncc-306041.html",
+  "source": "1. (채용공고문) 국립암센터 정규직 간호직(졸업예정자) 채용공고(안).pdf",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "간호(학)과 졸업예정자이며 2027년 간호사 면허 취득 가능한 자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 2일~11월 20일",
+     "desc": "교육사항25+어학성적10+경력경험25+자기소개서40점",
+     "note": "2배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 조직적합성검사",
+     "date": "11월 23일~11월 30일",
+     "desc": "온라인 개별 검사, 면접전형 참고자료로 활용",
+     "note": "합격자 전원 응시"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 1일~12월 18일",
+     "desc": "의사소통·문제해결·자기개발·대인관계·직업윤리 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 최종 합격자 발표",
+     "date": null,
+     "desc": "채용점검위원회 심의 후 2027년 3월부터 순차 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (간호직)",
+    "text": "토익 600점 이상(NEW TEPS 227점, TOEFL 68점) 이상 보유자만 지원 가능해요. 서류전형에서는 800점 이상 10점, 700~799점 8점, 600~699점 6점으로 반영돼요.",
+    "highlight": "600점 이상"
+   },
+   "written": null
+  }
+ },
+ "WK-181133": {
+  "at": "2026-10-16 20:51",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kt-wk181133.html",
+  "source": "기업 채용 페이지 이미지 6조각 (https://kt.recruiter.co.kr/career/jobs/129809)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "정규 4년제 대학 졸업자 또는 2027년 2월 이내 졸업예정자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량검사/코딩테스트",
+     "date": null,
+     "desc": "전직군 AI역량검사, SW직군은 코딩테스트 별도 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 — 입사",
+     "date": "2027년 1월",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
