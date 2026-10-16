@@ -6316,5 +6316,45 @@
   "published": "2026-10-16 20:52",
   "manual": "html",
   "html_hash": "994fb1196217"
+ },
+ "MN-POSTECH-01": {
+  "postId": "3824933974688986116",
+  "url": "https://hiring03.ddolbestory.com/2026/10/postech-mn01.html",
+  "title": "2026년 하반기 포항공과대학교 직원 채용 | 정규직전환형 채용, 10월 30일 마감",
+  "instNm": "포항공과대학교",
+  "slug": "postech-mn01",
+  "published": "2026-10-16 21:22",
+  "manual": "html",
+  "html_hash": "35f416944aef"
+ },
+ "MN-KUSJ-01": {
+  "postId": "6834776612654838441",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kusj-mn01.html",
+  "title": "고려대학교 세종캠퍼스 정규직원(사무직) 채용 — 행정직(일반행정·IT) | 정규직 채용, 10월 21일 마감",
+  "instNm": "고려대학교 세종캠퍼스",
+  "slug": "kusj-mn01",
+  "published": "2026-10-16 21:22",
+  "manual": "html",
+  "html_hash": "419a32a10385"
+ },
+ "MN-KUMOT-01": {
+  "postId": "406073674824796240",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kumot-mn01.html",
+  "title": "고려대학교 기술경영전문대학원 행정팀 직원 모집(국고사업 및 회계) | 계약직 1명, 10월 31일 마감",
+  "instNm": "고려대학교",
+  "slug": "kumot-mn01",
+  "published": "2026-10-16 21:22",
+  "manual": "html",
+  "html_hash": "cbc5b6dee888"
+ },
+ "MN-HYUMC-02": {
+  "postId": "7637883536430299580",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyumc-mn02.html",
+  "title": "한양대학교병원 서비스전략팀 UX디자이너 (임시직) | 임시직 채용, 10월 26일 마감",
+  "instNm": "한양대학교병원",
+  "slug": "hyumc-mn02",
+  "published": "2026-10-16 21:22",
+  "manual": "html",
+  "html_hash": "59efcc68258f"
  }
 }
