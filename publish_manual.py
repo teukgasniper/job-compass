@@ -18,13 +18,20 @@ GitHub Actions '수동 공고 발행' 버튼 전용. 예약 자동발행(publish
   srcUrl 페이지 글자 → Claude 웹 검색 → 카드 정보만
   ※ 재료에 없는 담당업무·자격은 지어내지 않고 '원문 공고에서 확인' 안내로 대신함
 
+[2026-10-16 추가] 직접 쓴 강화 본문 자동 발행
+  manual_posts/공고번호.html 파일이 있으면 Claude 자동 작성 대신 그 HTML을 그대로 hiring03에 발행
+  (퍼머링크 = slug_for, 라벨 = 기본 라벨 + '수동보강', 본문강화 건너뛰기 숨김 표시 자동 삽입, 카드 연결까지)
+  - HTML 파일을 고쳐서 다시 올리면 → 다음 실행 때 같은 주소의 글 내용만 바꿈 (내용이 같으면 그대로 둠)
+  - 이미 Claude가 자동 작성한 글이 있어도 → HTML 파일이 생기면 그 글을 HTML 내용으로 교체
+  - post_url(블로거에 직접 올린 글)이 있는 공고는 HTML 파일이 있어도 건드리지 않음
+
 실행
   python publish_manual.py                    # 새 공고 전부
   python publish_manual.py MN-TOSS-05 --dry-run
   MANUAL_IDS="MN-TOSS-05,MN-TOSS-17" MANUAL_FORCE=true python publish_manual.py
 필요한 Secrets: CLAUDE_API_KEY, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET, BLOGGER_REFRESH_TOKEN, BLOGGER_BLOG_ID
 """
-import json, os, re, sys, time, html as htmllib, urllib.request, urllib.error
+import json, os, re, sys, time, hashlib, html as htmllib, urllib.request, urllib.error
 from datetime import datetime
 from post_template import (KST, AD, HIRING, p, r, cta, h2, table, box, toc, faq, arrow_step,
                            clean_inst, clean_title, hire_list, hire_short, region_text, make_title, make_labels,
@@ -39,6 +46,9 @@ WEB_SEARCH = os.environ.get("MANUAL_WEB_SEARCH", "1") != "0"   # 재료 없을 �
 UA = {"User-Agent": "Mozilla/5.0 (job-compass manual)"}
 GENERIC_SRC = ("toss.im/career/jobs",)                          # 목록 페이지 = 재료로 못 씀
 CARD_SKIP = ("detail", "post_url", "post_id", "manual_post")      # 카드(jobs.json)에 안 싣는 입력 칸
+MANUAL_HTML_DIR = "manual_posts"                                  # [2026-10-16] 직접 쓴 강화 본문 HTML 폴더 (공고번호.html)
+MANUAL_MARK = '<span data-manual-enhanced="1" style="display:none"></span>'   # 본문강화 건너뛰기 표시 (enhance_posts.py와 같은 값)
+MANUAL_LABEL = "수동보강"
 
 
 # ───────── 0. 공통 ─────────
@@ -395,6 +405,53 @@ def publish_one(job, sn, cur, jobs, now, dry, state):
     return 1
 
 
+def manual_html(sn):
+    """[2026-10-16] manual_posts/공고번호.html → (본문, 해시). 파일이 없으면 (None, None)"""
+    path = os.path.join(MANUAL_HTML_DIR, f"{sn}.html")
+    if not os.path.exists(path):
+        return None, None
+    page = open(path, encoding="utf-8").read().strip()
+    if "data-manual-enhanced" not in page:
+        page = MANUAL_MARK + "\n" + page
+    return page, hashlib.md5(page.encode("utf-8")).hexdigest()[:12]
+
+
+def publish_html(job, sn, cur, page, h, now, dry, state):
+    """[2026-10-16] 직접 쓴 강화 본문 발행 (새 글) 또는 내용 교체 (기존 글). 반환: 1/0"""
+    labels = list(dict.fromkeys(make_labels(job) + [MANUAL_LABEL]))
+    if dry:
+        os.makedirs("preview", exist_ok=True)
+        open(f"preview/{slug_for(job)}.html", "w", encoding="utf-8").write(page)
+        print(f"  [미리보기] preview/{slug_for(job)}.html (직접 쓴 본문) | {make_title(job)}")
+        return 1
+    if state["token"] is None:
+        state["token"] = access_token()
+    token = state["token"]
+    if cur.get("postId"):                                       # 이미 있는 글 → 같은 주소에서 내용만 교체
+        if not api("PATCH", f"posts/{cur['postId']}", token, {"content": page, "labels": labels, "title": make_title(job)}):
+            print("  실패: Blogger 수정 오류"); return 0
+        state["mapping"][sn] = dict(cur, manual="html", html_hash=h, title=make_title(job),
+                                    rewritten=now.strftime("%Y-%m-%d %H:%M"))
+        state["changed"].add(sn)
+        print(f"  ✅ 직접 쓴 본문으로 교체 → {cur.get('url', '')}")
+        return 1
+    slug = slug_for(job)
+    post = api("POST", "posts?isDraft=false", token,
+               {"kind": "blogger#post", "title": slug.replace("-", " "), "content": page, "labels": labels})
+    if not post or not post.get("id"):
+        print("  실패: Blogger 발행 오류"); return 0
+    state["mapping"][sn] = {"postId": post["id"], "url": post.get("url", ""), "title": slug.replace("-", " "),
+                            "instNm": job["instNm"], "slug": slug, "published": now.strftime("%Y-%m-%d %H:%M"),
+                            "manual": "html", "html_hash": h}
+    state["changed"].add(sn)
+    state["save"]()                                             # 발행 직후 바로 기록 (중복 발행 방지)
+    if api("PATCH", f"posts/{post['id']}", token, {"title": make_title(job)}):
+        state["mapping"][sn]["title"] = make_title(job)
+    print(f"  ✅ 직접 쓴 본문 발행 → {post.get('url', '')}")
+    time.sleep(3)
+    return 1
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     ids = set(args or [x.strip() for x in re.split(r"[,\s]+", os.environ.get("MANUAL_IDS", "")) if x.strip()])
@@ -432,6 +489,23 @@ def main():
                                    "published": cur.get("published") or now.strftime("%Y-%m-%d %H:%M"), "manual": "user"}
                     state["changed"].add(sn); save()
                     print(f"[연결] {sn} 직접 쓴 본문 → {job['post_url']}")
+                continue
+            # ② [2026-10-16] 직접 쓴 강화 본문(manual_posts/공고번호.html) → 그대로 발행·교체
+            page, h = manual_html(sn)
+            if page:
+                if cur.get("manual") == "user":
+                    print(f"[건너뜀] {sn} 블로거에 직접 올린 글이 연결돼 있어 HTML 파일은 안 씀"); continue
+                if cur.get("manual") == "html" and cur.get("html_hash") == h:
+                    continue                                       # 내용 그대로 → 할 일 없음
+                print(f"\n[{sn}] {clean_inst(job['instNm'])} / {job['recrutPbancTtl']} (직접 쓴 본문)")
+                try:
+                    done += publish_html(job, sn, cur, page, h, now, dry, state)
+                except RuntimeError as e:
+                    if "발행 한도" in str(e):
+                        raise
+                    print(f"  실패: {str(e)[:200]}")
+                except Exception as e:
+                    print(f"  실패: {type(e).__name__}: {str(e)[:200]}")
                 continue
             if job.get("manual_post"):
                 print(f"[건너뜀] {sn} 직접 쓸 예정 (manual_post)"); continue

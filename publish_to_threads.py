@@ -48,6 +48,13 @@
                         → 훅 맨 앞 ⚠️ + 마감 임박 강조로만 작성 (후보 4개 전부), 코드 검사로 강제
                         → 1순위가 계속 있어도 최근 URGENT_EVERY건(기본 3) 안에 마감 임박 글이 없으면 2순위 먼저
                   3순위 나머지 안 올린 공고 / 4순위 우리 다른 계정에서 터진 글 각색 / 5순위 내 글 재발행
+[2026-10-16 수정] 수동 공고(MN-) 최우선 — 각 자동 계정에 수동 공고가 최소 1번씩은 올라가게 (다른 계정이 올렸어도 내 계정엔 올림)
+                  · 0순위 ① 수동 공고 마감 임박(D-1~D-2) 알림 ⚠️ (계정마다 1번) ② 내 계정에 아직 안 올린 수동 공고
+                  · 수동 공고끼리 연달아 올리지 않음 (직전 글이 수동 공고면 이번 회차는 다른 공고) / 공공 8 : 민간 2 비율보다 우선
+                  · 수동 공고는 고용형태(계약직·임시직 포함)·신입 필터를 건너뜀 — 직접 고른 공고라서
+                  · 최근에 넣은 수동 공고(접수 시작일 최신순)부터 / manual_jobs.json 항목에 "threads": false 를 넣으면 쓰레드 제외
+                  민간(공채속보·수동 공고) 훅·클로저·리스트에 학력·어학(토익 등) 조건 금지 — 진입장벽으로 보여 유입이 안 됨
+                  (공공기관·공무직은 학력무관 등이 오히려 무기라 그대로 둠)
 [2026-10-15 수정] 클린아이 공고는 학력 확인 때 실제 모집 직무·주력 고용형태도 같이 확인 (edu_lookup.py)
                   → 인원 가장 많은 직무가 요양보호·미화·경비·조리 등이거나 주력 분야가 계약직·시간제면 제외
                   (제목에 직무가 없고 고용형태가 '정규직'으로만 들어오는 공고 대응 — 인천광역시사회서비스원 요양보호사 계약직 사례)
@@ -225,6 +232,8 @@ YOUTH_MISS_RE = re.compile(r"미화|청소(?!년)|환경관리원|경비|방호�
 def eligible(job: dict, today: dt.date) -> bool:
     if job.get("ongoingYn") != "Y":
         return False
+    if is_manual_id(job.get("recrutPblntSn")):    # [2026-10-16] 수동 공고는 직접 고른 공고 → 고용형태·신입·제목 필터 없이 마감만 확인
+        return job.get("always") or dday(job.get("pbancEndYmd", ""), today) >= 1
     title = job.get("recrutPbancTtl") or ""
     if is_gojobs(job):
         # [2026-10-14] 나라일터는 고용형태·학력·인원·신입 구분이 전부 빈 값 → 아래 데이터 칸 검사 대신 제목으로 판단
@@ -439,6 +448,11 @@ def group_key(name: str) -> str:
     return n
 
 
+def is_manual_id(pid) -> bool:
+    """[2026-10-16] 수동 공고(manual_jobs.json, MN-)"""
+    return str(pid).startswith("MN-")
+
+
 def is_private_id(pid) -> bool:
     return str(pid).startswith(("WK-", "MN-"))      # 공채속보 + 수동 공고(토스 등) [2026-10-08]
 
@@ -509,6 +523,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     used_keys = my_keys | {norm_key(norm_inst(p.get("instNm"))) + "|" + norm_key(p.get("title")) for p in other_posts}
     recent_insts = {group_key(p["instNm"]) for p in history[-6:]}   # [2026-10-07] 그룹 단위
     recent_ids = {str(p["id"]) for p in history[-12:]}
+    recent_ids_list = [str(p["id"]) for p in history[-12:]]
     exclude = exclude or set()
     live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
 
@@ -558,6 +573,25 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         fresh.sort(key=lambda j: hot_score(j, today), reverse=True)
         top = fresh[:5]
         return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
+
+    # [2026-10-16] 0순위 수동 공고 — 공공/민간 차례·다른 계정 발행 여부와 상관없이 각 계정에 최소 1번
+    #              (직전 글이 수동 공고면 이번 회차는 건너뛰어 수동 공고만 연달아 나가지 않게)
+    manual_live = [j for j in live if is_manual_id(j["recrutPblntSn"]) and j.get("threads") is not False]   # "threads": false = 쓰레드 제외
+    last_manual = bool(history) and is_manual_id(history[-1]["id"])
+    if manual_live and not last_manual:
+        m_urgent_done = {str(p["id"]) for p in history if p.get("urgent")}
+        m_urgent = [j for j in manual_live if is_urgent(j) and str(j["recrutPblntSn"]) not in m_urgent_done
+                    and str(j["recrutPblntSn"]) not in recent_ids_list[-1:]]
+        m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys]
+        print(f"수동 공고: 진행 중 {len(manual_live)} / 내 계정 미발행 {len(m_new)} / 마감 임박 알림 대기 {len(m_urgent)}")
+        if m_urgent:
+            return choose(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
+        if m_new:                                  # 최근에 넣은 수동 공고부터 (접수 시작일 최신순 → 본문 있는 것 → 점수)
+            m_new.sort(key=lambda j: (j.get("pbancBgngYmd") or "", str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
+            fresh_m = [j for j in m_new if group_key(j["instNm"]) not in recent_insts] or m_new
+            return fresh_m[0], 0, len(m_new), None
+    elif manual_live:
+        print("수동 공고: 직전 글이 수동 공고라 이번 회차는 다른 공고")
 
     new = [j for j in pool if is_new(j)]
     tier1 = [j for j in new if opened_days(j) <= NEW_DAYS and not is_urgent(j)]
@@ -869,11 +903,12 @@ NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지
 - 민간 기업 공고([공고 데이터]에 '기업구분'이 있음)는 공기업이 아니다: '공기업', '정년 보장', '블라인드' 표현 금지.
   '대기업'이라는 말은 기업구분이 '민간 대기업'일 때만 쓴다. 중견기업을 대기업처럼 쓰지 않는다.
   인원 대신 모집분야·전형 단계·근무지·평균연봉(있을 때)으로 리스트를 채운다.
-  단, 전형 단계·학력 하한·어학 기준은 리스트에만 둘 수 있고 훅·클로저 소재로는 쓰지 않는다.
+  단, 전형 단계는 리스트에만 둘 수 있고 훅·클로저 소재로는 쓰지 않는다.
+  [2026-10-16] 학력(학사·대졸·4년제·졸업예정)과 어학(토익·오픽·토스·HSK·JLPT) 조건은 훅·리스트·클로저 어디에도 쓰지 않는다 (진입장벽).
   '대기업'은 누구나 이름을 아는 그룹사(삼성·현대·SK·LG·롯데·신세계·한화·LS·CJ 등) 계열일 때만 훅에 쓴다.
   그 외에는 '증권사', '패션 회사'처럼 업종으로 부른다. 그룹 계열이면 리스트 2번쯤에 'OO그룹 계열사'를 적어준다.
   민간 공고 훅의 무기: 브랜드 인지도, 평균 연봉, 하는 일(쉬운 말로), 열린 직무, 입사 시기·근무지.
-- 민간 공고 학력은 [본문 발췌]의 '지원 자격 상세' 문장 기준으로 쓴다 (예: "학사 이상, 2027년 2월 졸업예정자 지원 가능").
+- 민간 공고는 학력·어학 조건을 글에 쓰지 않는다 (위 규칙). 공공기관·공무직의 '학력무관'은 그대로 무기로 쓴다.
 
 [고정 클로저 금지]
 "세 번 확인했는데 진짜임", "모르는 사람이 많을수록 경쟁률은 낮음", "넘기려다 공고 열어본 사람이 붙는 거임",
@@ -948,6 +983,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         data.pop("공고 제시 연봉(클린아이)", None)
     if is_private(job):
         data["기업구분"] = f"민간 {job.get('bizType') or '기업'} (공기업 아님)"
+        if is_manual_id(job.get("recrutPblntSn")) and not job.get("bizType"):   # [2026-10-16] 수동 공고(대학·대학병원 등)
+            data["기업구분"] = "민간 (사립대학·대학병원·기업 등 — 공기업 아님, '대기업'이라 부르지 말 것)"
+        data.pop("학력조건", None)                 # [2026-10-16] 민간은 학력을 글에 안 씀
     if job.get("localYn") == "Y":                 # [2026-10-12] 클린아이 지역제한 — 리스트에 반드시 명시
         data["지역제한(리스트에 반드시 명시)"] = (job.get("localName") if has_value(job.get("localName")) else "있음 (거주·연고자 한정)")
     if is_cleaneye(job) and job.get("entGb"):
@@ -978,8 +1016,10 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
 
     # [2026-10-06] 민간 공고·열린 조건 여부에 따른 추가 지시
     if is_private(job):
-        lines.append("- 민간 기업 공고: 훅 무기는 브랜드·평균연봉·하는 일(쉬운 말)·열린 직무·입사 시기. "
-                     "전형 단계·학력 하한·어학 기준은 훅·클로저에 쓰지 말 것")
+        lines.append("- 민간 기업 공고: 훅 무기는 브랜드·평균연봉·하는 일(쉬운 말)·열린 직무·입사 시기·근무지·복지. "
+                     "전형 단계는 훅·클로저에 쓰지 말 것")
+        lines.append("- [2026-10-16] 민간 공고는 학력(학사·대졸·4년제·졸업예정 등)과 어학(토익·오픽·토스·HSK·JLPT 등) 조건을 "
+                     "훅·리스트·클로저 어디에도 쓰지 말 것 — 진입장벽으로 보여서 유입이 떨어짐. 리스트는 직무·근무지·연봉·전형·마감일로 채울 것")
         lines.append("- '대기업'은 누구나 아는 그룹사 계열일 때만. 아니면 업종(증권사·패션 회사 등)으로 부를 것")
     if is_cleaneye(job):
         lines.append("- 클린아이 공고: '기관구분'에 맞게 부를 것 (지방공사·지방공단 = 지방공기업 / 출자·출연기관·재단·의료원은 '공기업'이라 부르지 말 것)")
@@ -999,6 +1039,8 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 인원·고용형태·근무지·전형으로 채울 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
+    if is_manual_id(job.get("recrutPblntSn")) and re.search(r"계약|임시|기간제", job.get("hireTypeNmLst") or ""):
+        lines.append("- [수동 공고] 고용형태가 계약직·임시직임 → '정규직'·'정년'·'평생 직장' 표현 금지. 리스트에 고용형태(계약 기간)를 그대로 쓸 것")
     if urgent:                                    # [2026-10-15] 2순위 마감 임박 — 후보 4개 전부 ⚠️ + 마감 강조
         when = {1: "내일 마감", 2: "모레 마감"}.get(d_left, f"D-{d_left}")
         lines.append(f"- [마감 임박 글] 이 공고는 {when}(D-{d_left}, {end.month}월 {end.day}일)임. 후보 4개 전부 훅 맨 앞 이모지는 ⚠️ "
@@ -1077,11 +1119,12 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
+PRIVATE_BARRIER_RE = re.compile(r"학력|학사|석사|대졸|고졸|초대졸|전문학사|[0-9]년제|졸업\s*예정|졸업자|학점|토익|토스|오픽|TOEIC|OPIc|TOEFL|텝스|TEPS|HSK|JLPT|어학", re.I)
 URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막차|닫힘|닫혀|끝남|끝나|이번\s*주|며칠|이틀|하루")
 
 
 def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
-                       urgent: bool = False):
+                       urgent: bool = False, private: bool = False, contract: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
@@ -1151,6 +1194,10 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
             return None, "공무직을 공무원으로 씀"
         if not any("공무직" in x for x in items):
             return None, "리스트에 공무직 표시 없음"
+    if private and PRIVATE_BARRIER_RE.search(body):   # [2026-10-16] 민간: 학력·어학 조건은 진입장벽 → 글 전체 금지
+        return None, "민간 공고에 학력·어학 조건"
+    if contract and re.search(r"정규직(?!\s*전환)|정년|평생\s*직장", body):   # [2026-10-16] 수동 계약직·임시직
+        return None, "계약직 공고를 정규직처럼 씀"
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
     return {"hook": "\n".join(hook_lines), "items": items, "closer": closer, "text": body,
@@ -1209,7 +1256,8 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
             r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
-                                        urgent)
+                                        urgent, is_private(job),
+                                        is_manual_id(job.get("recrutPblntSn")) and bool(re.search(r"계약|임시|기간제", job.get("hireTypeNmLst") or "")))
             if r:
                 valid.append(r)
             else:
@@ -1917,7 +1965,7 @@ def main():
         print("발행할 공고 없음 — 이번 회차는 건너뜀")
         summary("### ⏭️ 건너뜀\n진행 중인 공고 없음 (또는 학력 확인 불가)")
         return
-    tier_label = {1: "1순위 신규", 2: "2순위 마감 임박", 3: "3순위 나머지 새 공고",
+    tier_label = {0: "0순위 수동 공고", 1: "1순위 신규", 2: "2순위 마감 임박", 3: "3순위 나머지 새 공고",
                   4: "4순위 다른 계정 터진 글 각색", 5: "5순위 내 글 재발행"}[tier]   # [2026-10-15]
     tier_label += " · 본문 " + ("있음" if post else "없음")
 

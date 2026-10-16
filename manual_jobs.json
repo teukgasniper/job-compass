@@ -1,6 +1,146 @@
 {
- "_설명": "수동 공고 — API에 없는 공고를 직접 추가. recrutPblntSn은 MN-으로 시작. pbancEndYmd(상시 공고는 정리 날짜)가 지나면 카드에서 자동으로 빠짐. always=true면 카드·본문에 날짜 대신 endLabel 표시. 본문: Actions '수동 공고 발행' 버튼을 누르면 글 없는 공고를 Claude가 작성·발행 (예약 자동발행·본문 보강은 수동 공고를 안 건드림). 선택 칸 — detail: 공고 원문을 붙여넣으면 그걸 재료로 씀 / post_url: 직접 쓴 본문 주소 (자동 글 안 쓰고 주소만 연결) / manual_post: true면 직접 쓸 예정이라 자동 글 안 씀 / recrutSeNm은 원문 자격요건 기준으로 적기 (경력 요구가 있으면 '경력')",
+ "_설명": "수동 공고 — API에 없는 공고를 직접 추가. recrutPblntSn은 MN-으로 시작. pbancEndYmd(상시 공고는 정리 날짜)가 지나면 카드에서 자동으로 빠짐. always=true면 카드·본문에 날짜 대신 endLabel 표시. 본문: Actions '수동 공고 발행' 버튼을 누르면 글 없는 공고를 Claude가 작성·발행 (예약 자동발행·본문 보강은 수동 공고를 안 건드림). 선택 칸 — detail: 공고 원문을 붙여넣으면 그걸 재료로 씀 / post_url: 직접 쓴 본문 주소 (자동 글 안 쓰고 주소만 연결) / manual_post: true면 직접 쓸 예정이라 자동 글 안 씀 / recrutSeNm은 원문 자격요건 기준으로 적기 (경력 요구가 있으면 '경력') / threads: false면 쓰레드 자동발행에서 제외 (카드·본문은 그대로)",
  "items": [
+  {
+   "recrutPblntSn": "MN-BSKS-01",
+   "instNm": "부산경상대학교",
+   "recrutPbancTtl": "2026년 행정 직원(계약직) 채용",
+   "hireTypeNmLst": "계약직",
+   "workRgnNmLst": "부산",
+   "recrutSeNm": "신입+경력",
+   "recrutNope": 0,
+   "pbancBgngYmd": "20261012",
+   "pbancEndYmd": "20261019",
+   "srcUrl": "https://univ.bsks.ac.kr/notice/recruit",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "경영·회계·사무",
+   "bizType": "",
+   "_work24": {
+    "stages": [
+     "서류심사",
+     "면접심사(필요 시 추가 면접)",
+     "최종합격(개별 통보)"
+    ],
+    "jobs": [
+     "대학 본부 및 산학협력단 대학 행정 업무"
+    ],
+    "support": [
+     "학사 학위 이상 소지자",
+     "남자는 병역필 또는 면제자",
+     "우대: 대학 행정(회계·장학·인사) 경험, 대학·공공기관 업무 경험, 시설·자산관리, 계약·구매, 행정 관련 자격증"
+    ],
+    "common": "본교 계약직 직원 채용 규정에 적합한 자",
+    "docs": "직원 채용 지원서(본교 양식), 자기소개서, 최종학력증명서(성적증명서 포함), 경력증명서·자격증 사본(해당자)",
+    "method": "우편·방문·온라인(고용24, 사람인) 접수 / 마감 10월 19일(월) 17:00",
+    "notes": "계약직 · 임용일로부터 1년(수습 3개월) · 연봉계약제(본교 내규·경력 따라 협의) · 주 5일 09:00~18:00 · 모집인원 미기재(00명) · 문의 051-850-1131",
+    "restriction": ""
+   },
+   "_source": "work24",
+   "_manual": true,
+   "detail": "부산경상대학교 행정 직원 채용공고\n2026년 부산경상대학교에서 함께 근무할 직원을 다음과 같이 신규 채용하오니, 대학의 발전과\n미래를 함께 만들어갈 유능한 인재 여러분의 많은 관심과 지원 바랍니다.\n1. 채용 분야 및 인원\n\n모집분야\n(채용인원)\n계약기간\n급여\n소 속\n담 당 업 무\n우대사항\n계약직\n`(00명)\n임용일로부터 1년 \n(수습기간\n 3개월)\n연봉계약제 임용\n(본교 내규 및 경력 등에 따른 협의)\n대학 본부 및 산학협력단\n대학 행정 업무 \n대학 행정 업무 경험자\n(회계,장학,인사 등)\n2. 공통 우대 사항\n 가. 대학 또는 공공기관 관련 업무 경험자 \n 나. 시설관리 및 자산관리 경험자\n 다. 계약 및 구매, 회계, 장학, 인사 업무 경험자\n 라. 행정 관련 자격증 소지자\n 마. 국가유공자 등 예우 및 지원에 관한 법률에 의거 취업보호대상자 및 장애인 고용촉진 및 \n 직업재활법 시행령 제3조 규정에 의한 장애인\n3. 근무조건\n 가. 근무지 : 부산경상대학교\n 나. 근무시간 : 주 5일 근무 (09:00~18:00)\n 다. 급여 : 연봉계약제 임용(본교 내규 및 경력 등에 따른 협의)\n 라. 근무기간 : 임용일로부터 1년 (수습기간은 3개월)\n4. 지원자격 (필수)\n 가. 본교 계약직 직원 채용 규정에 적합한 자\n 나. 학사 학위 이상의 소지자\n 다. 남자는 병역필 또는 면제자\n \n5. 접수기간 및 접수방법\n 가. 접수기간 : 2026.10.12.(월) ~ 2026.10.19.(월) 17:00까지\n 나. 접수방법 : 우편, 방문, 온라인(고용24, 사람인)\n6. 제출서류\n 가. 직원 채용 지원서(개인정보 수집·이용 동의서 포함) 1부(본 대학 양식에 의함)\n 나. 자기소개서 1부\n 다. 최종학력증명서 1부(성적증명서 포함, 경력증명서는 해당자에 한함)\n 라. 각종 자격증사본(해당자에 한함) 1부\n 마. 서류심사 합격자에 한해 추가 서류 제출 안내\n ※ 개인정보보호법에 의거 주민등록번호는 반드시 삭제 후 제출해 주시기 바라며, 경력증명서 미제출 시 없는 것으로 간주함\n7. 심사절차\n 가. 서류심사(서류 심사 합격 후 별도 통보)\n 나. 면접심사(필요에 따라 추가 면접 실시함) \n 다. 최종합격(개별 통보에 의함)\n8. 유의사항\n 가. 제출 서류의 기재착오·누락·연락불능 등으로 인한 불이익은 지원자의 책임으로 함\n 나. 제출된 서류에 대하여 추후 사실조회를 통해 임용하기 부적합한 결격사유가 발견될 경우 합격을 취소하거나 무효로 함\n 다. 전 단계 전형별 합격자에 한해 다음 단계 전형을 실시함\n 라. 적임자가 없을 경우 채용하지 않을 수 있음\n 마. 「채용절차의 공정화에 관한 법률」 시행에 따라 채용여부가 확정된 이후 14일 이내 지원자가 채용서류의 반환을 청구하는 경우 원본에 한하여 반환할 예정임\n 바. 「아동·청소년의 성보호에 관한 법률」 제56조에 따라 채용예정자에 한하여 성범죄 경력조회를 실시하며 동법에서 정한 취업제한 사유에 해당하는 경우 채용은 취소됨\n 사. 최종합격자가 채용포기, 합격취소, 채용 결격사유, 채용당일 퇴직 등으로 최종합격자가 채용되지 못한 경우 면접심사 차 순위자를 추가 합격자로 선발할 수 있음\n 아. 수습기관 종료 후 부서장 평가에 따른 계약직 전환 또는 계약 종료 될 수 있음\n9. 문의처\n 부산경상대학교 사무처 인사담당자 : 051-850-1131\n2026. 10. 12.\n부 산 경 상 대 학 교 총 장"
+  },
+  {
+   "recrutPblntSn": "MN-SSWU-01",
+   "instNm": "성신여자대학교",
+   "recrutPbancTtl": "대학 교학팀(각 교학팀) 계약직원 채용 (상시모집)",
+   "hireTypeNmLst": "계약직",
+   "workRgnNmLst": "서울 성북구,서울 강북구",
+   "recrutSeNm": "신입+경력",
+   "recrutNope": 1,
+   "pbancBgngYmd": "20261002",
+   "pbancEndYmd": "20261020",
+   "srcUrl": "https://www.sungshin.ac.kr",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "경영·회계·사무",
+   "bizType": "",
+   "_source": "work24",
+   "_manual": true,
+   "detail": "▣ <상시모집> 성신여자대학교 대학 교학팀(각 교학팀) 계약직원 채용\n\n\n1. 채용분야 및 업무 등\n ※ 대학 교학팀(각 교학팀) 일반행정 계약직원은 상시모집으로 진행되며 지원서를 접수해 두시면 결원 등으로\n 채용 필요시 서류평가 및 면접평가를 진행하고 있습니다. (채용인원은 공석 발생시 갱신되오니 참고 바랍니다)\n ※ 채용 필요시 매월 20일 서류마감, 서류 및 면접평가 후 익월 1일 임용되는 일정으로 진행됩니다.(세부 일정 변동 가능)\n ※ 저희 대학 채용 사이트에서 해당 채용분야가 보이지 않는 경우 평가 실시 및 채용 진행 등에 따른 일시적 마감처리일 수 있습니다.\n (기타 문의는 02-920-7042으로 연락 바랍니다.)\n (채용인원 최종 갱신일: 2026. 10. 2.)___\n\n 캠퍼스 채용분야 각 교학팀 담당 단과대학 채용인원 공통 업무 지원자격 및 우대사항 비고\n\n (수정캠퍼스 소속 학과(부))\n 제1교학팀 인문융합예술대학 - -\n 사범대학\n (수정캠퍼스 소속 학과(부))\n 제2교학팀 사회과학대학 - -\n 수정 법과대학\n <필수자격>\n 캠퍼스 (수정캠퍼스 소속 학과(부))\n 자연과학대학 - 학사 학위 이상 소지자\n 제3교학팀 1 각 교학팀 담당 -\n 공과대학 (졸업예정자 지원 가능)\n 단과대학, 학과(부)\n 생활산업대학\n 및 유관 대학원\n 미술대학 <우대사항>\n 제4교학팀 - 행정업무 수행 -\n 음악대학 - 대학 행정 및 사무업무\n (운정캠퍼스 소속 학과(부)) 유경험자 우대\n 사회과학대학\n 제5교학팀 - -\n 자연과학대학\n 운정 공과대학\n 캠퍼스\n (운정캠퍼스 소속 학과(부))\n 제6교학팀 인문융합예술대학 - -\n 생활산업대학\n\f2. 근로조건\n\n □ 근로 기간 □ 근로 장소\n\n - 계약일로부터 1년 - 성신여자대학교 수정캠퍼스 / 운정캠퍼스 해당 교학팀\n\n □ 근로 시간 □ 연봉\n\n - 각 교학팀 공통 - 각 교학팀: 연 2,600만원\n 월요일 ~ 금요일\n (09:00 ~ 17:00 / 주 35시간 / 방학 중 단축근무 시행 가능)\n\n □ 복리후생 □ 기타\n - 4대 보험 - 본교 직원 채용에 결격사유가 없는 자\n - 퇴직금(1년 이상 근무자)\n - 교육 훈련 등 - 취업보호대상자(국가보훈대상자), 장애인 우대\n\n\n\n\n3. 전형일정 및 방법\n\n 최종 발표 및\n 원서접수 서류평가 면접평가\n 임용 예정\n 2026. 10. 20.(화)\n 오후 4시 마감 ‣ 결원 등으로 필요시\n 서류평가 진행 ‣ 면접대상자\n 면접일정 개별통보 ‣ 최종 발표 후\n 11월 중 임용 예정\n\n※ 위 일정은 대학 측 사정에 따라 일부 변경될 수 있음을 양해바랍니다.\n※ 지원자 상황에 따라 원서 접수 기간은 연장될 수 있습니다.(연장시 지원서의 연락처로 안내 예정)\n - 임용일자는 개별 협의 후 결정 예정(원서 접수 기간 등 연장될 경우 임용 예정일도 변경될 수 있음)\n※ 적격자가 없을 경우, 채용하지 않을 수 있습니다.\n\f4. 제출서류\n\n 구 분 공 통\n - 최종학력 졸업증명서(또는 졸업예정증명서), 성적증명서 각 1부\n - 경력증명서 각 1부 (해당자)\n - 자격증 및 어학증명서 사본 각 1부(해당자)\n 제출서류\n - 주민등록등본 또는 가족관계증명서 1부\n - 취업지원대상자 증명서 1부(국가보훈대상자에 한함)\n - 장애인증명서 1부(해당자에 한함)\n - 스캔본은 원서접수 시 직원채용시스템에 업로드(PDF/PNG/JPG)\n 제출방법\n - 원본 서류는 최종 임용 시 제출\n\n ※ 제출 서류는 『채용절차의 공정화에 관한 법률』에 따라 반환, 일정은 별도 안내\n ※ 지원서 및 제출된 서류가 사실과 다를 경우, 합격 또는 임용을 취소\n\n\n문의사항 : 성신여자대학교 인사총무팀(02-920-7042) / personnel@sungshin.ac.kr"
+  },
+  {
+   "recrutPblntSn": "MN-SSWU-02",
+   "instNm": "성신여자대학교",
+   "recrutPbancTtl": "국제교류지원팀 계약직원 채용",
+   "hireTypeNmLst": "계약직",
+   "workRgnNmLst": "서울 성북구",
+   "recrutSeNm": "신입+경력",
+   "recrutNope": 1,
+   "pbancBgngYmd": "20261014",
+   "pbancEndYmd": "20261020",
+   "srcUrl": "https://www.sungshin.ac.kr",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "경영·회계·사무",
+   "bizType": "",
+   "_source": "work24",
+   "_manual": true,
+   "detail": "▣ 성신여자대학교 국제교류지원팀 계약직원 채용\n\n1. 채용분야 및 업무 등\n\n 채용분야 인원 지원자격 및 우대사항 업무\n\n <필수자격>\n - 학사학위 이상 소지자\n - 영어 능통자\n - 본교생 해외파견 사업\n 국제교류지원팀 1 - 외국인 교환학생·복수학위생 선발 및 관리\n <우대사항> - 기타 부서내 필요 업무\n - 국제 관련 대학 행정 업무 유경험자\n - 기타 제2외국어 가능자\n\n\n\n\n2. 근무 조건\n □ 근로 기간 □ 근로 시간\n\n - 계약일부터 1년 - 월요일 ~ 금요일 (09:00 ~ 17:00) / (방학 중 단축근무 시행 가능)\n\n\n\n\n □ 근로 장소 □ 연 봉\n\n - 성신여자대학교 수정캠퍼스 국제교류지원팀 - 연 2,800만원\n\n\n\n\n □ 복리후생 □ 기 타\n\n - 4대 보험, 퇴직금(1년 이상 근무자), 교육훈련 등 - 본교 직원 채용에 결격사유가 없는 자\n\n - 취업보호대상자(국가보훈대상자), 장애인 우대\n\n\n\n\n3. 전형 일정 및 방법 ※ 지원서 접수 : 성신여자대학교 직원채용시스템 온라인 접수\n\n\n 원서 접수 서류 평가 면접 평가 최종 발표 및\n 임용 예정\n 2026. 10. 20.(화) ▶ 서류평가 ▶ 면접대상자 ▶\n 2026년 11월 중\n 16시까지 수시 진행 면접일정 개별통보 임용예정\n (임용일 협의 후 진행)\n\n ※ 위 일정은 대학 측 사정에 따라 일부 변경될 수 있음을 양해 바랍니다.\n\n ※ 지원자 상황에 따라 원서 접수 기간은 연장될 수 있습니다.(연장시 지원서의 연락처로 안내 예정)\n\n - 임용일자는 개별 협의 후 결정 예정(원서 접수 기간 등 연장될 경우 임용 예정일도 변경될 수 있음)\n\n ※ 적격자가 없을 경우, 채용하지 않을 수 있습니다.\n\n\n\n4. 제출 서류\n\n 구 분 공 통 서 류\n\n - 최종학력 졸업증명서(또는 졸업예정증명서), 성적증명서 각 1부\n\n - 경력증명서 각 1부 (해당자)\n □ 제출 서류는「채용절차의\n 제출서류 - 자격증 및 어학증명서 사본 각 1부(해당자) 공정화에 관한 법률」에 따라\n 반환, 일정은 별도 안내\n - 취업지원대상자 증명서 1부(국가보훈대상자에 한함)\n □ 지원서 및 제출된 서류가\n - 장애인증명서 1부(해당자에 한함) 사실과 다를 경우, 합격 또는\n 임용을 취소\n - 스캔본은 원서접수 시 직원채용시스템에 업로드(PDF/PNG/JPG)\n 제출방법\n - 원본 서류는 최종 임용 시 제출\n\n\n 문의사항 : 성신여자대학교 인사총무팀(02-920-7042 / personnel@sungshin.ac.kr)"
+  },
+  {
+   "recrutPblntSn": "MN-SSWU-03",
+   "instNm": "성신여자대학교",
+   "recrutPbancTtl": "인재개발팀 계약직원 채용",
+   "hireTypeNmLst": "계약직",
+   "workRgnNmLst": "서울 성북구",
+   "recrutSeNm": "신입+경력",
+   "recrutNope": 1,
+   "pbancBgngYmd": "20261014",
+   "pbancEndYmd": "20261020",
+   "srcUrl": "https://www.sungshin.ac.kr",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "경영·회계·사무",
+   "bizType": "",
+   "_source": "work24",
+   "_manual": true,
+   "detail": "▣ 성신여자대학교 인재개발팀 계약직원 채용\n\n1. 채용분야 및 업무 등\n\n 채용분야 인원 지원자격 및 우대사항 업무\n\n <필수자격>\n - 학사학위 이상 소지자\n\n - S-Shiny 홍보도우미 모집 및 활동\n 인재개발팀 1 - 진로·취업 채용 관련 정보 제공\n <우대사항> - 기타 일반행정 업무\n - 본교 25.8월 및 26.2월 졸업자 우대\n\n\n\n\n2. 근무 조건\n □ 근로 기간 □ 근로 시간\n\n - 계약일부터 1년 - 월요일 ~ 금요일 (09:00 ~ 17:00) / (방학 중 단축근무 시행 가능)\n\n\n\n\n □ 근로 장소 □ 연 봉\n\n - 성신여자대학교 수정캠퍼스 인재개발팀 - 연2,600만원\n\n\n\n\n □ 복리후생 □ 기 타\n\n - 4대 보험, 퇴직금(1년 이상 근무자), 교육훈련 등 - 본교 직원 채용에 결격사유가 없는 자\n\n - 취업보호대상자(국가보훈대상자), 장애인 우대\n\n\n\n\n3. 전형 일정 및 방법 ※ 지원서 접수 : 성신여자대학교 직원채용시스템 온라인 접수\n\n\n 원서 접수 서류 평가 면접 평가 최종 발표 및\n 임용 예정\n 2026. 10. 20.(화) ▶ 서류평가 ▶ 면접대상자 ▶\n 2026년 11월 중\n 16시까지 수시 진행 면접일정 개별통보 임용예정\n (임용일 협의 후 진행)\n\n ※ 위 일정은 대학 측 사정에 따라 일부 변경될 수 있음을 양해 바랍니다.\n\n ※ 지원자 상황에 따라 원서 접수 기간은 연장될 수 있습니다.(연장시 지원서의 연락처로 안내 예정)\n\n - 임용일자는 개별 협의 후 결정 예정(원서 접수 기간 등 연장될 경우 임용 예정일도 변경될 수 있음)\n\n ※ 적격자가 없을 경우, 채용하지 않을 수 있습니다.\n\n\n\n4. 제출 서류\n\n 구 분 공 통 서 류\n\n - 최종학력 졸업증명서(또는 졸업예정증명서), 성적증명서 각 1부\n\n - 경력증명서 각 1부 (해당자)\n □ 제출 서류는「채용절차의\n 제출서류 - 자격증 및 어학증명서 사본 각 1부(해당자) 공정화에 관한 법률」에 따라\n 반환, 일정은 별도 안내\n - 취업지원대상자 증명서 1부(국가보훈대상자에 한함)\n □ 지원서 및 제출된 서류가\n - 장애인증명서 1부(해당자에 한함) 사실과 다를 경우, 합격 또는\n 임용을 취소\n - 스캔본은 원서접수 시 직원채용시스템에 업로드(PDF/PNG/JPG)\n 제출방법\n - 원본 서류는 최종 임용 시 제출\n\n\n 문의사항 : 성신여자대학교 인사총무팀(02-920-7042 / personnel@sungshin.ac.kr)"
+  },
+  {
+   "recrutPblntSn": "MN-HYUMC-01",
+   "instNm": "한양대학교병원",
+   "recrutPbancTtl": "2026년 하반기 사무원 (정규직)",
+   "hireTypeNmLst": "정규직",
+   "workRgnNmLst": "서울 성동구",
+   "recrutSeNm": "신입",
+   "recrutNope": 0,
+   "pbancBgngYmd": "20261008",
+   "pbancEndYmd": "20261021",
+   "srcUrl": "https://hyumc.recruiter.co.kr/career/jobs/130782",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "경영·회계·사무",
+   "bizType": "",
+   "_source": "work24",
+   "_manual": true,
+   "detail": "2026년 하반기 사무원 (정규직) / 2026년 신규직원(정규직) 모집\n■ 채용개요: 모집부문 2026년 하반기 사무원 / 모집인원 O명\n지원자격: 가. 학사 학위 이상 소지자(필수) 나. 경력 5년 미만(필수) 다. 어학성적 1개 이상 필수(TOEIC 800점, OPIc(英) IH, TOEIC Speaking IH, 新HSK 5급, JLPT N2) 라. 상급종합병원 경력자(우대) 마. 상경계열 전공자(우대)\n전형절차: 서류전형 → AI면접/1차면접 → 2차면접 → 채용검진\n※ 남자는 병역필 또는 면제자 / 해외여행 결격사유가 없는 자. 결과는 개별 통지 및 채용홈페이지 [합격자조회]\n■ 처우: 임금 본 병원 급여 규정에 따름 / 복리후생 사학연금 가입, 휴가, 경조금 및 경조휴가, 진료비 감면 등 / 주 40시간(부서 상황에 따라 연장·휴일 근무 가능)\n■ 지원방법: 온라인접수(https://hyumc.recruiter.co.kr), 지원기간 2026.10.08(목) ~ 2026.10.21(수) 오후 11:59, 이메일·우편 불가, 취업지원대상자 우대(증명서 제출 시)\n■ 제출서류: 최종학력증명서, 성적증명서, 공인외국어시험 성적표, 기타 자격증(해당자), 경력증명서(해당자), 취업지원대상자 증명서(해당자)\n■ 기타: 허위사실 기재 시 합격 취소, 적격자 없을 시 미선발, 채용검진 이상 소견 시 합격 취소, 최종합격자 3개월 수습\n"
+  },
+  {
+   "recrutPblntSn": "MN-HYUMC-02",
+   "instNm": "한양대학교병원",
+   "recrutPbancTtl": "서비스전략팀 UX디자이너 (임시직)",
+   "hireTypeNmLst": "임시직",
+   "workRgnNmLst": "서울 성동구",
+   "recrutSeNm": "경력",
+   "recrutNope": 0,
+   "pbancBgngYmd": "20261013",
+   "pbancEndYmd": "20261026",
+   "srcUrl": "https://hyumc.recruiter.co.kr/career/jobs",
+   "acbgCondNmLst": "대졸(4년)",
+   "replmprYn": "N",
+   "ongoingYn": "Y",
+   "ncsCdNmLst": "문화·예술·디자인·방송",
+   "bizType": "",
+   "_source": "work24",
+   "_manual": true,
+   "detail": "서비스전략팀 UX디자이너 (임시직) / 2026년 신규직원(임시직) 모집\n■ 채용개요: 모집부문 서비스전략팀 UX디자이너 / 모집인원 O명\n지원자격(필수): 학사 이상 관련학과 학위 소지자, 그래픽디자인 관련 경력 2년 이상, Figma·Adobe Photoshop·Illustrator 등 디자인 툴 활용 가능자\n우대사항: 시각디자인·그래픽디자인·UX 서비스디자인 관련 전공자, 의료기관 및 헬스케어 관련 프로젝트 수행 경험자\n근무내용: 병원 공간·환경, 원내 사인물(Wayfinding) 및 안내체계 디자인 / 환자 안내물, 사이니지, DID 등 시각정보 디자인 / 서비스 디자인 프로젝트 시각화 및 결과물 제작 / 환자 Journey Map, 서비스 프로세스 시각화 / 결과물 현장 테스트 및 적용 / 유관부서·외부업체 협업\n전형절차: 서류전형 → 면접 → 채용검진 (남자 병역필 또는 면제, 해외여행 결격사유 없는 자)\n■ 처우: 임금 본 병원 급여 규정에 따름 / 4대보험, 휴가, 경조금·경조휴가, 진료비 감면 / 계약기간 12개월(평가 후 1회 재계약 가능, 총 2년 이내) / 주 40시간\n■ 지원: 온라인(https://hyumc.recruiter.co.kr), 2026.10.13(화) ~ 10.26(월), 이메일·우편 불가\n■ 제출서류: 최종학력증명서, 성적증명서, 포트폴리오(파일 또는 링크), 경력기술서(자유양식), 경력증명서, 공인외국어 성적표·자격증·취업지원대상자 증명서(해당자)"
+  },
   {
    "recrutPblntSn": "MN-TOSS-01",
    "instNm": "토스뱅크",
@@ -32,7 +172,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-02",
@@ -65,7 +206,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-03",
@@ -98,7 +240,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-04",
@@ -131,7 +274,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-05",
@@ -164,7 +308,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-06",
@@ -197,7 +342,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-07",
@@ -230,7 +376,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-08",
@@ -263,7 +410,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-09",
@@ -296,7 +444,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-10",
@@ -329,7 +478,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-11",
@@ -362,7 +512,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-12",
@@ -395,7 +546,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-13",
@@ -428,7 +580,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-14",
@@ -461,7 +614,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-15",
@@ -494,7 +648,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-16",
@@ -527,7 +682,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-17",
@@ -560,7 +716,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-18",
@@ -593,7 +750,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-19",
@@ -626,7 +784,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-20",
@@ -659,7 +818,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-21",
@@ -692,7 +852,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-22",
@@ -725,7 +886,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-23",
@@ -758,7 +920,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-24",
@@ -791,7 +954,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-TOSS-25",
@@ -824,7 +988,8 @@
     "restriction": ""
    },
    "_source": "work24",
-   "_manual": true
+   "_manual": true,
+   "threads": false
   },
   {
    "recrutPblntSn": "MN-YONSEI-01",
