@@ -8359,5 +8359,106 @@
     "callout": null
    }
   }
+ },
+ "306009": {
+  "at": "2026-10-17 20:07",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306009.html",
+  "source": "2026년도 제5회 공개채용 공고.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기상·지진장비 검·인증 6명, 사업관리 4명, 사업관리(보훈) 1명, 사업관리(장애) 1명을 뽑아요.",
+    "columns": [
+     "기상·지진장비 검·인증",
+     "사업관리",
+     "사업관리(보훈)",
+     "사업관리(장애)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       6,
+       4,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "NCS기반 입사지원서 적격·부적격 심사",
+     "note": "적격자 전원 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 발표",
+     "date": "11월 9일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 14일(토)",
+     "desc": "NCS 직업기초능력 5과목, 총 100문항",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 발표",
+     "date": "11월 23일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 면접전형",
+     "date": "11월 30일~12월 2일",
+     "desc": "발표·질의응답, 문제해결·직무전문성 평가",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 면접전형 발표",
+     "date": "12월 7일(월)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차 면접전형",
+     "date": "12월 10일~11일",
+     "desc": "질의응답, 성실청렴·조직이해 등 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "신체검사 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기전형은 NCS 직업기초능력 5과목, 총 100문항으로 봐요.",
+    "highlight": "100문항",
+    "subjects": [
+     {
+      "name": "NCS 직업기초능력",
+      "count": "100문항",
+      "scope": "의사소통, 수리, 문제해결, 자원관리, 조직이해",
+      "note": "과목별 20문항, 40% 미만 과락",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
