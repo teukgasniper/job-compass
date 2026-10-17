@@ -771,6 +771,22 @@
    "comment_id": "17939783025380738",
    "at": "2026-10-18 01:43",
    "views": 3300
+  },
+  {
+   "id": "GJ-305152",
+   "instNm": "경인교육대학교",
+   "title": "경인교육대학교 시설공무직원 채용 공고",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️마감까지 이틀\n접수 안 하면 없던 일 됨",
+   "closer": "이틀 뒤엔 공고 자체가 사라짐",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18027354854702779",
+   "comment_id": "18110848718181886",
+   "at": "2026-10-18 03:44"
   }
  ],
  "views_refreshed_at": "2026-10-18 02:33",
