@@ -618,6 +618,22 @@
    "comment_id": "17871196518670356",
    "at": "2026-10-17 07:45",
    "views": 1172
+  },
+  {
+   "id": "MN-KUMOT-01",
+   "instNm": "고려대학교",
+   "title": "기술경영전문대학원 행정팀 직원 모집(국고사업 및 회계)",
+   "combo_idx": 1,
+   "combo_cat": "urgent",
+   "hook": "⚠️조기마감 가능하다는 공고\n마감일 믿고 미루면 늦음",
+   "closer": "마감일보다 일찍 닫힐 수 있다는 거, 이번엔 진짜임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18016397507752825",
+   "comment_id": "17912849838508884",
+   "at": "2026-10-17 09:46"
   }
  ],
  "views_refreshed_at": "2026-10-17 08:33",
