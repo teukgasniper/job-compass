@@ -752,6 +752,22 @@
    "thread_id": "18193751188395450",
    "comment_id": "18116452016170670",
    "at": "2026-10-17 23:43"
+  },
+  {
+   "id": "MN-HYUMC-01",
+   "instNm": "한양대학교병원",
+   "title": "2026년 하반기 사무원 (정규직)",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️접수 시작한 지 2주\n이번 주 수요일에 끝남",
+   "closer": "10월 21일 넘기면 다음 공고는 또 언제 뜰지 모름",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18108745327908903",
+   "comment_id": "17939783025380738",
+   "at": "2026-10-18 01:43"
   }
  ],
  "views_refreshed_at": "2026-10-17 20:33",
