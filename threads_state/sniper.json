@@ -720,6 +720,22 @@
    "comment_id": "17922367032434370",
    "at": "2026-10-17 19:39",
    "views": 69
+  },
+  {
+   "id": "MN-SSWU-01",
+   "instNm": "성신여자대학교",
+   "title": "대학 교학팀(각 교학팀) 계약직원 채용 (상시모집)",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️화요일 오후 4시\n이번 회차 접수 끝남",
+   "closer": "오후 4시 지나면 다음 회차까지 기다려야 함",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18119661670767590",
+   "comment_id": "18122755186936402",
+   "at": "2026-10-17 21:38"
   }
  ],
  "views_refreshed_at": "2026-10-17 20:33",
