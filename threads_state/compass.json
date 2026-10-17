@@ -1068,6 +1068,22 @@
    "thread_id": "18145968073575160",
    "comment_id": "18117330041589361",
    "at": "2026-10-17 11:09"
+  },
+  {
+   "id": "MN-SSWU-03",
+   "instNm": "성신여자대학교",
+   "title": "인재개발팀 계약직원 채용",
+   "combo_idx": 3,
+   "combo_cat": "fact",
+   "hook": "📍대학 행정 계약직\n조건 보고 눈길이 갔음",
+   "closer": "오후 5시 퇴근이라는 말에 다시 공고를 읽게 됨",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18641434561019581",
+   "comment_id": "18023172275717855",
+   "at": "2026-10-17 13:09"
   }
  ],
  "views_refreshed_at": "2026-10-17 07:56",
