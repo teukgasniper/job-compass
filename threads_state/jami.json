@@ -3018,6 +3018,22 @@
    "thread_id": "17994635931014691",
    "comment_id": "18639132427028510",
    "at": "2026-10-17 12:20"
+  },
+  {
+   "id": "MN-SSWU-03",
+   "instNm": "성신여자대학교",
+   "title": "인재개발팀 계약직원 채용",
+   "combo_idx": 12,
+   "combo_cat": "sniper",
+   "hook": "📍스펙 한 줄 없어도\n넣을 수 있는 자리가 있음",
+   "closer": "스펙 적을 칸 없어도 지원서는 낼 수 있음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17906302821604368",
+   "comment_id": "18120747613738412",
+   "at": "2026-10-17 14:20"
   }
  ],
  "logo_tried": {
