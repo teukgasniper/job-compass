@@ -685,6 +685,22 @@
    "thread_id": "18133045561707991",
    "comment_id": "18016916273747020",
    "at": "2026-10-17 15:41"
+  },
+  {
+   "id": "MN-POSTECH-01",
+   "instNm": "포항공과대학교",
+   "title": "2026년 하반기 포항공과대학교 직원 채용",
+   "combo_idx": 6,
+   "combo_cat": "fact",
+   "hook": "📍1년만 버티면\n정규직 전환되는 자리임",
+   "closer": "계약직이라고 넘겼다가 8급 전환 조건 놓칠 뻔함",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18105601862623266",
+   "comment_id": "18091586573693868",
+   "at": "2026-10-17 17:50"
   }
  ],
  "views_refreshed_at": "2026-10-17 14:33",
