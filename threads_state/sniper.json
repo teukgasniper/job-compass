@@ -803,6 +803,22 @@
    "thread_id": "18127018018888342",
    "comment_id": "17984106441109437",
    "at": "2026-10-18 05:41"
+  },
+  {
+   "id": "GJ-304421",
+   "instNm": "방위사업청",
+   "title": "방위사업청 공무직근로자(통신원) 채용 공고",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️D-2\n망설일 시간 없음",
+   "closer": "D-2 넘기면 이 통신원 자리 끝남",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18023326844712861",
+   "comment_id": "18107992772631128",
+   "at": "2026-10-18 07:31"
   }
  ],
  "views_refreshed_at": "2026-10-18 02:33",
