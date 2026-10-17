@@ -1103,6 +1103,22 @@
    "thread_id": "18372982774240404",
    "comment_id": "18061932548533734",
    "at": "2026-10-17 15:06"
+  },
+  {
+   "id": "MN-POSTECH-01",
+   "instNm": "포항공과대학교",
+   "title": "2026년 하반기 포항공과대학교 직원 채용",
+   "combo_idx": 4,
+   "combo_cat": "monologue",
+   "hook": "📍이번엔 진짜 넣는다\n딴 공고 다 접고 이거 하나만 팜",
+   "closer": "이번 분기는 이거 하나 끝까지 파보기로 함",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17951499096292106",
+   "comment_id": "17923588554435395",
+   "at": "2026-10-17 17:04"
   }
  ],
  "views_refreshed_at": "2026-10-17 13:56",
