@@ -8460,5 +8460,116 @@
     "callout": null
    }
   }
+ },
+ "GJ-305816": {
+  "at": "2026-10-18 05:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305816.html",
+  "source": "2026년 제7회 공무직 상시계약집배원 채용 공고문.pdf",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": "경기도, 인천광역시, 서울특별시 거주자만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격기준 적합 여부 서면심사(적격/부적격)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 23일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실기시험(체력검정)",
+     "date": "10월 26일(월)",
+     "desc": "팔굽혀펴기, 윗몸일으키기, 20kg 소포 이동",
+     "note": "2종목 이상 합격자만 면접 진행"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "10월 26일(월)",
+     "desc": "정신자세, 전문지식, 의사표현 등 종합평가",
+     "note": "실기시험과 같은 날 실시"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 28일(수)",
+     "desc": "예정, 인력 상황에 따라 변동 가능",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-305437": {
+  "at": "2026-10-18 05:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305437.html",
+  "source": "공고문.hwpx",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설물관리원 다급 1명, 안전관리원(야간) 2명을 뽑아요.",
+    "columns": [
+     "시설물관리원 다급",
+     "안전관리원(야간)"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       1,
+       2
+      ]
+     }
+    ],
+    "note": "안전관리원(야간)은 고양 서삼릉, 김포 장릉 각 1명씩이에요."
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "지원분야 경력(50)+자기소개서(40)+우대사항(10) 평가",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 23일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월 27일~28일",
+     "desc": "5개 항목 상·중·하 평가, 우수 순 선발",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 30일(금)",
+     "desc": "결격사유 조회·신체검사 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
