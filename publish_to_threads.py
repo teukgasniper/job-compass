@@ -36,6 +36,14 @@
 [2026-10-12 수정] 클린아이(지방공기업) 편입 — 발행 직전 공고문을 Sonnet으로 읽어 학력 확인(edu_lookup.py), 못 찾으면 학력 없이 발행, 학력 언급 금지·지역제한 명시 /
                   공공 차례에 공공 신규가 없으면 공공 재발행(민간으로 안 샘) / 민간은 누구나 아는 대기업만 /
                   조회수(views.json) 가산으로 핫한 공고 우선 / 진료전담교수 등 의사직 제외 추가
+[2026-10-17 수정] 수동 공고 마감 임박(D-1~3) ⚠️ 글은 전체 계정 통틀어 1번만 — 어느 계정이든 한 번 올리면 끝,
+  그 기간엔 다른 계정이 같은 공고를 다시 올리지 않음 (일반 공고 마감 임박 규칙은 그대로)
+[2026-10-17 수정] 계약직·기간제·임시직·비정규직은 쓰레드에서 아예 언급 안 함 (본문으로 먼저 들어오게 하는 게 목표 — 본문엔 그대로 있음)
+  정규직·무기계약직·정규직 전환형은 장점이라 그대로 후킹에 씀. 섞인 공고(정규직전환형,기간제 등)는 장점 쪽만 넘김
+[2026-10-17 수정] 모집 인원 5명 이하(수동 공고는 인원 데이터가 없어도 포함)는 인원 언급 금지 — 소수 채용은 오히려 매력이
+  떨어짐(성신여대 1명 공고 조회수 낮음). 인원 대신 브랜드·하는 일·근무지·근무조건·연봉·전형 일정으로 후킹
+[2026-10-17 수정] 수동 공고는 계정끼리 하루씩 엇갈려 발행 — 다른 계정이 오늘(KST) 올린 수동 공고는 오늘 안 올림
+  (같은 공고가 하루에 3계정에 다 뜨면 신비감이 떨어져 조회수가 낮아짐). 일반 공고 순위는 그대로
 [2026-10-12 수정] 멀티 계정 — threads_state/의 다른 계정 기록을 같이 읽어 같은 공고(같은 기관+같은 공고)는 다른 계정에서 안 올림
                   (같은 기관 다른 공고는 가능) / 새 공고 소진 시 ① 다른 계정에서 터진 글(조회수가 그 계정 평균 이상)을
                   가져와 다른 유형으로 각색 ② 그래도 없으면 내 계정 글만 재발행 / 내 글 조회수를 6시간마다 기록(views)
@@ -80,6 +88,7 @@ FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
 MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
 NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] 접수 시작 N일 이내 = 1순위 신규
+MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-1 ~ D-3, 전체 계정 통틀어 ⚠️ 글 1번
 URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "2") or 2)      # [2026-10-15] 마감 D-1 ~ D-N = 2순위 마감 임박
 URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
 
@@ -577,17 +586,40 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     # [2026-10-16] 0순위 수동 공고 — 공공/민간 차례·다른 계정 발행 여부와 상관없이 각 계정에 최소 1번
     #              (직전 글이 수동 공고면 이번 회차는 건너뛰어 수동 공고만 연달아 나가지 않게)
     manual_live = [j for j in live if is_manual_id(j["recrutPblntSn"]) and j.get("threads") is not False]   # "threads": false = 쓰레드 제외
+    pool = [j for j in pool if j.get("threads") is not False]   # [2026-10-17] 토스 등 쓰레드 제외 공고는 일반 순위로도 안 나가게
     last_manual = bool(history) and is_manual_id(history[-1]["id"])
+    # [2026-10-17] 같은 수동 공고는 같은 날 한 계정만 — 다른 계정이 오늘 올린 수동 공고는 오늘 건너뜀 (내일 이 계정 차례)
+    today_s = today.isoformat()
+    others_today = {str(p["id"]) for p in other_posts
+                    if is_manual_id(p.get("id")) and (p.get("at") or "")[:10] == today_s}
+    m_count = {}                                   # 수동 공고별로 지금까지 올린 계정 수 (적게 올라간 공고부터)
+    for acc_posts in list(others.values()) + [history]:
+        for sid in {str(p["id"]) for p in acc_posts if is_manual_id(p.get("id"))}:
+            m_count[sid] = m_count.get(sid, 0) + 1
+    if others_today:
+        held = [j for j in manual_live if str(j["recrutPblntSn"]) in others_today]
+        if held:
+            print(f"수동 공고: 다른 계정이 오늘 올린 {len(held)}개는 내일로 미룸 — " + ", ".join(str(j["recrutPblntSn"]) for j in held))
+        manual_live = [j for j in manual_live if str(j["recrutPblntSn"]) not in others_today]
+        pool = [j for j in pool if str(j["recrutPblntSn"]) not in others_today]   # 마감 알림·각색·재발행으로도 안 나가게
+    # [2026-10-17] 수동 공고 마감 임박(D-1~3)은 전체 계정 통틀어 ⚠️ 글 1번 — 이미 누가 올렸으면 그 공고는 끝
+    def m_is_urgent(j):
+        return not j.get("always") and 1 <= dday(j.get("pbancEndYmd", ""), today) <= MANUAL_URGENT_DAYS
+    all_urgent_done = {str(p["id"]) for p in list(history) + other_posts if p.get("urgent") and is_manual_id(p.get("id"))}
+    m_closed = [j for j in manual_live if m_is_urgent(j) and str(j["recrutPblntSn"]) in all_urgent_done]
+    if m_closed:
+        print(f"수동 공고: 마감 임박 글이 이미 나간 {len(m_closed)}개는 더 안 올림 — " + ", ".join(str(j["recrutPblntSn"]) for j in m_closed))
+    manual_live = [j for j in manual_live if j not in m_closed]
+    pool = [j for j in pool if not (is_manual_id(j["recrutPblntSn"]) and m_is_urgent(j))]   # 마감 임박 수동 공고는 아래 0순위에서만
     if manual_live and not last_manual:
-        m_urgent_done = {str(p["id"]) for p in history if p.get("urgent")}
-        m_urgent = [j for j in manual_live if is_urgent(j) and str(j["recrutPblntSn"]) not in m_urgent_done
-                    and str(j["recrutPblntSn"]) not in recent_ids_list[-1:]]
+        m_urgent = [j for j in manual_live if m_is_urgent(j)]
         m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys]
         print(f"수동 공고: 진행 중 {len(manual_live)} / 내 계정 미발행 {len(m_new)} / 마감 임박 알림 대기 {len(m_urgent)}")
         if m_urgent:
             return choose(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
         if m_new:                                  # 최근에 넣은 수동 공고부터 (접수 시작일 최신순 → 본문 있는 것 → 점수)
-            m_new.sort(key=lambda j: (j.get("pbancBgngYmd") or "", str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
+            m_new.sort(key=lambda j: (-m_count.get(str(j["recrutPblntSn"]), 0), j.get("pbancBgngYmd") or "",
+                                      str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
             fresh_m = [j for j in m_new if group_key(j["instNm"]) not in recent_insts] or m_new
             return fresh_m[0], 0, len(m_new), None
     elif manual_live:
@@ -948,6 +980,44 @@ JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이
 """
 
 
+SMALL_HEAD_MAX = 5     # [2026-10-17] 이 인원 이하면 글에 인원을 쓰지 않음
+
+
+def few_heads(job) -> bool:
+    """[2026-10-17] 소수 채용(5명 이하) — 인원이 후킹 포인트가 안 되니 글에서 인원 언급 금지.
+    수동 공고(MN-)는 인원 칸이 비어 있어도 대학·병원 소수 채용이 대부분이라 포함"""
+    try:
+        n = int(job.get("recrutNope") or 0)
+    except Exception:
+        n = 0
+    return 0 < n <= SMALL_HEAD_MAX or (n == 0 and is_manual_id(job.get("recrutPblntSn")))
+
+
+HIRE_NEG_RE = re.compile(r"계약직|기간제|비정규|임시직|체험형")
+
+
+def hire_parts(job):
+    """[2026-10-17] 고용형태를 장점(정규직·무기계약직·정규직 전환형·채용형 인턴)과 단점(계약직·기간제·임시직·비정규직·체험형)으로 나눔
+    반환: (장점 목록, 단점 있음 여부)"""
+    parts = [p.strip() for p in re.split(r"[,/·]", job.get("hireTypeNmLst") or "") if p.strip()]
+    pos = [p for p in parts if not HIRE_NEG_RE.search(p) or p.startswith("무기계약")]
+    neg = any(HIRE_NEG_RE.search(p) and not p.startswith("무기계약") for p in parts)
+    return pos, neg
+
+
+def contract_only(job) -> bool:
+    """[2026-10-17] 장점 고용형태 없이 계약직·임시직 등만 있는 공고"""
+    pos, neg = hire_parts(job)
+    return neg and not pos
+
+
+# 무기계약(직)은 장점이라 허용 — 그 외 계약·기간제·임시·비정규·계약 기간 표현은 쓰레드 금지
+CONTRACT_WORD_RE = re.compile(r"(?<!무기)계약직|(?<!무기)계약\s*기간|(?<!무기)계약\s*만료|\d+\s*(개월|년)\s*계약|기간제|비정규|임시직|체험형")
+
+
+FEW_HEADS_RE = re.compile(r"\d+\s*명|(한|두|세|네|다섯)\s*명|소수|단\s*\d|딱\s*\d|한\s*자리|1인\s*채용|인원")
+
+
 def edu_for_prompt(job):
     """[2026-10-06] 민간 공고 학력 값은 수집 오류(빈 값·석사/박사만)가 있어 본문 기준으로 쓰게 안내"""
     v = job.get("acbgCondNmLst") or ""
@@ -979,6 +1049,16 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         if job.get(k_src):
             data[k_out] = job[k_src]
     low_pay = 0 < salary_manwon(job.get("yearIncome")) < SALARY_MIN
+    hire_pos, hire_neg = hire_parts(job)
+    if hire_neg:                                  # [2026-10-17] 계약직·기간제 등은 넘기지 않음 (장점만)
+        if hire_pos:
+            data["고용형태"] = ", ".join(hire_pos)
+        else:
+            data.pop("고용형태", None)
+    few = few_heads(job)
+    if few:                                       # [2026-10-17] 5명 이하 — 인원은 넘기지 않음
+        data.pop("모집인원", None)
+    head = "" if few else "인원·"
     if low_pay:                                   # [2026-10-12] 3천만원 미만 제시 연봉은 넘기지 않음
         data.pop("공고 제시 연봉(클린아이)", None)
     if is_private(job):
@@ -1034,13 +1114,23 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         lines.append("- 학력 대신 면허·자격이 필수인 공고 → 리스트에 '학력조건' 괄호 안 내용을 그대로 쓰고, '누구나 지원' 류 금지")
     if edu_unknown(job, post_text):
         lines.append("- 이 공고는 학력 정보가 없음 → 훅·리스트·클로저에 학력·블라인드·'누구나 지원' 언급 금지. "
-                     "리스트는 인원·고용형태·" + ("" if low_pay else "공고 제시 연봉·") + "근무지(지역제한)·마감일로 채울 것")
+                     "리스트는 " + head + "고용형태·" + ("" if low_pay else "공고 제시 연봉·") + "근무지(지역제한)·마감일로 채울 것")
     if low_pay or low_salary_in(post_text):
-        lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 인원·고용형태·근무지·전형으로 채울 것")
+        lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 " + head + "고용형태·근무지·전형으로 채울 것")
+    if few:
+        lines.append("- [2026-10-17] 모집 인원이 5명 이하인 소수 채용 → 인원(○명·한 명·소수·딱 ○자리·'인원' 단어 등)을 훅·리스트·클로저 "
+                     "어디에도 쓰지 말 것 (본문 발췌에 인원이 있어도). 대신 기관 브랜드·하는 일(쉬운 말)·근무지·근무조건·"
+                     + ("" if low_pay else "연봉·") + "고용형태·입사 시기·전형 일정 같은 끌리는 포인트로 채울 것")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
-    if is_manual_id(job.get("recrutPblntSn")) and re.search(r"계약|임시|기간제", job.get("hireTypeNmLst") or ""):
-        lines.append("- [수동 공고] 고용형태가 계약직·임시직임 → '정규직'·'정년'·'평생 직장' 표현 금지. 리스트에 고용형태(계약 기간)를 그대로 쓸 것")
+    if hire_neg:                                  # [2026-10-17] 계약직은 쓰레드에서 언급 안 함 — 본문으로 먼저 들어오게
+        lines.append("- [2026-10-17] 계약직·기간제·임시직·비정규직·계약 기간(○개월·1년 계약 등)은 훅·리스트·클로저 어디에도 쓰지 말 것 "
+                     "(본문 발췌에 있어도). 상세 조건은 본문에서 보게 하는 게 목표")
+        if not hire_pos:
+            lines.append("- 이 공고는 정규직·무기계약직이 아님 → '정규직'·'무기계약'·'정년'·'평생 직장'·'안정적' 표현도 금지. "
+                         "리스트는 고용형태 칸 없이 기관 브랜드·하는 일(쉬운 말)·근무지·근무조건·전형 일정·마감일로 채울 것")
+        else:
+            lines.append(f"- 고용형태는 장점인 '{', '.join(hire_pos)}'만 쓸 것")
     if urgent:                                    # [2026-10-15] 2순위 마감 임박 — 후보 4개 전부 ⚠️ + 마감 강조
         when = {1: "내일 마감", 2: "모레 마감"}.get(d_left, f"D-{d_left}")
         lines.append(f"- [마감 임박 글] 이 공고는 {when}(D-{d_left}, {end.month}월 {end.day}일)임. 후보 4개 전부 훅 맨 앞 이모지는 ⚠️ "
@@ -1124,7 +1214,8 @@ URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막
 
 
 def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
-                       urgent: bool = False, private: bool = False, contract: bool = False):
+                       urgent: bool = False, private: bool = False, contract: bool = False, few: bool = False,
+                       hide_contract: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
@@ -1196,7 +1287,11 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
             return None, "리스트에 공무직 표시 없음"
     if private and PRIVATE_BARRIER_RE.search(body):   # [2026-10-16] 민간: 학력·어학 조건은 진입장벽 → 글 전체 금지
         return None, "민간 공고에 학력·어학 조건"
-    if contract and re.search(r"정규직(?!\s*전환)|정년|평생\s*직장", body):   # [2026-10-16] 수동 계약직·임시직
+    if few and FEW_HEADS_RE.search(body):        # [2026-10-17] 5명 이하 공고에 인원 언급
+        return None, "소수 채용 공고에 인원 언급"
+    if hide_contract and CONTRACT_WORD_RE.search(body):   # [2026-10-17] 계약직은 쓰레드에서 언급 안 함
+        return None, "계약직·기간제 언급"
+    if contract and re.search(r"정규직(?!\s*전환)|무기\s*계약|정년|평생\s*직장", body):   # [2026-10-16] 수동 계약직·임시직
         return None, "계약직 공고를 정규직처럼 씀"
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
@@ -1257,7 +1352,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
         for c in cands:
             r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
                                         urgent, is_private(job),
-                                        is_manual_id(job.get("recrutPblntSn")) and bool(re.search(r"계약|임시|기간제", job.get("hireTypeNmLst") or "")))
+                                        contract_only(job), few_heads(job), hire_parts(job)[1])
             if r:
                 valid.append(r)
             else:
