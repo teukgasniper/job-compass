@@ -905,6 +905,24 @@
    "thread_id": "17905811166575514",
    "comment_id": "17930161164411206",
    "at": "2026-10-18 17:40"
+  },
+  {
+   "id": 305973,
+   "instNm": "한전KPS",
+   "title": "[한전KPS(주)]2026년도 하반기 신입사원 채용공고",
+   "combo_idx": 11,
+   "combo_cat": "monologue",
+   "hook": "📍마감 열흘 남은 공고를\n방금 북마크만 해뒀음",
+   "closer": "열흘 뒤엔 이 북마크가 후회로 바뀜",
+   "hook_type": "plain",
+   "tier": 4,
+   "logo": true,
+   "urgent": false,
+   "borrowed_from": "compass",
+   "orig_thread_id": "18181339306434845",
+   "thread_id": "18150040297548425",
+   "comment_id": "18114032141026450",
+   "at": "2026-10-18 19:37"
   }
  ],
  "views_refreshed_at": "2026-10-18 14:33",
