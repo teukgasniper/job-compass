@@ -1344,6 +1344,24 @@
    "comment_id": "17988664701111493",
    "at": "2026-10-18 19:04",
    "views": 96
+  },
+  {
+   "id": 299412,
+   "instNm": "경상국립대학교병원",
+   "title": "약무직(면허소지자) 채용공고",
+   "combo_idx": 2,
+   "combo_cat": "monologue",
+   "hook": "📍전공 안 맞아서 못 넣겠다\n싶었는데 조건엔 학력무관뿐임",
+   "closer": "전공 눈치 보다가 접수 놓치면 억울한 자리임",
+   "hook_type": "plain",
+   "tier": 4,
+   "logo": true,
+   "urgent": false,
+   "borrowed_from": "jami",
+   "orig_thread_id": "17936865252394109",
+   "thread_id": "18648583666038405",
+   "comment_id": "18151857265543674",
+   "at": "2026-10-18 21:02"
   }
  ],
  "views_refreshed_at": "2026-10-18 19:56",
