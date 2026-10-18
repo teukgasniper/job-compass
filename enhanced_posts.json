@@ -8744,5 +8744,99 @@
     "callout": null
    }
   }
+ },
+ "WK-181365": {
+  "at": "2026-10-18 20:38",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-181365.html",
+  "source": "기업 채용 페이지 이미지 7조각 (https://careers.koreazinc.co.kr/recruit/announceView?recruitNoticeSn=269068&viewType=CARD&currentPage=1)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "고려아연 온산제련소(생산·연구지원·정비부문)와 케이지그린텍(유틸리티 설비 운영) 신입을 뽑는데, 정확한 인원은 공고문에 아직 '0명'으로 표기돼 있어요.",
+    "columns": [
+     "고려아연(주) 온산제련소",
+     "케이지그린텍"
+    ],
+    "rows": [
+     {
+      "label": "생산/연구지원부문(신입)",
+      "values": [
+       null,
+       null
+      ]
+     },
+     {
+      "label": "정비부문(계약직, 신입)",
+      "values": [
+       null,
+       null
+      ]
+     },
+     {
+      "label": "유틸리티설비(신입/주간·교대)",
+      "values": [
+       null,
+       null
+      ]
+     }
+    ],
+    "note": "케이지그린텍 유틸리티설비 경력(7년 이상) 채용은 신입 기준이 아니라 표에서 제외했어요"
+   },
+   "edu": {
+    "label": "고졸 이상",
+    "text": "모집분야 학력란에 고졸 이상으로 명시돼 있어요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량/인성검사 및 체력검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 채용검진 및 면접전형",
+     "date": null,
+     "desc": "면접평가 시 필기시험 실시 예정(언어, 수리, 일반/회사상식 등)",
+     "note": "채용검진 응시자에 한해 면접 응시 가능"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 최종합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "면접평가 때 언어, 수리, 일반/회사상식 등을 묻는 필기시험을 함께 봐요.",
+    "highlight": "언어, 수리, 일반/회사상식",
+    "subjects": [
+     {
+      "name": "필기시험",
+      "count": null,
+      "scope": "언어, 수리, 일반/회사상식 등",
+      "note": "면접평가 시 실시 예정",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
