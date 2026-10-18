@@ -979,6 +979,22 @@
    "comment_id": "18108049201943132",
    "at": "2026-10-19 01:42",
    "views": 254
+  },
+  {
+   "id": "WK-180991",
+   "instNm": "에스케이바이오사이언스",
+   "title": "2026 하반기 신입사원 채용 (원액/완제생산(DS/DP))",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️모레 마감인데\n아직 안 넣었으면 큰일",
+   "closer": "모레 지나면 이 자리 영영 못 봄",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18092004434278892",
+   "comment_id": "18117590771060006",
+   "at": "2026-10-19 03:43"
   }
  ],
  "views_refreshed_at": "2026-10-19 02:34",
