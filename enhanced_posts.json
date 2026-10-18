@@ -8571,5 +8571,178 @@
    "language": null,
    "written": null
   }
+ },
+ "306053": {
+  "at": "2026-10-18 14:03",
+  "url": "https://hiring03.ddolbestory.com/2026/10/khmc-306053.html",
+  "source": "NCS 채용공고문(2026. 10. 15. 전북권 기술직 2명) (1).hwpx",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·어학 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "직무능력소개서(35)+자기소개서(40)+자격증가점(10) 등 평가",
+     "note": "2명 채용 시 5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 27일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 2일(월)",
+     "desc": "직무정의이해도·조직이해·전문지식·직업윤리·문제해결·의사소통 평가",
+     "note": "채용예정인원 1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 최종 합격자 발표",
+     "date": "11월 9일(월)",
+     "desc": "결격사유 확인(11.3~11.6) 후 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "어학 제한 없어요.",
+    "highlight": "제한 없음"
+   },
+   "written": null
+  }
+ },
+ "GJ-305712": {
+  "at": "2026-10-18 14:03",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-305712.html",
+  "source": "(게시용)2026년 제2회 서울중앙우체국 우체국소포원 채용 공고문(서류전형 서식 포함).pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건·직무적합도 심사(자격만족도·경력·자기소개서 등)",
+     "note": "3배수 이상 응시 시 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 26일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실기시험",
+     "date": "10월 27일(화)",
+     "desc": "운전능력 평가(교통법규·안전운전·조향·돌발대처)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "10월 27일(화)",
+     "desc": "정신자세·전문지식·의사표현·예의·발전가능성 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "10월 28일(수)",
+     "desc": "면접 성적순으로 채용목표 인원 결정, 개별 통보",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305776": {
+  "at": "2026-10-18 14:03",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305776.html",
+  "source": "261007 2026년도 제13차 채용 공고(행정직(공무직)).pdf",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사학위 이상 소지자(학위취득예정자 지원 불가)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 마지막주~11월 둘째주",
+     "desc": "자격요건, 자기소개서, 경험 및 경력 평가",
+     "note": "20배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형(NCS)",
+     "date": "11월 둘째주~11월 셋째주",
+     "desc": "NCS직업기초능력평가 실시",
+     "note": "8배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "온라인 인성검사 실시",
+     "date": "11월 셋째주~11월 넷째주"
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 면접전형",
+     "date": "11월 넷째주~12월 첫째주",
+     "desc": "직무수행 식견, 인품 및 적격성 평가",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 730점 이상, 텝스 580점 이상, 뉴텝스 315점 이상, 토플 83점 이상, 토익스피킹·오픽 IM2 이상 중 하나를 충족해야 해요.",
+    "highlight": "토익 730점 이상"
+   },
+   "written": {
+    "summary": "필기는 NCS직업기초능력평가로 의사소통·수리·문제해결·자원관리·조직이해능력을 평가해요.",
+    "highlight": "NCS직업기초능력평가",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력평가",
+      "count": null,
+      "scope": "의사소통능력, 수리능력, 문제해결능력, 자원관리능력, 조직이해능력",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
