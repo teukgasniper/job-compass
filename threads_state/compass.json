@@ -1240,6 +1240,22 @@
    "comment_id": "18128334637883699",
    "at": "2026-10-18 07:11",
    "views": 120
+  },
+  {
+   "id": "CE-80308",
+   "instNm": "서산의료원",
+   "title": "(변경공고)직원채용(정규직 간호조무사) 공고",
+   "combo_idx": 9,
+   "combo_cat": "urgent",
+   "hook": "⚠️이번 주 막차는\n내일이 마지막임",
+   "closer": "막차 놓치면 다음 차는 없음",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "17974573758161695",
+   "comment_id": "17979592124919657",
+   "at": "2026-10-18 09:04"
   }
  ],
  "views_refreshed_at": "2026-10-18 07:56",
