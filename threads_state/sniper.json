@@ -1062,6 +1062,24 @@
    "thread_id": "17910688731484532",
    "comment_id": "18144270409589391",
    "at": "2026-10-19 11:49"
+  },
+  {
+   "id": 299412,
+   "instNm": "경상국립대학교병원",
+   "title": "약무직(면허소지자) 채용공고",
+   "combo_idx": 5,
+   "combo_cat": "monologue",
+   "hook": "📍마감 임박인 줄 알고\n조마조마하면서 열어봤는데",
+   "closer": "늦게 알았어도 전혀 안 늦은 공고였음",
+   "hook_type": "plain",
+   "tier": 4,
+   "logo": true,
+   "urgent": false,
+   "borrowed_from": "jami",
+   "orig_thread_id": "17936865252394109",
+   "thread_id": "18374933071211666",
+   "comment_id": "18068708885774144",
+   "at": "2026-10-19 13:38"
   }
  ],
  "views_refreshed_at": "2026-10-19 09:33",
