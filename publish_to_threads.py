@@ -221,6 +221,19 @@ def edu_unknown(job: dict, post_text: str = "") -> bool:
     return is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")) and not private_edu_ok(post_text)
 
 
+def edu_hidden(job: dict, post_text: str = "") -> bool:
+    """[2026-10-19] 쓰레드에 학력을 쓰지 않는 공고 — 학력 확인 불가(클린아이) 또는 공공인데 '학력무관'이 아닌 공고
+    (학사·대졸 이상 같은 조건은 진입장벽으로 읽혀 유입이 끊김 → 학력 대신 다른 장점으로 어필. 학력무관만 무기로 씀)"""
+    if edu_unknown(job, post_text):
+        return True
+    if is_private(job) or is_gojobs(job):         # 민간은 학력 데이터를 원래 안 넘김, 나라일터는 따로 금지
+        return False
+    v = job.get("acbgCondNmLst") or ""
+    if v == "면허·자격 필수":                      # 클린아이 면허 필수 공고는 따로 안내 (자격 내용을 리스트에 씀)
+        return False
+    return has_value(v) and "무관" not in v
+
+
 def has_value(v) -> bool:
     return str(v if v is not None else "").strip() not in EMPTY_VALS
 
@@ -245,6 +258,12 @@ def not_newbie(title: str) -> bool:
 
 # [2026-10-14] 20~30대 취준생이 거의 안 가는 현장 단순직 (제목 기준)
 YOUTH_MISS_RE = re.compile(r"미화|청소(?!년)|환경관리원|경비|방호원|조리원|조리실무|취사|급식|주차|간병|요양보호")   # 청소년·조리사(요리사)는 제외 안 함
+
+
+# [2026-10-19] 박사 이상·연구책임자급 공고 — 지원 대상이 너무 좁아 쓰레드 글감에서 제외 (제목 기준)
+PHD_ONLY_RE = re.compile(r"박사후|박사급|박사\s*(이상|학위)|석사후|석사급|석사\s*(이상|학위)|연구위원|Research\s*Fellow|연구책임자|책임연구원|선임연구원|전임교원|교수(?!학습|요원)")
+# 석·박사급 직책과 함께 학사 이하도 지원 가능한 직책(일반 연구원·인턴·사업수행직 등)을 같이 뽑는 공고는 통과 (예: '선임연구원 및 연구원')
+PHD_MIXED_RE = re.compile(r"(및|,|·|/)\s*(연구원|연구인턴|인턴|인턴연구원|학사|사업수행|행정|원급)")
 
 
 # [2026-10-19] 보훈·장애인 전형이 '일부'로 섞인 혼합 공고 — 제한 전형 전용 공고가 아니므로 제외하지 않음
@@ -286,7 +305,9 @@ def eligible(job: dict, today: dt.date) -> bool:
         return False
     # [2026-10-05] 학력이 석사·박사뿐인 공고는 일반 취준생 대상이 아니라 제외
     edu = [e.strip() for e in (job.get("acbgCondNmLst") or "").split(",") if e.strip()]
-    if not is_private(job) and edu and all(e in ("석사", "박사") for e in edu):
+    if not is_private(job) and edu and all(e in ("석사", "박사") for e in edu):   # [2026-10-19 재확인] 석·박사 이상 공고는 제외, 학사까지 OK
+        return False
+    if PHD_ONLY_RE.search(title) and not PHD_MIXED_RE.search(title):   # [2026-10-19] 박사 이상·연구책임자급만 뽑는 공고 제외 (일반 연구직은 통과)
         return False
     # [2026-10-02] 지원 대상이 제한된 공고(보훈·장애인 전형)는 일반 취준생 수요가 적어 제외
     # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
@@ -1203,6 +1224,11 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
     if edu_unknown(job, post_text):
         lines.append("- 이 공고는 학력 정보가 없음 → 훅·리스트·클로저에 학력·블라인드·'누구나 지원' 언급 금지. "
                      "리스트는 " + head + "고용형태·" + ("" if low_pay else "공고 제시 연봉·") + "근무지(지역제한)·마감일로 채울 것")
+    elif edu_hidden(job, post_text):              # [2026-10-19] 학사(대졸) 이상 등 학력 조건이 있는 공공 공고 → 학력은 쓰지 않음
+        data.pop("학력조건", None)
+        lines.append("- [2026-10-19] 이 공고는 학력 조건(대졸·학사 이상 등)이 있음 → 진입장벽으로 읽히니 훅·리스트·클로저 어디에도 "
+                     "학력·학위·졸업·블라인드·'누구나 지원' 언급 금지 (공공 공고의 '학력조건 필수 팩트' 규칙보다 이게 우선). "
+                     "대신 " + head + "고용형태(정년)·" + ("" if low_pay else "연봉·") + "근무지·하는 일(쉬운 말)·기관 브랜드·전형 일정으로 어필할 것")
     if low_pay or low_salary_in(post_text):
         lines.append("- 연봉 언급 금지 (3천만원 미만이라 매력 포인트가 아님) — 훅·리스트·클로저 모두. 연봉 대신 " + head + "고용형태·근무지·전형으로 채울 것")
     if few:
@@ -1245,6 +1271,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
     ]
     if recent_hooks:
         lines += ["", "[최근 발행한 훅 / 클로저 — 장면·인물·도입 상황·문장 구조가 겹치면 안 됨]"] + [f"- {h}" for h in recent_hooks]
+    if not is_private(job):                       # [2026-10-19] 데이터는 여러 전형의 학력을 합쳐서 줌 → 본문으로 한 번 더 확인
+        lines += ["", "[학력 확인] 본문 발췌를 보고, 이 글에 쓸 장점 고용형태(정규직·무기계약·공무직 등) 분야의 지원 자격이 "
+                  "석사·박사 이상뿐이면 후보를 쓰지 말고 {\"skip\": \"석·박사 이상 전용\"} 만 출력해. 확실하지 않으면 그냥 후보 4개를 써."]
     lines += ["", "위 규격대로 후보 4개를 JSON으로 출력해."]
     return "\n".join(lines)
 
@@ -1479,13 +1508,17 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
     for attempt in range(3):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
         raw = call_claude(SYSTEM_PROMPT, u, CLAUDE_MODEL)
+        m_skip = re.search(r'"skip"\s*:\s*"([^"]*)"', raw or "")
+        if m_skip and '"candidates"' not in raw:     # [2026-10-19] 박사 이상 전용 공고 → 이 공고는 앞으로 건너뜀
+            print(f"[제외] AI 확인 결과 {m_skip.group(1)} — 이 공고는 앞으로 후보에서 뺌")
+            return {"_skip": m_skip.group(1)}
         valid, errs = [], []
         cands = parse_candidates(raw)
         if not cands:
             errs.append("JSON 해석 실패")
             print(f"  [JSON 해석 실패] 응답 앞부분: {raw[:300]!r} … 끝부분: {raw[-200:]!r}")
         for c in cands:
-            r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
+            r, err = validate_candidate(c, inst, edu_hidden(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
                                         urgent, is_private(job),
                                         contract_only(job), few_heads(job), hire_parts(job)[1], tenure_job(job),
                                         recent_frames)
@@ -2161,7 +2194,7 @@ def main():
         return
 
     # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
-    excluded = set()
+    excluded = set(state.get("skip_jobs", []))      # [2026-10-19] AI가 박사 이상 전용으로 확인한 공고
     job, post, post_text, borrow = None, None, "", None
     for _ in range(6):
         job, tier, n_cands, borrow = pick_job(jobs, posts, state, today, excluded, others)
@@ -2228,6 +2261,14 @@ def main():
         recent_hooks.insert(0, "[다른 계정 원글 — 이 공고의 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
                             + borrow["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {borrow['closer']}" if borrow.get("closer") else ""))
     result = generate(job, inst, d_left, combo, post_text, recent_hooks, urgent)
+    if result and result.get("_skip"):              # [2026-10-19] 박사 이상 전용 → 기록해두고 다음 회차부터 후보에서 제외
+        if not DRY_RUN:
+            sk = state.setdefault("skip_jobs", [])
+            if str(job["recrutPblntSn"]) not in sk:
+                sk.append(str(job["recrutPblntSn"]))
+            save_state(state)
+        summary(f"### ⏭️ 건너뜀\n{inst}: {result['_skip']} (다음 회차부터 후보 제외)")
+        return
     if result is None:
         return
     comment = build_comment(post, d_left)

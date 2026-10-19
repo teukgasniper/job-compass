@@ -300,6 +300,12 @@ def not_newbie(title: str) -> bool:
     return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
 
 
+# [2026-10-19] 박사 이상·연구책임자급 공고 — 지원 대상이 너무 좁아 쓰레드 글감에서 제외 (제목 기준)
+PHD_ONLY_RE = re.compile(r"박사후|박사급|박사\s*(이상|학위)|석사후|석사급|석사\s*(이상|학위)|연구위원|Research\s*Fellow|연구책임자|책임연구원|선임연구원|전임교원|교수(?!학습|요원)")
+# 석·박사급 직책과 함께 학사 이하도 지원 가능한 직책(일반 연구원·인턴·사업수행직 등)을 같이 뽑는 공고는 통과 (예: '선임연구원 및 연구원')
+PHD_MIXED_RE = re.compile(r"(및|,|·|/)\s*(연구원|연구인턴|인턴|인턴연구원|학사|사업수행|행정|원급)")
+
+
 # [2026-10-19] 보훈·장애인 전형이 '일부'로 섞인 혼합 공고 — 제한 전형 전용 공고가 아니므로 제외하지 않음
 MIXED_TRACK_RE = re.compile(r"(보훈|장애)[^,)\]]{0,15}포함|일반\s*(경쟁|정규|직|전형|채용|및|·|,|과)|일반정규")
 
@@ -318,6 +324,8 @@ def thread_eligible(job, now=None):
     if any(w in title for w in DOCTOR_WORDS):
         return False
     if not_newbie(title):
+        return False
+    if PHD_ONLY_RE.search(title) and not PHD_MIXED_RE.search(title):   # [2026-10-19] 박사 이상·연구책임자급만 → 쓰레드 후보 아님 (본문은 일반 순서로 발행)
         return False
     # [2026-10-12] 쓰레드와 같은 기준: 지원 대상 제한 공고(보훈·장애인 전형)와 강사·아르바이트성 공고 제외
     # [2026-10-19] 단, 일반 전형이 섞인 혼합 공고('실무직(보훈제한경쟁 포함)', '일반정규직' 등)는 통과 — 한국수산자원공단 79명 사례
