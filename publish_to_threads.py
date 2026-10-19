@@ -91,6 +91,14 @@ NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] �
 MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-1 ~ D-3, 전체 계정 통틀어 ⚠️ 글 1번
 URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "2") or 2)      # [2026-10-15] 마감 D-1 ~ D-N = 2순위 마감 임박
 URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
+# [2026-10-19] 긴급형(⚠️) 쏠림 방지 — 최근 URGENT_WINDOW건 안에 긴급형이 URGENT_MAX개 이상이면 이번엔 긴급형 금지
+#              (10/17~19 세 계정 글의 절반 이상이 ⚠️ 마감 글 → 같은 톤 반복으로 조회수 급락)
+URGENT_WINDOW = int(os.environ.get("URGENT_WINDOW", "3") or 3)
+URGENT_MAX = int(os.environ.get("URGENT_MAX", "1") or 1)
+# [2026-10-19] 재발행 제한 — 같은 계정에서 같은 공고는 최소 REPOST_MIN_DAYS일 간격, 총 REPOST_MAX번까지 (마감 알림 포함)
+#              (sniper가 동천안우체국 공고 2개를 3일 사이 4번 올린 사례)
+REPOST_MIN_DAYS = int(os.environ.get("REPOST_MIN_DAYS", "3") or 3)
+REPOST_MAX = int(os.environ.get("REPOST_MAX", "2") or 2)
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
 REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
@@ -519,6 +527,31 @@ def is_famous(job: dict) -> bool:
     return name.startswith(FAMOUS_NAMES)          # 앞부분 일치 ('하이브리드…' 같은 오탐 방지)
 
 
+def is_urgent_post(p: dict) -> bool:
+    """[2026-10-19] 기록상 긴급형(⚠️ 마감) 글인지 — 2순위 마감 글 또는 긴급 유형 또는 ⚠️ 훅"""
+    return bool(p.get("urgent")) or p.get("combo_cat") == "urgent" or (p.get("hook") or "").startswith("⚠")
+
+
+def urgent_blocked(history) -> bool:
+    """[2026-10-19] 최근 URGENT_WINDOW건 안에 긴급형이 URGENT_MAX개 이상이면 True → 이번 회차는 긴급형 금지"""
+    recent = history[-URGENT_WINDOW:] if URGENT_WINDOW > 0 else []
+    return sum(1 for p in recent if is_urgent_post(p)) >= URGENT_MAX
+
+
+def repost_ok(sid: str, history, today) -> bool:
+    """[2026-10-19] 내 계정에서 이 공고를 다시 올려도 되는지 — 총 REPOST_MAX번 미만 + 마지막 발행 후 REPOST_MIN_DAYS일 이상"""
+    mine = [p for p in history if str(p.get("id")) == str(sid)]
+    if not mine:
+        return True
+    if len(mine) >= REPOST_MAX:
+        return False
+    try:
+        last = max(dt.datetime.strptime((p.get("at") or "")[:10], "%Y-%m-%d").date() for p in mine)
+    except ValueError:
+        return False
+    return (today - last).days >= REPOST_MIN_DAYS
+
+
 def pick_job(jobs, posts, state, today, exclude=None, others=None):
     """반환: (job, tier, 후보 수, borrow) — borrow는 다른 계정 원글 정보 (tier 4일 때만)
     tier: 1 신규 / 2 마감 임박 / 3 나머지 새 공고 / 4 다른 계정 터진 글 각색 / 5 내 글 재발행 [2026-10-15]"""
@@ -632,17 +665,20 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     urgent_new = [j for j in new if is_urgent(j)]
     urgent_mine = [j for j in pool if is_urgent(j) and not is_new(j)
                    and (str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys)
-                   and str(j["recrutPblntSn"]) not in urgent_done and str(j["recrutPblntSn"]) not in recent_ids]
+                   and str(j["recrutPblntSn"]) not in urgent_done and str(j["recrutPblntSn"]) not in recent_ids
+                   and repost_ok(j["recrutPblntSn"], history, today)]   # [2026-10-19] 재발행 간격·횟수 제한
     # 안 올린 공고가 나라일터(인원·학력 없음)뿐이면 내가 올렸던 본문 있는 공고의 마감 알림이 더 나음 → 합쳐서 posts_first로 고름
     tier2 = urgent_new + urgent_mine
     tier3 = [j for j in new if j not in tier1 and not is_urgent(j)]
 
     recent_n = history[-max(URGENT_EVERY - 1, 0):] if URGENT_EVERY > 1 else []
     urgent_due = not any(p.get("urgent") for p in recent_n)
+    u_block = urgent_blocked(history)              # [2026-10-19] 최근 긴급형이 많으면 마감 글은 맨 마지막 수단으로
     print(f"순위별 후보: 신규 {len(tier1)} / 마감 임박 {len(tier2)} (안 올린 {len(urgent_new)}·알림 {len(urgent_mine)}) "
-          f"/ 나머지 {len(tier3)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due else ""))
+          f"/ 나머지 {len(tier3)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due and not u_block else "")
+          + (f" — 최근 {URGENT_WINDOW}건에 긴급형 {URGENT_MAX}개 이상이라 마감 글은 뒤로" if u_block and tier2 else ""))
 
-    if tier2 and (urgent_due or not tier1):
+    if tier2 and not u_block and (urgent_due or not tier1):
         return choose(tier2), 2, len(tier2), None
     if tier1:
         return choose(tier1), 1, len(tier1), None
@@ -659,8 +695,15 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
                                     "thread_id": src.get("thread_id")}
 
     # ⑤ 그래도 없으면 내 계정이 올렸던 공고만 재발행 (다른 계정 공고를 그대로 가져오면 중복)
-    mine = [j for j in pool if str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys]
+    #    [2026-10-19] 같은 공고는 REPOST_MIN_DAYS일 간격·총 REPOST_MAX번까지만 — 사골 방지
+    mine_all = [j for j in pool if str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys]
+    mine = [j for j in mine_all if repost_ok(j["recrutPblntSn"], history, today)]
+    if len(mine) < len(mine_all):
+        print(f"재발행 제한: {len(mine_all) - len(mine)}개 공고는 최근에 올렸거나 이미 {REPOST_MAX}번 올려서 제외")
     if not mine:
+        if tier2:                                  # [2026-10-19] 긴급형 제한 중이어도 올릴 게 마감 글뿐이면 발행
+            print("다른 후보가 없어 마감 임박 글로 발행")
+            return choose(tier2), 2, len(tier2), None
         return None, 0, 0, None
     repeat = [j for j in mine if str(j["recrutPblntSn"]) not in recent_ids] or mine
 
@@ -773,7 +816,8 @@ COMBOS = [
              "역전까지 반드시 훅 2줄 안에서 끝낸다(실패 상태로 끝나는 훅 금지). 역전 근거는 모두에게 열린 조건(학력무관 등)이나 "
              "브랜드·연봉 같은 매력이어야 하고, '전문학사도 됨'처럼 특정 학력 허용을 근거로 쓰지 않는다"},
     {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다", "emoji": "📍",
-     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음. 감정 하나로 담백하게 ('합격하면 그때 말하려고'는 고정 클로저라 금지)"},
+     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음. 감정 하나로 담백하게 ('합격하면 그때 말하려고'는 고정 클로저라 금지). "
+             "최근 글에 같은 문장 틀이 있으면 표현을 바꿀 것"},
     {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍",
      "desc": "이번엔 진짜 넣는다 / ○○ 포기하고 이거 하나만 파기로 했음 — 취준생 누구나 하는 결심"},
     {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍",
@@ -783,18 +827,21 @@ COMBOS = [
      "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지. "
              "민간이면 평균연봉·브랜드로"},
     {"cat": "fact", "person": "—", "structure": "조건 나열", "emoji": "📍",
-     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음. 넣을 이유만 나열하고 학력 하한·어학·전형 단계는 나열 금지"},
+     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음. 넣을 이유만 나열하고 학력 하한·어학·전형 단계는 나열 금지. "
+             "최근 글에 같은 둘째 줄이 있으면 둘째 줄을 새로 쓸 것"},
     # 긴급형 15%
     {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️",
-     "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰"},
+     "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰 — 훅에 이 공고의 알맹이(고용형태·학력무관·인원·연봉·하는 일·근무지 중 1개 이상)를 반드시 넣을 것"},
     {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️",
-     "desc": "D-N이라 이번 주 안에 넣어야 됨 / 이번 주 지나면 끝"},
+     "desc": "D-N이라 이번 주 안에 넣어야 됨 — 마감만 말하는 훅 금지('접수 마감이 코앞', '이번 주 막차' 같은 빈 훅 X). "
+             "훅에 이 공고의 알맹이(고용형태·학력무관·인원·연봉·하는 일·근무지·기관 성격 중 1개 이상)를 마감과 함께 넣을 것"},
     # 특가스나이퍼형 15% — 비교(vs) 금지, 읽는 사람 상황을 바로 저격
     {"cat": "sniper", "person": "—", "structure": "포기 방지", "emoji": "📍", "need_open": True,
      "desc": "스펙 없어서 공기업 접은 사람 다시 펴 — 포기를 뒤집을 열린 조건(학력무관·자소서 없음 등)을 리스트에 반드시 넣을 것. "
              "근거 없이 '다시 봐'만 하면 안 됨. 조건을 겹겹이 단 꼬인 문장 금지"},
     {"cat": "sniper", "person": "—", "structure": "바보 손실", "emoji": "📍",
-     "desc": "이거 안 넣는 게 손해가 아니라 바보임 — 근거는 강한 팩트(대규모 인원·학력무관·평균연봉·브랜드)"},
+     "desc": "이거 안 넣는 게 손해가 아니라 바보임 — 근거는 강한 팩트(대규모 인원·학력무관·평균연봉·브랜드). "
+             "최근 글에 같은 문장 틀이 있으면 표현을 바꿀 것"},
     {"cat": "sniper", "person": "—", "structure": "상황 저격", "emoji": "📍",
      "desc": "지방 사는 취준생인데 이거 모르면 손해 / 스펙 없는 신입이면 이건 꼭 봐 — A vs B 비교 금지. "
              "특정 학력 집단(전문대생 등)을 지목하지 말 것"},
@@ -811,12 +858,15 @@ def pick_combo(state, d_left: int, open_fact: bool = True):
 
     # 최근 2건 중 인물형이 하나라도 있으면 비인물형 강제 (인물 상황극 연속 금지)
     force_nonperson = "person" in recent_cats
+    no_urgent = urgent_blocked(state["posts"])    # [2026-10-19] 최근 긴급형이 많으면 긴급 유형 제외
 
     pool = []
     for i, c in enumerate(COMBOS):
         if i in recent_idxs:
             continue
         if force_nonperson and c["cat"] == "person":
+            continue
+        if no_urgent and c["cat"] == "urgent":
             continue
         if d_left > 7 and c["structure"] in ("시한폭탄 / 막차",):
             continue
@@ -828,6 +878,8 @@ def pick_combo(state, d_left: int, open_fact: bool = True):
         pool = [i for i in range(len(COMBOS)) if open_fact or not COMBOS[i].get("need_open")]
         if force_nonperson:
             pool = [i for i in pool if COMBOS[i]["cat"] != "person"] or pool
+        if no_urgent:
+            pool = [i for i in pool if COMBOS[i]["cat"] != "urgent"] or pool
 
     # 가중 랜덤 — 유형별 비중 반영
     weights = [CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) for i in pool]
@@ -1029,11 +1081,12 @@ TENURE_ANGLES = [
     "긴급 — 마감이 코앞인데 정년까지 다닐 자리라는 걸 한 훅 안에 같이",
     "담백한 다짐 — 이번엔 오래 다닐 곳 하나만 노리겠다는 선언",
 ]
-TENURE_COPY_RE = re.compile(r"포기하려던.{0,20}였던\s*거|정년\s*보장\s*무기계약직이었던")
+TENURE_COPY_RE = re.compile(r"정년\s*보장\s*무기계약직이었던")   # [2026-10-19] 베스트 원문 그대로 복붙만 차단 ('포기하려던 ~' 틀은 최근 반복일 때만 REPEAT_FRAMES로)
 
 
 # 무기계약(직)은 장점이라 허용 — 그 외 계약·기간제·임시·비정규·계약 기간 표현은 쓰레드 금지
-CONTRACT_WORD_RE = re.compile(r"(?<!무기)계약직|(?<!무기)계약\s*기간|(?<!무기)계약\s*만료|\d+\s*(개월|년)\s*계약|기간제|비정규|임시직|체험형")
+CONTRACT_WORD_RE = re.compile(r"(?<!무기)계약직|(?<!무기)계약\s*기간|(?<!무기)계약\s*만료|\d+\s*(개월|년)\s*계약|기간제|비정규|임시직|체험형"
+                              r"|\d+\s*(개월|년)\s*(만|동안)?\s*버티")   # [2026-10-19] '1년만 버티면 정규직 전환' 류
 
 
 FEW_HEADS_RE = re.compile(r"\d+\s*명|(한|두|세|네|다섯)\s*명|소수|단\s*\d|딱\s*\d|한\s*자리|1인\s*채용|인원")
@@ -1243,12 +1296,35 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
 
 
 PRIVATE_BARRIER_RE = re.compile(r"학력|학사|석사|대졸|고졸|초대졸|전문학사|[0-9]년제|졸업\s*예정|졸업자|학점|토익|토스|오픽|TOEIC|OPIc|TOEFL|텝스|TEPS|HSK|JLPT|어학", re.I)
+# [2026-10-19] 긴급형 훅의 알맹이 — 마감만 말하는 빈 훅('접수 마감이 코앞', '이번 주 막차')은 탈락
+URGENT_SUBSTANCE_RE = re.compile(
+    r"\d+\s*(명|만|천|억)|정규직|무기\s*계약|공무직|채용형|전환|학력|정년|연봉|초봉|평균|신입|공채|"
+    r"서울|부산|대구|인천|대전|광주|울산|세종|제주|경기|강원|충북|충남|전북|전남|경북|경남|수도권|지방|"
+    r"공기업|공공기관|공단|공사|재단|정부|청사|법무부|우체국|병원|대학|은행|박물관|연구|발전소|"
+    r"상담|배달|우편|관리|사무|행정|전산|개발|디자인|품질|시설|안전|간호|직무|분야")
+# [2026-10-19] 반복 금지 문장 틀 (지침서 v3.6) — 틀 자체는 잘 터지는 것도 많아서 쓰는 건 허용,
+#              최근 글(이 계정 최근 10개 + 같은 공고 글 + 각색 원글)에 같은 틀이 이미 있을 때만 탈락
+REPEAT_FRAMES = [
+    ("바보 손실", re.compile(r"손해가\s*아니라\s*바보")),
+    ("조건 조합 둘째 줄", re.compile(r"이\s*조합이\s*(공고\s*)?(하나|한\s*공고)에")),
+    ("조용히 넣음", re.compile(r"조용히\s*(이\s*공고만\s*)?넣")),
+    ("붙으면 그때 말", re.compile(r"붙으면\s*그때\s*말")),
+    ("주말에 미루면", re.compile(r"주말에\s*미루")),
+    ("그냥 넘기지 마", re.compile(r"그냥\s*넘기지\s*마")),
+    ("몰라서 억울", re.compile(r"몰라서\s*(못\s*넣은\s*게\s*)?(아직도\s*)?억울")),
+    ("포기하려던 ~였던 거임", re.compile(r"포기하려던.{0,25}(였|었)던\s*거")),
+]
+
+
+def frames_in(texts) -> set:
+    """[2026-10-19] 글 목록에 쓰인 반복 금지 문장 틀 이름"""
+    return {name for name, rx in REPEAT_FRAMES for t in texts if rx.search(t or "")}
 URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막차|닫힘|닫혀|끝남|끝나|이번\s*주|며칠|이틀|하루")
 
 
 def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
                        urgent: bool = False, private: bool = False, contract: bool = False, few: bool = False,
-                       hide_contract: bool = False, tenure: bool = False):
+                       hide_contract: bool = False, tenure: bool = False, recent_frames: set = None):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
@@ -1270,6 +1346,11 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
             return None, f"훅 {i+1}줄이 {len(body_l)}자 (최대 {HOOK_LINE_MAX}자)"
     if urgent and not URGENT_HOOK_RE.search(hook):   # [2026-10-15] 마감 임박 글은 훅에서 마감을 강조해야 통과
         return None, "마감 임박 글인데 훅에 마감 강조 없음"
+    if hook.startswith("⚠") and not URGENT_SUBSTANCE_RE.search(re.sub(r"^(⚠️|⚠)", "", hook)):   # [2026-10-19]
+        return None, "긴급형 훅에 알맹이 없음 (마감만 말함)"
+    dup = frames_in([hook + "\n" + closer]) & (recent_frames or set())   # [2026-10-19] 최근 글과 같은 문장 틀
+    if dup:
+        return None, f"최근 글과 같은 문장 틀 ({', '.join(sorted(dup))})"
     if inst:
         full = norm_key(inst)
         short = re.sub(r"^(한국|국가|국립|재단법인|대한)", "", full)
@@ -1377,6 +1458,10 @@ def judge(cands, recent_hooks):
 
 def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
     user = build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent)
+    recent_frames = frames_in(recent_hooks or [])   # [2026-10-19] 최근에 쓴 반복 금지 문장 틀 → 이번엔 못 씀
+    if recent_frames:
+        print(f"최근 글에 쓴 문장 틀 (이번엔 금지): {', '.join(sorted(recent_frames))}")
+        user += "\n\n[이번엔 쓰면 안 되는 문장 틀 — 최근 글에 이미 나옴] " + ", ".join(sorted(recent_frames))
     errs = []
     for attempt in range(3):
         u = user if not errs else user + f"\n\n[이전 후보들이 규격 위반으로 탈락: {'; '.join(errs[-4:])}] 규격을 다시 지켜서 후보 4개를 출력해."
@@ -1389,7 +1474,8 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
         for c in cands:
             r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
                                         urgent, is_private(job),
-                                        contract_only(job), few_heads(job), hire_parts(job)[1], tenure_job(job))
+                                        contract_only(job), few_heads(job), hire_parts(job)[1], tenure_job(job),
+                                        recent_frames)
             if r:
                 valid.append(r)
             else:
