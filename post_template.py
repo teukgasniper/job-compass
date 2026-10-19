@@ -176,7 +176,8 @@ def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True, 
     tag_style = 'display:inline-block; background:#DBEAFE; color:#1E40AF; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     deadline_style = 'display:inline-block; background:#FEF3C7; color:#92400E; font-size:14px; font-weight:600; padding:6px 14px; border-radius:20px;'
     tags = f'<span style="{tag_style}">✅ {hire_type} {total_count}명</span>' if total_count > 0 else f'<span style="{tag_style}">✅ {hire_type}</span>'
-    tags += f' <span style="{tag_style}">✅ {edu_label}</span>'
+    if edu_label and edu_label != "공고 참조":     # [2026-10-19] 학력 정보 없으면 태그 생략 ('✅ 공고 참조' 방지)
+        tags += f' <span style="{tag_style}">✅ {edu_label}</span>'
     if blind:
         tags += f' <span style="{tag_style}">✅ 블라인드 채용</span>'
     tags += f' <span style="{deadline_style}">⏰ {deadline_label or (deadline_short + " 마감")}</span>'
@@ -544,6 +545,32 @@ def region_text(job):
         return f"전국 {len([x for x in rg if x != '해외'])}개 시·도{extra}"
     return ", ".join(rg) or "공고 참조"
 
+_GJ_SPLIT = re.compile(r"\s*(?=(?:[○●◎■□▶▷※◈◆◇]|(?<![\d.])\d{1,2}\.\s?(?=[가-힣])|(?<![가-힣])[가-하]\.\s|-\s))")   # 날짜(2026. 10. 14.)는 안 쪼갬
+
+
+def gojobs_contents_block(job):
+    """[2026-10-19] 나라일터 공고 원문(contents)을 정리해 본문에 그대로 싣는 상자 — 인원·학력 칸이 비어도 팩트를 보여주기 위함
+    원문을 요약·각색하지 않고 줄만 나눠서 보여준다 (틀린 정보를 만들지 않게). 너무 길면 앞부분만 싣고 원문 링크로 안내"""
+    raw = job.get("_gojobs_contents") or ""
+    if not raw or job.get("_source") != "gojobs":
+        return ""
+    text = _html.unescape(re.sub(r"<[^>]+>", " ", raw))
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) < 40:
+        return ""
+    cut = len(text) > 1800
+    if cut:
+        text = text[:1800].rsplit(" ", 1)[0]
+    lines = [l.strip() for l in _GJ_SPLIT.split(text) if l.strip()]
+    body = "<br>".join(_html.escape(l) for l in lines)
+    return (p("나라일터에 올라온 공고 원문 내용을 그대로 옮겼어요. 인원·자격·근무 조건은 여기서 먼저 확인하세요.")
+            + '<div style="background:#F9FAFB; border:1px solid #E5E7EB; border-radius:12px; padding:16px 18px; margin:12px 0 20px; '
+              'font-size:15px; line-height:1.75; color:#374151; word-break:keep-all;">'
+            + body + ("<br>…" if cut else "")
+            + '<p style="font-size:13px; color:#6B7280; margin:12px 0 0;">출처: 나라일터 공고 원문'
+            + (" (일부 — 전체 내용은 원문 공고에서 확인)" if cut else "") + "</p></div>")
+
+
 def nope_text(job):
     n = job.get("recrutNope") or 0
     return f"{n}명" if n > 0 else "공고 참조"
@@ -578,7 +605,7 @@ def make_title(job):
     inst = clean_inst(job["instNm"])
     t = clean_title(job["recrutPbancTtl"])
     base = t if inst in t else f"{inst} {t}"
-    if is_private(job) and not (job.get("recrutNope") or 0):
+    if not (job.get("recrutNope") or 0):          # [2026-10-19] 인원 정보 없는 공고(민간·나라일터)는 제목에 '공고 참조' 대신 '채용'
         return f"{base} | {hire_short(job)} 채용, " + (end_label(job) if is_always(job) else f"{md(job['pbancEndYmd'])} 마감")
     return f"{base} | {hire_short(job)} {nope_text(job)}, {md(job['pbancEndYmd'])} 마감"
 
@@ -661,7 +688,7 @@ def build_html(job, src, related=None, enh=None):
     # ★ 목차 구성 (정규직 H2 6개 / 비정규직 H2 7개)
     if is_regular:
         toc_items = [
-            f"채용 개요: {inst} {hs} {nope_text(job) if (nope or not priv) else '공채'} 모집",
+            f"채용 개요: {inst} {hs} {nope_text(job) if nope else ('공채' if priv else '채용')} 모집",
             f"접수 일정: {end_txt}",
             f"지원 자격: {acbg.split(', ')[0]} · {se}",
             step_toc,
@@ -696,6 +723,7 @@ def build_html(job, src, related=None, enh=None):
               ["모집분야" if priv else "직무분야", ncs_text(job)], ["근무지역", region_text(job)]]
              + ([] if priv else [["대체인력 여부", "대체인력 채용" if repl else "해당 없음"]]), ["30%", "70%"])
           + ("" if priv else ncs_tags(nl))
+          + gojobs_contents_block(job)               # [2026-10-19] 나라일터: 공고 원문 내용을 그대로 보여줌 (팩트 보강)
           + (work24_jobs_table(wk.get("jobs")) if priv else "")
           + p("그런데 가장 중요한 건 모집 분야별 세부 인원이에요. 분야마다 뽑는 인원과 근무지가 나뉘어 있어서, 내가 지원할 분야를 먼저 골라야 해요.")
           + p("생각보다 선택지가 많아서 놀라시는 분이 많아요. 모집 분야부터 확인해보세요.")

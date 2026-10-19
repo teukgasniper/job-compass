@@ -294,9 +294,14 @@ SOFT_NOT_NEWBIE_RE = re.compile(r"(?<!무기)계약직|경력직(?!원)")
 def not_newbie(title: str) -> bool:
     if NOT_NEWBIE_RE.search(title):
         return True
-    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title):   # "공개, 제한경쟁"처럼 섞인 공고는 통과
+    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title) \
+            and not MIXED_TRACK_RE.search(title):   # "공개, 제한경쟁"·일반 전형 혼합 공고는 통과 [2026-10-19]
         return True
     return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
+
+
+# [2026-10-19] 보훈·장애인 전형이 '일부'로 섞인 혼합 공고 — 제한 전형 전용 공고가 아니므로 제외하지 않음
+MIXED_TRACK_RE = re.compile(r"(보훈|장애)[^,)\]]{0,15}포함|일반\s*(경쟁|정규|직|전형|채용|및|·|,|과)|일반정규")
 
 
 def thread_eligible(job, now=None):
@@ -315,7 +320,9 @@ def thread_eligible(job, now=None):
     if not_newbie(title):
         return False
     # [2026-10-12] 쓰레드와 같은 기준: 지원 대상 제한 공고(보훈·장애인 전형)와 강사·아르바이트성 공고 제외
-    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title):
+    # [2026-10-19] 단, 일반 전형이 섞인 혼합 공고('실무직(보훈제한경쟁 포함)', '일반정규직' 등)는 통과 — 한국수산자원공단 79명 사례
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title) \
+            and not MIXED_TRACK_RE.search(title):
         return False
     if re.search(r"강사|프로그램\s*운영자|아르바이트|단기\s*근로|공모\s*직위|(과|국|부|팀)장급", title):
         return False
@@ -387,14 +394,20 @@ def api(method, path, token, body=None):
             raise RuntimeError("발행 한도/권한 문제 → 이번 실행 중단")
         return None
 
+GOJOBS_GONGMU_RE = re.compile(r"공무직|상시계약집배원|상시집배원|무기계약")
+
+
 def gojobs_skip_reason(job):
     """[2026-10-13] 보충 후에도 쓸 만한 정보가 없는 나라일터 공고는 발행하지 않음
-    (쓰레드 지침 4장과 같은 기준: 인원 0(정보 없음)·1명 공고, 고용형태 빈 값 제외)"""
-    n = job.get("recrutNope") or 0
-    if n <= 1:
-        return f"인원 {n}명" if n else "인원 정보 없음"
-    if not (job.get("hireTypeNmLst") or "").strip():
-        return "고용형태 빈 값"
+    [2026-10-19] 인원 0~1명이어도 발행 — 쓰레드는 나라일터 인원을 원래 안 쓰고, 본문엔 공고 원문 내용을 실어 팩트를 채움.
+                 제목이 공무직이면 고용형태 빈 값은 '공무직'으로 채움. 원문 내용도 고용형태도 없을 때만 건너뜀"""
+    if not (job.get("hireTypeNmLst") or "").strip() and GOJOBS_GONGMU_RE.search(job.get("recrutPbancTtl") or ""):
+        job["hireTypeNmLst"] = "공무직"
+    has_text = len(re.sub(r"<[^>]+>|\s", "", job.get("_gojobs_contents") or "")) >= 40
+    if not (job.get("hireTypeNmLst") or "").strip() and not has_text:
+        return "고용형태·원문 내용 없음"
+    if not has_text and not (job.get("recrutNope") or 0):
+        return "인원·원문 내용 없음"
     return ""
 
 

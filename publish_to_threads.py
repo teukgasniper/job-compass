@@ -237,13 +237,18 @@ SOFT_NOT_NEWBIE_RE = re.compile(r"(?<!무기)계약직|경력직(?!원)")
 def not_newbie(title: str) -> bool:
     if NOT_NEWBIE_RE.search(title):
         return True
-    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title):   # "공개, 제한경쟁"처럼 섞인 공고는 통과
+    if "제한경쟁" in title and not re.search(r"공개|상시|신입|채용형", title) \
+            and not MIXED_TRACK_RE.search(title):   # "공개, 제한경쟁"·일반 전형 혼합 공고는 통과 [2026-10-19]
         return True
     return bool(SOFT_NOT_NEWBIE_RE.search(title)) and not re.search(r"정규직|채용형|신입", title)
 
 
 # [2026-10-14] 20~30대 취준생이 거의 안 가는 현장 단순직 (제목 기준)
 YOUTH_MISS_RE = re.compile(r"미화|청소(?!년)|환경관리원|경비|방호원|조리원|조리실무|취사|급식|주차|간병|요양보호")   # 청소년·조리사(요리사)는 제외 안 함
+
+
+# [2026-10-19] 보훈·장애인 전형이 '일부'로 섞인 혼합 공고 — 제한 전형 전용 공고가 아니므로 제외하지 않음
+MIXED_TRACK_RE = re.compile(r"(보훈|장애)[^,)\]]{0,15}포함|일반\s*(경쟁|정규|직|전형|채용|및|·|,|과)|일반정규")
 
 
 def eligible(job: dict, today: dt.date) -> bool:
@@ -285,7 +290,9 @@ def eligible(job: dict, today: dt.date) -> bool:
         return False
     # [2026-10-02] 지원 대상이 제한된 공고(보훈·장애인 전형)는 일반 취준생 수요가 적어 제외
     # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
-    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title):
+    # [2026-10-19] 단, 일반 전형이 섞인 혼합 공고('실무직(보훈제한경쟁 포함)', '일반정규직' 등)는 통과 — 한국수산자원공단 79명 사례
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title) \
+            and not MIXED_TRACK_RE.search(title):
         return False
     # [2026-10-14] 요양보호사(요양보호직)는 자격증 필수 + 실제 지원층이 40~60대라 20~30대 취준생 대상이 아님 → 제외
     #              ('보훈요양원' 같은 기관 이름은 '요양보호'가 아니라서 걸리지 않음)
