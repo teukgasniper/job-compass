@@ -1011,6 +1011,27 @@ def contract_only(job) -> bool:
     return neg and not pos
 
 
+def tenure_job(job) -> bool:
+    """[2026-10-19] 공공 무기계약직·공무직 공고 — 정년까지 근무가 핵심 무기라 리스트·훅에서 강조"""
+    if is_private(job):
+        return False
+    if is_gojobs(job):
+        return True
+    return any("무기계약" in p or "공무직" in p for p in hire_parts(job)[0])
+
+
+# [2026-10-19] 정년 강조 각도 — 매번 2개를 무작위로 골라 넘김 (같은 정년 문장이 반복되지 않게)
+TENURE_ANGLES = [
+    "조건 조합 — '정년까지'를 조건 한 칸으로 끼워 넣기 (예: 무기계약 + 정년까지 + 학력무관 + 지역). 둘째 줄은 매번 새로 쓸 것",
+    "1인칭 감정 — 공고를 다시 읽다가 정년까지 다닐 수 있는 자리라는 걸 알아챈 순간의 감정 하나",
+    "숫자로 체감 — 지금 나이에서 정년까지 남은 햇수처럼 '오래 다닐 수 있음'을 숫자로 (예: 스물다섯이면 35년). 기관 규모 숫자 포장은 금지",
+    "상황 저격 — 이직·재취업 걱정 그만하고 오래 다닐 데 찾는 사람을 저격 (비교형 금지)",
+    "긴급 — 마감이 코앞인데 정년까지 다닐 자리라는 걸 한 훅 안에 같이",
+    "담백한 다짐 — 이번엔 오래 다닐 곳 하나만 노리겠다는 선언",
+]
+TENURE_COPY_RE = re.compile(r"포기하려던.{0,20}였던\s*거|정년\s*보장\s*무기계약직이었던")
+
+
 # 무기계약(직)은 장점이라 허용 — 그 외 계약·기간제·임시·비정규·계약 기간 표현은 쓰레드 금지
 CONTRACT_WORD_RE = re.compile(r"(?<!무기)계약직|(?<!무기)계약\s*기간|(?<!무기)계약\s*만료|\d+\s*(개월|년)\s*계약|기간제|비정규|임시직|체험형")
 
@@ -1055,6 +1076,9 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
             data["고용형태"] = ", ".join(hire_pos)
         else:
             data.pop("고용형태", None)
+    tenure = tenure_job(job)
+    if tenure:                                    # [2026-10-19] 무기계약·공무직 — 정년까지 근무를 팩트로 넘김
+        data["고용 안정(리스트에 반드시 명시)"] = "무기계약 — 정해진 근무 기간 없이 정년까지 근무"
     few = few_heads(job)
     if few:                                       # [2026-10-17] 5명 이하 — 인원은 넘기지 않음
         data.pop("모집인원", None)
@@ -1131,6 +1155,15 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
                          "리스트는 고용형태 칸 없이 기관 브랜드·하는 일(쉬운 말)·근무지·근무조건·전형 일정·마감일로 채울 것")
         else:
             lines.append(f"- 고용형태는 장점인 '{', '.join(hire_pos)}'만 쓸 것")
+    if tenure:                                    # [2026-10-19] 정년 강조 — 단, 문장은 매번 다르게
+        angles = random.sample(TENURE_ANGLES, 2)
+        lines.append("- [2026-10-19] 무기계약·공무직 공고 → '정년까지 근무'가 이 글의 핵심 무기. "
+                     "리스트 5개 중 한 항목에 반드시 '정년'을 넣을 것 (가능하면 2번, 예: '무기계약직 - 정년까지 근무'. "
+                     "나라일터처럼 리스트 순서가 정해진 공고는 '공무직 채용' 항목 뒤에 붙여도 됨)")
+        lines.append("- 후보 4개 중 최소 1개는 훅에 정년(정년까지·60세까지·오래 다닐 자리 등)을 무기로 쓸 것. 이번 글의 정년 각도 후보: "
+                     + " / ".join(angles))
+        lines.append("- 정년 문장은 매번 새로 쓸 것: '포기하려던 자리가 정년 보장 무기계약직이었던 거임' 같은 예시 문장·문장 틀을 그대로 가져오지 말고, "
+                     "최근 발행한 훅·클로저에 나온 정년 표현과 단어 배치·구조가 겹치지 않게. 4개 후보끼리도 정년 표현을 서로 다르게")
     if urgent:                                    # [2026-10-15] 2순위 마감 임박 — 후보 4개 전부 ⚠️ + 마감 강조
         when = {1: "내일 마감", 2: "모레 마감"}.get(d_left, f"D-{d_left}")
         lines.append(f"- [마감 임박 글] 이 공고는 {when}(D-{d_left}, {end.month}월 {end.day}일)임. 후보 4개 전부 훅 맨 앞 이모지는 ⚠️ "
@@ -1215,7 +1248,7 @@ URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막
 
 def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
                        urgent: bool = False, private: bool = False, contract: bool = False, few: bool = False,
-                       hide_contract: bool = False):
+                       hide_contract: bool = False, tenure: bool = False):
     """후보 1개 규격 검사 → (결과, 오류)"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
@@ -1293,6 +1326,10 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         return None, "계약직·기간제 언급"
     if contract and re.search(r"정규직(?!\s*전환)|무기\s*계약|정년|평생\s*직장", body):   # [2026-10-16] 수동 계약직·임시직
         return None, "계약직 공고를 정규직처럼 씀"
+    if tenure and not any("정년" in x for x in items):   # [2026-10-19] 무기계약·공무직은 리스트에 정년 필수
+        return None, "무기계약 공고인데 리스트에 정년 없음"
+    if TENURE_COPY_RE.search("\n".join(hook_lines) + "\n" + closer):   # [2026-10-19] 베스트 예시 문장 복붙 금지
+        return None, "정년 예시 문장 그대로 사용"
     if len(body) > 490:
         return None, f"길이 초과 ({len(body)}자)"
     return {"hook": "\n".join(hook_lines), "items": items, "closer": closer, "text": body,
@@ -1352,7 +1389,7 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
         for c in cands:
             r, err = validate_candidate(c, inst, edu_unknown(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
                                         urgent, is_private(job),
-                                        contract_only(job), few_heads(job), hire_parts(job)[1])
+                                        contract_only(job), few_heads(job), hire_parts(job)[1], tenure_job(job))
             if r:
                 valid.append(r)
             else:
