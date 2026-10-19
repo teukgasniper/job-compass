@@ -3493,6 +3493,22 @@
    "thread_id": "18123565192986965",
    "comment_id": "17978125677133357",
    "at": "2026-10-19 20:18"
+  },
+  {
+   "id": "WK-181633",
+   "instNm": "현대로템",
+   "title": "기술직(생산직) 신입 채용",
+   "combo_idx": 0,
+   "combo_cat": "monologue",
+   "hook": "📍생산직 공고는\n다 경력직인 줄 알았음",
+   "closer": "신입도 뽑는 공고였던 거, 안 열어봤으면 몰랐음",
+   "hook_type": "plain",
+   "tier": 1,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18128470942889089",
+   "comment_id": "17945199873364594",
+   "at": "2026-10-19 22:25"
   }
  ],
  "logo_tried": {
