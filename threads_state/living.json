@@ -123,6 +123,22 @@
    "thread_id": "17934669168410051",
    "comment_id": "18095271197408819",
    "at": "2026-10-20 18:35"
+  },
+  {
+   "id": "MN-YONSEI-02",
+   "instNm": "연세대학교 미래캠퍼스",
+   "title": "정규직원 행정사무직 행정(일반Ⅱ·정보통신) 채용",
+   "combo_idx": 1,
+   "combo_cat": "urgent",
+   "hook": "⚠️개발자 공채인데\n마감이 닷새밖에 안 남음",
+   "closer": "닷새 안에 못 넣으면 그대로 날아감",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17987025975077974",
+   "comment_id": "18450158923121479",
+   "at": "2026-10-20 21:25"
   }
  ],
  "views_refreshed_at": "2026-10-20 15:25",
