@@ -47,6 +47,8 @@
 [2026-10-12 수정] 멀티 계정 — threads_state/의 다른 계정 기록을 같이 읽어 같은 공고(같은 기관+같은 공고)는 다른 계정에서 안 올림
                   (같은 기관 다른 공고는 가능) / 새 공고 소진 시 ① 다른 계정에서 터진 글(조회수가 그 계정 평균 이상)을
                   가져와 다른 유형으로 각색 ② 그래도 없으면 내 계정 글만 재발행 / 내 글 조회수를 6시간마다 기록(views)
+[2026-10-20 수정] 새 공고는 계정마다 한 번씩 다 올림 — '새 공고' 기준을 "아무 계정도 안 올린"에서 "내 계정이 안 올린"으로
+                  (같은 공고는 같은 날 한 계정만 → 계정끼리 날짜만 다르게), 다른 계정 글의 훅·유형과 겹치지 않게 작성
 [2026-10-20 수정] 계정 확장 대비 — 각색 후보: 전체 계정 통틀어 조회수 높은 순 → 조회수 없는 다른 계정 공고도 점수순
                   (터진 글이 바닥나도 멈추지 않음) / 같은 날 같은 공고는 한 계정만 — 수동 공고에서 일반 공고까지 확대
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
@@ -607,6 +609,11 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
     pool = []
     def is_new(j):
+        # [2026-10-20] 새 공고는 계정마다 한 번씩 다 올림 — '내 계정이 안 올린 공고'면 새 공고 (다른 계정이 올렸어도 OK)
+        #              같은 날 다른 계정이 올린 공고는 아래 others_today에서 이미 빠짐 → 계정끼리 날짜만 다르게
+        return str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys
+
+    def never_posted(j):                           # 아무 계정도 안 올린 공고 (로그·동점 정렬용)
         return str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys
 
     if want_priv:
@@ -696,6 +703,8 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         print("수동 공고: 직전 글이 수동 공고라 이번 회차는 다른 공고")
 
     new = [j for j in pool if is_new(j)]
+    print(f"내 계정 안 올린 공고 {len(new)}개 (아무도 안 올린 {sum(1 for j in new if never_posted(j))} · "
+          f"다른 계정만 올린 {sum(1 for j in new if not never_posted(j))})")
     tier1 = [j for j in new if opened_days(j) <= NEW_DAYS and not is_urgent(j)]
     # 마감 임박: 안 올린 공고 + 내가 올렸던 공고(마감 알림으로 아직 안 올린 것만). 다른 계정이 올린 공고는 제외(중복 방지)
     urgent_done = {str(p["id"]) for p in history if p.get("urgent")}
@@ -2118,6 +2127,43 @@ def summary(md: str):
 
 
 # ─────────────────────────── 쓰레드 동기화 ───────────────────────────
+SYNC_STOP = {"채용", "공고", "모집", "직원", "신규", "년도", "하반기", "상반기", "2026년", "2026", "제1차", "제2차", "공개", "근로자",
+             "공무직", "공무직근로자", "정규직", "신입", "일반", "및", "직"}
+
+
+def match_post_to_job(text: str, ts: str, cands: list, first_rest: str = ""):
+    """[2026-10-20] 수동으로 올린 글 → 공고 1개 찾기. 같은 기관 공고가 여러 개여도 마감일·직무 단어·인원으로 가려냄.
+    글 올린 날짜보다 나중에 시작한 공고는 제외 (예전 글이 같은 기관의 새 공고로 잘못 잡히던 문제 — 대한법률구조공단 사례)"""
+    post_day = (ts or "")[:10].replace("-", "")
+    if post_day:
+        cands = [j for j in cands if (j.get("pbancBgngYmd") or "0") <= post_day <= (j.get("pbancEndYmd") or "99999999")]
+    if len(cands) <= 1:
+        return cands[0] if cands else None
+    flat = re.sub(r"\s+", "", text)
+
+    def sc(j):
+        s = 0
+        end = j.get("pbancEndYmd") or ""
+        if len(end) == 8:
+            mo, d = int(end[4:6]), int(end[6:8])
+            if re.search(rf"(?<!\d){mo}\s*[/.월]\s*{d}(?!\d)", text):
+                s += 3
+        title = re.sub(r"[()\[\]·,/]", " ", (j.get("recrutPbancTtl") or "") + " " + (j.get("hireTypeNmLst") or ""))
+        inst_words = set(norm_inst(j.get("instNm")).split())
+        for w in set(title.split()):
+            w = w.strip("'\"")
+            if len(w) >= 2 and w not in SYNC_STOP and w not in inst_words and w in flat:
+                s += 1
+        n = re.search(r"(\d+)\s*명", first_rest or "")
+        if n and str(j.get("recrutNope") or "") == n.group(1):
+            s += 2
+        return s
+    ranked = sorted(((sc(j), j) for j in cands), key=lambda x: -x[0])
+    if ranked[0][0] > 0 and ranked[0][0] > ranked[1][0]:
+        return ranked[0][1]
+    return None
+
+
 def sync_from_threads(state: dict, jobs: list) -> int:
     uid, token = os.environ.get("THREADS_USER_ID"), os.environ.get("THREADS_TOKEN")
     if not uid or not token:
@@ -2142,13 +2188,9 @@ def sync_from_threads(state: dict, jobs: list) -> int:
         inst_k = norm_key(norm_inst(m.group(1)))
         cands = [j for j in jobs
                  if inst_k and (inst_k in norm_key(norm_inst(j.get("instNm"))) or norm_key(norm_inst(j.get("instNm"))) in inst_k)]
-        if len(cands) > 1:
-            n = re.search(r"(\d+)\s*명", m.group(2))
-            if n:
-                cands = [j for j in cands if str(j.get("recrutNope") or "") == n.group(1)]
-        if len(cands) != 1:
+        j = match_post_to_job(text, it.get("timestamp") or "", cands, m.group(2))
+        if not j:
             continue
-        j = cands[0]
         try:
             at = dt.datetime.strptime(it["timestamp"][:19], "%Y-%m-%dT%H:%M:%S").replace(
                 tzinfo=dt.timezone.utc).astimezone(KST).strftime("%Y-%m-%d %H:%M")
@@ -2281,6 +2323,21 @@ def main():
     hook_src = state["posts"][-10:] + [p for p in same_job if p not in state["posts"][-10:]]
     recent_hooks = [p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else "")
                     for p in hook_src if p.get("hook")]
+    # [2026-10-20] 다른 계정이 이미 올린 공고면 그 글들의 훅·클로저도 반복 금지 + 유형도 다르게
+    if not borrow:
+        other_same = [p for ps in others.values() for p in ps
+                      if str(p.get("id")) == str(job["recrutPblntSn"]) and p.get("hook")]
+        if other_same:
+            used_cats = {p.get("combo_cat") for p in other_same if p.get("combo_cat")}
+            if not urgent and used_cats:
+                for _ in range(8):
+                    if combo["cat"] not in used_cats:
+                        break
+                    combo_idx, combo = pick_combo(state, d_left, open_fact)
+            for p in other_same[-3:]:
+                recent_hooks.insert(0, "[다른 계정에 이미 올라간 같은 공고 글 — 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
+                                    + p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else ""))
+            print(f"다른 계정에 이미 올라간 공고 ({len(other_same)}건) → 다른 유형·문장으로 작성")
     if borrow and borrow.get("hook"):                # 원글 훅·클로저를 반복 금지 목록 맨 앞에
         recent_hooks.insert(0, "[다른 계정 원글 — 이 공고의 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
                             + borrow["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {borrow['closer']}" if borrow.get("closer") else ""))
