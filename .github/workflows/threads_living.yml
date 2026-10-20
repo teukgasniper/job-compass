@@ -45,6 +45,8 @@ jobs:
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
           JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
           MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '160' || '60' }}   # 자동 실행은 160분 → 매시간 깨우므로 실제 약 3시간 간격 (취업_나침반 메인 계정)
+          # [2026-10-20] 이 계정에서만 안 올릴 공고 — 다른 계정에서 조회수 안 나온 현재 수동 공고 (새로 들어오는 공고는 해당 없음)
+          SKIP_IDS: "MN-HYUMC-02,MN-SSWU-01,MN-SSWU-02,MN-SSWU-03,MN-POSTECH-01,MN-KUSJ-01,MN-KUMOT-01"
         run: python publish_to_threads.py
 
       - name: 사용 기록 저장
