@@ -8929,5 +8929,186 @@
     "callout": null
    }
   }
+ },
+ "306052": {
+  "at": "2026-10-20 21:02",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306052.html",
+  "source": "2026년도_한국임업진흥원_제4차_인재채용(공무직)_공고.hwp",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반사무 4명, 임업·임산 3명을 뽑아요.",
+    "columns": [
+     "일반사무",
+     "임업·임산"
+    ],
+    "rows": [
+     {
+      "label": "공무직",
+      "values": [
+       4,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "일반사무·임업·임산 모두 응시자격 제한없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 3일~9일",
+     "desc": "자격증(20점)+자기소개서·경험기술서 정성평가(80점)",
+     "note": "10배수(70명) 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 10일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 14일(토)",
+     "desc": "인성검사(240문항)+직업공통능력검사(NCS 40문항)",
+     "note": "5배수(35명) 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "11월 24일(화)",
+     "desc": "의사소통 및 문제해결, 대인관계 및 직업윤리 등",
+     "note": "다대다 면접, 조당 25분 내외"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 1일(화)",
+     "desc": "신원조회·근로계약 후 12월 14일(월) 임용",
+     "note": "최종합격자 7명"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사와 직업공통능력검사(NCS)로 봐요. 직업공통능력검사는 40문항, 100점이에요.",
+    "highlight": "40문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "240문항",
+      "scope": null,
+      "note": "면접 시 참고자료로 활용",
+      "ncs": false
+     },
+     {
+      "name": "직업공통능력검사",
+      "count": "40문항",
+      "scope": "의사소통능력, 문제해결능력, 대인관계능력, 디지털능력",
+      "note": "NCS 기반",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "306084": {
+  "at": "2026-10-20 21:02",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306084.html",
+  "source": "1. 공고문.pdf",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·전공 제한 없음, 연령 제한도 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "~11월 1주(예정)",
+     "desc": "NCS 기반 블라인드 평가",
+     "note": "20배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 14일(토)(예정)",
+     "desc": "직무논술(50%)+NCS 직업기초능력(50%)+인성검사",
+     "note": "6배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 역량면접전형",
+     "date": "11월 4주(예정)",
+     "desc": "그룹 토의형 직무역량 평가",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 종합면접전형",
+     "date": "12월 2주(예정)",
+     "desc": "직무 전문성 및 인성 등 종합평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "~12월 3주(예정)",
+     "desc": "서류검증 후 12.29(화) 입사 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 직무논술과 NCS 직업기초능력, 인성검사로 봐요. 직무논술 1문항, 직업기초능력 50문항이에요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "직무논술",
+      "count": "1문항/90분",
+      "scope": "채용 직무 관련",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "NCS 직업기초능력",
+      "count": "50문항/60분",
+      "scope": "의사소통, 문제해결, 자기관리, 수리, 대인관계",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": "직무 적합성 등",
+      "note": "면접 참고자료로 활용",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
