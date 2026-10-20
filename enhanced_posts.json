@@ -9110,5 +9110,244 @@
     "callout": null
    }
   }
+ },
+ "305905": {
+  "at": "2026-10-21 02:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305905.html",
+  "source": "제2026-6호 한국청소년상담복지개발원 직원 모집 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "청년인턴(채용형) 2명, 기간제 28명을 포함해 총 30명을 뽑아요.",
+    "columns": [
+     "청소년상담복지(인턴)",
+     "빅데이터관리",
+     "청소년상담복지(기간제)",
+     "총무인사",
+     "사업운영"
+    ],
+    "rows": [
+     {
+      "label": "채용형 청년인턴",
+      "values": [
+       1,
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "기간제",
+      "values": [
+       null,
+       null,
+       24,
+       2,
+       2
+      ]
+     }
+    ],
+    "note": "기간제 청소년상담복지 24명 중 2명, 총무인사 2명 중 1명은 휴직대체예요."
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 9일(월)",
+     "desc": "자격증·경력 등 정량평가(60점)+정성평가(40점)",
+     "note": "채용예정인원 10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 결과발표",
+     "date": "11월 13일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 21일(토)",
+     "desc": "인성검사(275문항)+직무능력검사(55문항)",
+     "note": "청년인턴(상담복지)만 해당, 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 결과발표",
+     "date": "11월 26일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "12월 3일(목)",
+     "desc": "조직적합성·직무적합성·리더십·면접태도 평가",
+     "note": "80점 이상 고득점순 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "전력조회·채용점검위원회 거쳐 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기시험은 인성검사(275문항)와 직무능력검사(55문항)로 치러요. 청년인턴(상담복지) 서류전형 합격자만 응시해요.",
+    "highlight": "275문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "275문항",
+      "scope": "인성평가, 부적응성 검사, 응답신뢰도",
+      "note": "적합/부적합 판정",
+      "ncs": false
+     },
+     {
+      "name": "직무능력검사",
+      "count": "55문항",
+      "scope": "언어력, 수리력, 문제해결능력, 상황판단력, 사물지각력",
+      "note": "100점 만점, 가점 제외",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-181502": {
+  "at": "2026-10-21 02:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/cj-wk181502.html",
+  "source": "기업 채용 페이지 (https://recruit.cj.net/recruit/ko/recruit/recruit/bestDetail.fo?direct=N&zz_jo_num=J20260831040042)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고등학교 졸업 이상",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 지원서 접수",
+     "date": "10월 13일~27일",
+     "desc": "CJ그룹 채용 홈페이지 통한 지원서 접수",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 처우 협의/채용 검진",
+     "date": null,
+     "desc": "처우 협의 및 채용 검진 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-181040": {
+  "at": "2026-10-21 02:29",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-181040.html",
+  "source": "기업 채용 페이지 이미지 5조각 (https://coex.recruiter.co.kr/career/jobs/130437)",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 대학 이상 졸업자(2027년 2월 졸업예정자 지원 가능)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 5주차~11월 2주차",
+     "desc": "입사지원서·자기소개서 심사",
+     "note": "발표(예정) 11월 12일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 18일(수)",
+     "desc": "논술, NCS직무평가시험, 인성검사",
+     "note": "확정"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": "12월 1주차",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": "12월 2주차",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 2~3주차",
+     "desc": null,
+     "note": "예정"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (전시 컨벤션)",
+    "text": "토익 860점 이상 보유자(또는 상응 어학성적)만 지원 가능하고, 영어권 해외 4년제 대학 졸업자는 면제예요.",
+    "highlight": "860점 이상"
+   },
+   "written": {
+    "summary": "필기는 논술(경제·시사·무역)과 NCS직무평가시험, 인성검사로 봐요.",
+    "highlight": "NCS직무평가시험",
+    "subjects": [
+     {
+      "name": "논술",
+      "count": "1문제",
+      "scope": "경제/시사/무역",
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "NCS직무평가시험",
+      "count": null,
+      "scope": "의사소통/조직이해/수리/문제해결",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
