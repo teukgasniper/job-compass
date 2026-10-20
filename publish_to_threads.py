@@ -47,6 +47,8 @@
 [2026-10-12 수정] 멀티 계정 — threads_state/의 다른 계정 기록을 같이 읽어 같은 공고(같은 기관+같은 공고)는 다른 계정에서 안 올림
                   (같은 기관 다른 공고는 가능) / 새 공고 소진 시 ① 다른 계정에서 터진 글(조회수가 그 계정 평균 이상)을
                   가져와 다른 유형으로 각색 ② 그래도 없으면 내 계정 글만 재발행 / 내 글 조회수를 6시간마다 기록(views)
+[2026-10-20 수정] 계정 확장 대비 — 각색 후보: 전체 계정 통틀어 조회수 높은 순 → 조회수 없는 다른 계정 공고도 점수순
+                  (터진 글이 바닥나도 멈추지 않음) / 같은 날 같은 공고는 한 계정만 — 수동 공고에서 일반 공고까지 확대
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
@@ -432,27 +434,31 @@ def refresh_my_views(state: dict) -> bool:
 
 
 def borrow_candidates(others: dict, pool: list, mine_ids: set, mine_keys: set, today) -> list:
-    """[2026-10-12] 다른 계정에서 터진 글 — 그 계정 평균 조회수 이상 + 마감 2일 이상 + 내가 안 올린 공고.
-    반환: [(job, 원글 post, 계정)] 조회수 높은 순"""
+    """다른 계정이 올린 공고를 각색 후보로 — 내가 안 올린 공고 + 마감 2일 이상 + 카드(pool)에 살아 있는 공고.
+    [2026-10-20] 계정 확장 대비: ① 조회수 기록이 있는 글을 전체 계정 통틀어 조회수 높은 순 (터진 글 먼저)
+                 ② 조회수 기록이 없는 나머지 공고도 전부 점수순으로 이어서 — 계정이 늘어도 멈추지 않게
+                 (이전: 계정별 '그 계정 평균 조회수 이상'만 → 계정마다 기준이 달라 들쭉날쭉, 터진 글이 바닥나면 각색 중단)
+    공고마다 원글 1개 — 조회수가 가장 높은 글, 조회수가 없으면 가장 최근 글.
+    반환: [(job, 원글 post, 계정)]"""
     by_id = {str(j["recrutPblntSn"]): j for j in pool}
-    out, seen = [], set()
+    best = {}                                      # 공고 id → (job, 원글, 계정)
     for acct, posts in others.items():
-        viewed = [p for p in posts if (p.get("views") or 0) > 0]
-        if not viewed:
-            continue
-        avg = sum(p["views"] for p in viewed) / len(viewed)
-        for p in viewed:
-            j = by_id.get(str(p.get("id")))
-            if not j or p["views"] < avg or str(p["id"]) in seen:
-                continue
-            if str(p["id"]) in mine_ids or job_key(j) in mine_keys:
+        for p in posts:
+            sid = str(p.get("id"))
+            j = by_id.get(sid)
+            if not j or sid in mine_ids or job_key(j) in mine_keys:
                 continue
             if not j.get("always") and dday(j.get("pbancEndYmd", ""), today) < BORROW_MIN_DLEFT:
                 continue
-            seen.add(str(p["id"]))
-            out.append((j, p, acct))
-    out.sort(key=lambda x: -(x[1].get("views") or 0))
-    return out
+            cur = best.get(sid)
+            key = ((p.get("views") or 0), p.get("at") or "")
+            if cur is None or key > ((cur[1].get("views") or 0), cur[1].get("at") or ""):
+                best[sid] = (j, p, acct)
+    hot = [b for b in best.values() if (b[1].get("views") or 0) > 0]
+    rest = [b for b in best.values() if not (b[1].get("views") or 0) > 0]
+    hot.sort(key=lambda x: -(x[1].get("views") or 0))
+    rest.sort(key=lambda x: -hot_score(x[0], today))
+    return hot + rest
 
 
 def job_key(j: dict) -> str:
@@ -650,9 +656,9 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     pool = [j for j in pool if j.get("threads") is not False]   # [2026-10-17] 토스 등 쓰레드 제외 공고는 일반 순위로도 안 나가게
     last_manual = bool(history) and is_manual_id(history[-1]["id"])
     # [2026-10-17] 같은 수동 공고는 같은 날 한 계정만 — 다른 계정이 오늘 올린 수동 공고는 오늘 건너뜀 (내일 이 계정 차례)
+    # [2026-10-20] 일반 공고까지 확대 — 다른 계정이 오늘(KST) 올린 공고는 각색·마감 알림·재발행 모두 오늘은 안 올림
     today_s = today.isoformat()
-    others_today = {str(p["id"]) for p in other_posts
-                    if is_manual_id(p.get("id")) and (p.get("at") or "")[:10] == today_s}
+    others_today = {str(p["id"]) for p in other_posts if (p.get("at") or "")[:10] == today_s}
     m_count = {}                                   # 수동 공고별로 지금까지 올린 계정 수 (적게 올라간 공고부터)
     for acc_posts in list(others.values()) + [history]:
         for sid in {str(p["id"]) for p in acc_posts if is_manual_id(p.get("id"))}:
@@ -662,7 +668,10 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         if held:
             print(f"수동 공고: 다른 계정이 오늘 올린 {len(held)}개는 내일로 미룸 — " + ", ".join(str(j["recrutPblntSn"]) for j in held))
         manual_live = [j for j in manual_live if str(j["recrutPblntSn"]) not in others_today]
+        n_before = len(pool)
         pool = [j for j in pool if str(j["recrutPblntSn"]) not in others_today]   # 마감 알림·각색·재발행으로도 안 나가게
+        if n_before > len(pool):
+            print(f"다른 계정이 오늘 올린 공고 {n_before - len(pool)}개는 오늘 후보에서 제외")
     # [2026-10-17] 수동 공고 마감 임박(D-1~3)은 전체 계정 통틀어 ⚠️ 글 1번 — 이미 누가 올렸으면 그 공고는 끝
     def m_is_urgent(j):
         return not j.get("always") and 1 <= dday(j.get("pbancEndYmd", ""), today) <= MANUAL_URGENT_DAYS
@@ -713,7 +722,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     if tier3:
         return choose(tier3), 3, len(tier3), None
 
-    # [2026-10-12] 새 공고 소진 → ④ 우리 다른 계정에서 터진 글을 가져와 각색
+    # [2026-10-12] 새 공고 소진 → ④ 우리 다른 계정 글을 가져와 각색 (조회수 높은 순 → 나머지 점수순) [2026-10-20]
     borrows = borrow_candidates(others, pool, my_ids, my_keys, today)
     if borrows:
         fresh_b = [b for b in borrows if group_key(b[0]["instNm"]) not in recent_insts] or borrows
