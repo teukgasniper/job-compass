@@ -1179,6 +1179,8 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
     head = "" if few else "인원·"
     if low_pay:                                   # [2026-10-12] 3천만원 미만 제시 연봉은 넘기지 않음
         data.pop("공고 제시 연봉(클린아이)", None)
+    if (job.get("recrutSeNm") or "").strip() == "경력":   # [2026-10-20] 경력 공고 — '경력' 값은 넘기지 않음 (진입장벽)
+        data.pop("신입/경력", None)
     if is_private(job):
         data["기업구분"] = f"민간 {job.get('bizType') or '기업'} (공기업 아님)"
         if is_manual_id(job.get("recrutPblntSn")) and not job.get("bizType"):   # [2026-10-16] 수동 공고(대학·대학병원 등)
@@ -1244,6 +1246,10 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         lines.append("- [2026-10-17] 모집 인원이 5명 이하인 소수 채용 → 인원(○명·한 명·소수·딱 ○자리·'인원' 단어 등)을 훅·리스트·클로저 "
                      "어디에도 쓰지 말 것 (본문 발췌에 인원이 있어도). 대신 기관 브랜드·하는 일(쉬운 말)·근무지·근무조건·"
                      + ("" if low_pay else "연봉·") + "고용형태·입사 시기·전형 일정 같은 끌리는 포인트로 채울 것")
+    # [2026-10-20] 경력 요건(○년 이상·경력자만)은 진입장벽 — 모든 공고 공통
+    lines.append("- [2026-10-20] 경력 요건(경력 ○년 이상·경력자만·실무 경험 필수 등)은 훅·리스트·클로저 어디에도 쓰지 말 것 "
+                 "(본문 발췌에 있어도). 대신 기관 브랜드·하는 일(쉬운 말)·근무지·근무조건·전형 일정으로 채울 것. "
+                 "훅은 특정 직군(디자이너·개발자 등)만 알아듣는 고민 말고, 일반 취준생도 '오 이런 자리도 있네' 하는 소재로")
     if not has_open_fact(job, post_text):
         lines.append("- 이 공고엔 학력무관 같은 '모두에게 열린 조건'이 없음 → '포기했으면 다시 봐', '스펙 없어도 됨' 류 금지")
     if hire_neg:                                  # [2026-10-17] 계약직은 쓰레드에서 언급 안 함 — 본문으로 먼저 들어오게
@@ -1346,6 +1352,8 @@ BANNED_CLOSERS = ["세 번 확인했는데 진짜임", "모르는 사람이 많�
                   "합격하면 그때 말하려고", "동료는 이미 넣었고 나만 안 넣었음"]
 
 
+# [2026-10-20] 경력 요건은 공공·민간 상관없이 진입장벽 → 훅·리스트·클로저 어디에도 안 씀 (한양대병원 UX디자이너 "경력 2년 이상 필요" 사례)
+CAREER_BARRIER_RE = re.compile(r"경력\s*\d+\s*(년|개월)|\d+\s*(년|개월)\s*(이상\s*)?(의\s*)?(실무\s*)?경력|경력\s*(자\s*)?(만|필수|요건|있어야|이상)|경력자\s*(만|우대|대상)|경력직\s*(만|전용)")
 PRIVATE_BARRIER_RE = re.compile(r"학력|학사|석사|대졸|고졸|초대졸|전문학사|[0-9]년제|졸업\s*예정|졸업자|학점|토익|토스|오픽|TOEIC|OPIc|TOEFL|텝스|TEPS|HSK|JLPT|어학", re.I)
 # [2026-10-19] 긴급형 훅의 알맹이 — 마감만 말하는 빈 훅('접수 마감이 코앞', '이번 주 막차')은 탈락
 URGENT_SUBSTANCE_RE = re.compile(
@@ -1452,6 +1460,8 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
             return None, "리스트에 공무직 표시 없음"
     if private and PRIVATE_BARRIER_RE.search(body):   # [2026-10-16] 민간: 학력·어학 조건은 진입장벽 → 글 전체 금지
         return None, "민간 공고에 학력·어학 조건"
+    if CAREER_BARRIER_RE.search(body):           # [2026-10-20] 경력 요건 언급 금지 (진입장벽)
+        return None, "경력 요건 언급"
     if few and FEW_HEADS_RE.search(body):        # [2026-10-17] 5명 이하 공고에 인원 언급
         return None, "소수 채용 공고에 인원 언급"
     if hide_contract and CONTRACT_WORD_RE.search(body):   # [2026-10-17] 계약직은 쓰레드에서 언급 안 함
@@ -2204,6 +2214,11 @@ def main():
 
     # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
     excluded = set(state.get("skip_jobs", []))      # [2026-10-19] AI가 박사 이상 전용으로 확인한 공고
+    # [2026-10-20] 계정별 발행 제외 공고 — 워크플로 SKIP_IDS(쉼표 구분). 다른 계정에서 조회수가 안 나온 공고를 이 계정에서만 뺄 때
+    skip_env = {x.strip() for x in os.environ.get("SKIP_IDS", "").split(",") if x.strip()}
+    if skip_env:
+        print(f"이 계정 제외 공고 {len(skip_env)}개: " + ", ".join(sorted(skip_env)))
+        excluded |= skip_env
     job, post, post_text, borrow = None, None, "", None
     for _ in range(6):
         job, tier, n_cands, borrow = pick_job(jobs, posts, state, today, excluded, others)
