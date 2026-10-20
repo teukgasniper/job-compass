@@ -310,13 +310,24 @@ PHD_MIXED_RE = re.compile(r"(및|,|·|/)\s*(연구원|연구인턴|인턴|인턴
 MIXED_TRACK_RE = re.compile(r"(보훈|장애)[^,)\]]{0,15}포함|일반\s*(경쟁|정규|직|전형|채용|및|·|,|과)|일반정규")
 
 
+# [2026-10-19] 나라일터는 공무직·무기계약만 — 기간제·계약직·인턴·지킴이·아르바이트 등 단기 일자리는 본문도 안 씀
+#              (쓰레드 자동발행의 나라일터 기준과 같음: 제목에 공무직이 있어야 하고, 단기·대체 표현이 없어야 함)
+GOJOBS_OK_RE = re.compile(r"공무직|상시계약집배원|상시집배원|무기계약")
+GOJOBS_BAD_RE = re.compile(r"기간제|대체|육아휴직|한시|단시간|시간제|시간선택|(?<!무기)계약직|임기제|인턴|장애인\s*구분|결과|면접\s*안내"
+                           r"|지킴이|아르바이트|알바|단기|일용|위촉|강사|연봉제")
+
+
 def thread_eligible(job, now=None):
     """쓰레드 글감 조건 (지침서 4장): 정규직·무기계약직·채용형인턴 + 신입 가능 + 의사직 제외"""
     hl = hire_list(job)
     # [2026-10-12] 정규직전환형(채용형 인턴) 추가 — 쓰레드 자동발행은 이미 통과시키고 있어 본문 없이 나가던 문제
     if not any(h in ("정규직", "무기계약직", "청년인턴(채용형)", "정규직전환형") for h in hl):
-        # 나라일터 공고는 고용형태가 비어있을 수 있으므로 일단 통과시킴
+        # 나라일터 공고는 고용형태가 비어있을 수 있으므로 일단 통과시킴 (아래 제목 검사로 공무직만 남김)
         if not is_gojobs(job):
+            return False
+    if is_gojobs(job):                            # [2026-10-19] 나라일터: 제목에 공무직·무기계약이 있고 단기·대체 표현이 없을 때만
+        t = job.get("recrutPbancTtl") or ""
+        if not GOJOBS_OK_RE.search(t) or GOJOBS_BAD_RE.search(t):
             return False
     if not is_gojobs(job) and "신입" not in (job.get("recrutSeNm") or ""):
         return False
@@ -411,6 +422,9 @@ def gojobs_skip_reason(job):
                  제목이 공무직이면 고용형태 빈 값은 '공무직'으로 채움. 원문 내용도 고용형태도 없을 때만 건너뜀"""
     if not (job.get("hireTypeNmLst") or "").strip() and GOJOBS_GONGMU_RE.search(job.get("recrutPbancTtl") or ""):
         job["hireTypeNmLst"] = "공무직"
+    hires = [h.strip() for h in (job.get("hireTypeNmLst") or "").split(",") if h.strip()]
+    if hires and not any(h in ("공무직", "무기계약직", "정규직") for h in hires):   # [2026-10-19] 보충 결과 기간제·계약직뿐
+        return "고용형태 " + "·".join(hires) + " (공무직·무기계약 아님)"
     has_text = len(re.sub(r"<[^>]+>|\s", "", job.get("_gojobs_contents") or "")) >= 40
     if not (job.get("hireTypeNmLst") or "").strip() and not has_text:
         return "고용형태·원문 내용 없음"
