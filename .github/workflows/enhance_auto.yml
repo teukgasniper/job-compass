@@ -39,6 +39,7 @@ jobs:
           GA4_CLIENT_SECRET: ${{ secrets.GA4_CLIENT_SECRET }}
           GA4_REFRESH_TOKEN: ${{ secrets.GA4_REFRESH_TOKEN }}
           GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
+          GA4_PROPERTY_ID_CARD: ${{ vars.GA4_PROPERTY_ID_CARD }}   # [2026-10-22] 카드페이지가 다른 GA4 속성일 때만 (비워두면 같은 속성)
           AUTO_ENHANCE_MIN_VIEWS: ${{ vars.AUTO_ENHANCE_MIN_VIEWS }}
           AUTO_ENHANCE_PER_RUN: ${{ vars.AUTO_ENHANCE_PER_RUN }}
         run: python fetch_views.py
@@ -71,7 +72,7 @@ jobs:
         run: |
           git config user.name "job-compass-bot"
           git config user.email "actions@users.noreply.github.com"
-          for p in views.json enhanced_posts.json enhance_tried.json; do
+          for p in views.json traffic.json enhanced_posts.json enhance_tried.json; do
             [ -e "$p" ] && git add "$p"
           done
           if git diff --cached --quiet; then
