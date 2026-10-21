@@ -287,6 +287,22 @@
    "comment_id": "18119559026092430",
    "at": "2026-10-21 21:35",
    "views": 268
+  },
+  {
+   "id": "MN-YONSEI-01",
+   "instNm": "연세대학교 미래캠퍼스",
+   "title": "정규직원 행정사무직 행정(일반Ⅰ) 채용",
+   "combo_idx": 9,
+   "combo_cat": "sniper",
+   "hook": "⚠️학교 행정 업무 정규직\n사흘 뒤 접수 마감임",
+   "closer": "마감 사흘 앞두고 자리는 아직 비어있음",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": true,
+   "urgent": true,
+   "thread_id": "18077632337425185",
+   "comment_id": "18361854973217320",
+   "at": "2026-10-22 00:35"
   }
  ],
  "views_refreshed_at": "2026-10-21 23:19",
