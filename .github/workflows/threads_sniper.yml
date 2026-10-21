@@ -26,6 +26,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || vars.THREADS_AUTO_SNIPER == 'on'
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # [2026-10-22] 대기열에서 기다린 실행도 최신 발행 기록(다른 계정 글)을 보고 고르게 — 기본값은 예약 시점 커밋이라 기록이 낡음
 
       - uses: actions/setup-python@v5
         with:
