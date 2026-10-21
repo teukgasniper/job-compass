@@ -9409,5 +9409,162 @@
     "callout": null
    }
   }
+ },
+ "306115": {
+  "at": "2026-10-21 21:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/reb-306115.html",
+  "source": "채용공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "감정평가사 자격 소지자(실무수습 미수료자)만 지원 가능해요",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "적격심사 후 역량평가(직무적합도 100점)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 25일(수)",
+     "desc": "직무PT 및 자기소개서 기반 개별면접(1~2단계 연속)",
+     "note": "직무수행·직업공통 각 50점"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 24일(목)",
+     "desc": "증빙서류 검토 후 적합판정자 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-181770": {
+  "at": "2026-10-21 21:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/posco-wk181770.html",
+  "source": "기업 채용 페이지 이미지 5조각 (https://recruit.posco.com/h22a01-front/H22A1001.html?id=725000)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고졸 이상의 학력 보유자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류접수",
+     "date": "10월 19일~26일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인적성검사",
+     "date": "10월 말",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 중",
+     "desc": "인성/전공 면접",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 초",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-181424": {
+  "at": "2026-10-21 21:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/nongshim-wk181424.html",
+  "source": "기업 채용 페이지 이미지 2조각 (https://recruit.nongshim.com/recruit/notice/view?companyCd=01&useYear=2026&useSeq=23)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 학사 학위 소지자(2027년 2월 졸업예정자 지원가능)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "2026.10.12~2026.10.23",
+     "desc": "4년제 학사 학위 소지자, 식품공학 계열 지원",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "10월 26일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 — 채용검진 후 입사",
+     "date": null,
+     "desc": "채용검진 통과 후 입사해요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
