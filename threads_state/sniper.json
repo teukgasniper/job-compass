@@ -1222,6 +1222,22 @@
    "thread_id": "18129552592877207",
    "comment_id": "17994197738848608",
    "at": "2026-10-21 13:46"
+  },
+  {
+   "id": "MN-NHBANK-01",
+   "instNm": "NH농협은행",
+   "title": "NH농협은행 본부 일반계약직 채용 (고객행복센터 카드상담지원팀·자금세탁방지부)",
+   "combo_idx": 2,
+   "combo_cat": "monologue",
+   "hook": "📍한 은행에서 부서 두 곳이\n동시에 사람 뽑고 있음",
+   "closer": "같은 공고 안에 기회가 두 개 있음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17993163351102914",
+   "comment_id": "17973996330150388",
+   "at": "2026-10-21 16:43"
   }
  ],
  "views_refreshed_at": "2026-10-21 13:33",
