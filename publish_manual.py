@@ -39,7 +39,7 @@ GitHub Actions '수동 공고 발행' 버튼 전용. 예약 자동발행(publish
 """
 import json, os, re, sys, time, hashlib, html as htmllib, urllib.request, urllib.error
 from datetime import datetime
-from post_template import (KST, AD, HIRING, p, r, cta, h2, table, box, toc, faq, arrow_step,
+from post_template import (KST, AD, AD_TOP, AD_HOOK, HIRING, p, r, cta, h2, table, box, toc, faq, arrow_step,
                            clean_inst, clean_title, hire_list, hire_short, region_text, make_title, make_labels,
                            is_always, end_label, md, md_w, dot, ymd, WEEK, RED, _e)
 from publish_to_blogger import access_token, api, slug_for, is_private_job, score as job_score
@@ -365,14 +365,14 @@ def build_manual_html(job, src, c, related=None):
     faqs = [dl_faq] + [(_e(f.get("q", "")), _e(f.get("a", ""))) for f in c["faqs"] if isinstance(f, dict) and f.get("q")][:4]
 
     secs = [s1, s2, s3, s4, s5, s6, s7]
-    body = (AD + toc(toc_items) + intro + AD + cta("채용공고 바로가기", src)   # 광고 - 목차 - 후킹박스 - 광고 - 버튼
+    body = (AD_TOP + toc(toc_items) + intro + AD_HOOK + cta("채용공고 바로가기", src)   # 광고 - 목차 - 후킹박스 - 광고 - 버튼 ([2026-10-21] 위치별 슬롯)
             + "".join(sec if i == 0 else AD + sec for i, sec in enumerate(secs))
             + AD
             + '<h2 style="background:#F0F7FF; border-left:5px solid #3B82F6; border-radius:0 10px 10px 0; color:#1e293b; font-size:22px; font-weight:bold; margin:40px 0 18px; padding:14px 18px;">자주 묻는 질문</h2>'
             + faq(faqs)
             + p(f"이번 {_e(inst)} {_e(title)} 공고는 {r(_e(end_label(job)) if always else md_w(end) + ' 마감')}이에요. 관심 있다면 원문부터 열어두세요.")
             + cta("지금 바로 지원하기", src)
-            + AD
+            # [2026-10-21] 최하단 광고(마지막 버튼 아래) 제거 — 광고 과다 방지
             + '<div style="background:#F3F4F6; border-radius:10px; padding:16px 18px; margin:30px 0 10px; font-size:14px; color:#6B7280; line-height:1.65; word-break:keep-all;">'
               '본 글은 기업 채용 공고를 바탕으로 작성되었어요. 모집 분야, 자격 요건, 일정은 기업 사정에 따라 바뀔 수 있으니 지원 전 반드시 원문 공고를 확인하세요. '
               '본 페이지는 채용 기업과 관계가 없는 정보 안내 페이지예요.</div>'

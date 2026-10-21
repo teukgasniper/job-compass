@@ -8,7 +8,7 @@ v2 변경사항:
 - NCS 분류 태그 (H2-1 안)
 - 전형절차 화살표 ▼ (테이블 → 화살표 교체)
 - 정규직이면 고용형태 섹션 생략 (H2 6개), 비정규직이면 고용형태 설명 추가 (H2 7개)
-- 광고: 정규직 10개, 비정규직 11개 (소제목 위마다 1개)
+- 광고: 정규직 9개, 비정규직 10개 (첫 소제목 제외 소제목 위마다 1개, [2026-10-21] 최하단 광고 제거)
 """
 from datetime import datetime, timezone, timedelta
 import re, json, os
@@ -74,17 +74,29 @@ AD_CLIENT = "ca-pub-1043776171226680"
 AD_SLOT = "5492035216"
 HIRING = "https://hiring.ddolbestory.com"
 
-AD = ('<div style="margin:28px 0;">'
-      '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1043776171226680"'
-      ' crossorigin="anonymous"></script>'
-      '<ins class="adsbygoogle"'
-      ' style="display:block"'
-      f' data-ad-client="{AD_CLIENT}"'
-      f' data-ad-slot="{AD_SLOT}"'
-      ' data-ad-format="auto"'
-      ' data-full-width-responsive="true"></ins>'
-      '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>'
-      '</div>')
+AD_SLOT_TOP = "8366437492"    # [2026-10-21] 목차위 최상단 광고
+AD_SLOT_HOOK = "1471614244"   # [2026-10-21] 후킹 박스 하단 광고
+
+
+def _ad(slot, name):
+    """[2026-10-21] 광고 위치별 슬롯 분리 — 애드센스 보고서에서 위치별 성과 확인용"""
+    return ('<div style="margin:28px 0;">'
+            '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1043776171226680"'
+            ' crossorigin="anonymous"></script>'
+            f'<!-- {name} -->'
+            '<ins class="adsbygoogle"'
+            ' style="display:block"'
+            f' data-ad-client="{AD_CLIENT}"'
+            f' data-ad-slot="{slot}"'
+            ' data-ad-format="auto"'
+            ' data-full-width-responsive="true"></ins>'
+            '<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>'
+            '</div>')
+
+
+AD_TOP = _ad(AD_SLOT_TOP, "목차위 최상단 광고")
+AD_HOOK = _ad(AD_SLOT_HOOK, "후킹 박스 하단 광고")
+AD = _ad(AD_SLOT, "[디스플레이,사각, 반응형] 중간 광고")   # 소제목 위·FAQ 위
 
 RED = 'style="color:#EF4444; font-weight:bold;"'
 P = 'style="font-size:18px; line-height:1.7; word-break:keep-all; margin:0 0 16px; color:#333;"'
@@ -891,7 +903,7 @@ def build_html(job, src, related=None, enh=None):
     ]
 
     # ★ body 조립
-    # 광고 배치: 목차 위 + 목차 아래 + 각 H2 위 + FAQ 위 + 면책 위
+    # 광고 배치: 목차 위 + 목차 아래 + 첫 H2 제외 각 H2 위 + FAQ 위 ([2026-10-21] 면책 위 최하단 광고 제거)
     sections = [s1, s2, s3]
     if not is_regular:
         sections.append(s4)  # 고용형태 (비정규직만)
@@ -911,8 +923,8 @@ def build_html(job, src, related=None, enh=None):
     elif any("채용형" in h for h in hl):
         tenure = "정규직 전환 "
 
-    body = (AD + toc(toc_items)
-            + intro + AD                    # [2026-10-08] 초반 순서: 광고 - 목차 - 후킹박스 - 광고 - 버튼
+    body = (AD_TOP + toc(toc_items)
+            + intro + AD_HOOK               # [2026-10-08] 초반 순서: 광고 - 목차 - 후킹박스 - 광고 - 버튼 ([2026-10-21] 위치별 슬롯)
             + cta("채용공고 바로가기", src)  # ★ 첫 번째 CTA만 변경
             + sections_with_ads
             + AD
@@ -923,7 +935,7 @@ def build_html(job, src, related=None, enh=None):
                if always else
                p(f"이번 {inst} 공고는 {r(md_w(end))}에 접수가 끝나요. {tenure}{hs} {nope_text(job) if nope else '채용'} — 이런 공채는 자주 안 열려요."))
             + cta("지금 바로 지원하기", src)
-            + AD
+            # [2026-10-21] 최하단 광고(마지막 버튼 아래) 제거 — 광고 과다 방지
             + '<div style="background:#F3F4F6; border-radius:10px; padding:16px 18px; margin:30px 0 10px; font-size:14px; color:#6B7280; line-height:1.65; word-break:keep-all;">'
               '본 글은 ' + ('' if priv else '공공기관 ') + '채용정보(' + source_name + ') 공개 데이터를 바탕으로 작성되었어요. 모집 분야, 자격 요건, 일정은 ' + org + ' 사정에 따라 바뀔 수 있으니 지원 전 반드시 원문 공고를 확인하세요. 본 페이지는 채용 ' + org + '과 관계가 없는 정보 안내 페이지예요.</div>'
             + '<script>(function(){var e=document.querySelectorAll(".jm-dday");for(var i=0;i<e.length;i++){var d=Math.ceil((new Date(e[i].getAttribute("data-end"))-new Date())/86400000)-1;e[i].textContent=d>0?("D-"+d+" (마감까지 "+d+"일)"):(d===0?"D-DAY (오늘 마감)":"접수 마감");}})();</script>')
