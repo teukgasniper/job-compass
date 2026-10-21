@@ -9566,5 +9566,279 @@
    "language": null,
    "written": null
   }
+ },
+ "306170": {
+  "at": "2026-10-22 02:37",
+  "url": "https://hiring03.ddolbestory.com/2026/10/klac-306170.html",
+  "source": "주택 및 상가건물임대차분쟁조정위원회 실무관 채용 공고.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력 및 거주지 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자기소개서 평가(지원동기·필요지식·경력·업무계획)",
+     "note": "선발예정인원 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 24일~26일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "12월 14일~16일",
+     "desc": "경험면접 및 상황면접(20분)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 24일~28일",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306179": {
+  "at": "2026-10-22 02:37",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306179.html",
+  "source": "(붙임1) 2026년 여수광양항만공사 직원 채용 공고.hwp",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반직 7급(가) 7명(사무 5명, 기술 2명)과 무기계약직 마급 2명(보건 1명, 기록물 1명)을 뽑아요.",
+    "columns": [
+     "사무(일반)",
+     "사무(AI)",
+     "기술(토목)",
+     "기술(기계AI)",
+     "보건",
+     "기록물"
+    ],
+    "rows": [
+     {
+      "label": "일반직 7급(가)",
+      "values": [
+       5,
+       1,
+       1,
+       1,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "무기계약직 마급",
+      "values": [
+       null,
+       null,
+       null,
+       null,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 제한 없음(공통 자격요건)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "지원자격 적격/부적격 판단",
+     "note": "적격자 전원 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 응시대상자 발표",
+     "date": "11월 11일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 22일(일)",
+     "desc": "AI인성검사+NCS직업기초(50)+직무능력(50)",
+     "note": "5배수+α 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접시험 응시대상자 발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "12월 7일(월)",
+     "desc": "토론면접(50%)+역량면접(50%)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "면접시험합격자 발표",
+     "date": "12월 14일(월)",
+     "desc": "신체검사·신원조회 후 임용"
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (사무(일반))",
+    "text": "사무(일반) 분야는 토익 700점 이상(텝스 340, 토플 71 등) 공인 영어성적이 필요해요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 AI인성검사와 NCS 직업기초능력평가, 직무능력평가로 봐요. 사무(일반) 기준 총 100문항이에요.",
+    "highlight": "100문항",
+    "subjects": [
+     {
+      "name": "AI인성검사",
+      "count": "약 308문항",
+      "scope": "적격/부적격 판정",
+      "note": "평균 30분 소요",
+      "ncs": false
+     },
+     {
+      "name": "NCS 직업기초능력평가",
+      "count": "50문항",
+      "scope": "의사소통, 자원관리, 수리, 조직이해, 문제해결",
+      "note": "과락 60%미만 또는 평가별 40%미만",
+      "ncs": true
+     },
+     {
+      "name": "직무능력평가",
+      "count": "50문항",
+      "scope": "경영학원론, 경제학원론",
+      "note": "사무(일반) 기준, 분야별 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "305962": {
+  "at": "2026-10-22 02:37",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305962.html",
+  "source": "한국의약품안전관리원 2026년 3차 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 4명, 전문계약직 1명, 일반계약직 42명, 일반계약직(육아휴직 대체) 8명을 채용해요.",
+    "columns": [
+     "정규직",
+     "전문계약직",
+     "일반계약직",
+     "일반계약직(육아휴직대체)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       4,
+       1,
+       42,
+       8
+      ]
+     }
+    ],
+    "note": "주요 모집분야는 약무, 전산, 행정, 간호, 통계, 조사연구 등이에요."
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "대부분 분야는 학사 이상 학위 취득자를 요구해요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "교육·자격30+경력30+자기소개서30+지원서10",
+     "note": "채점평균 70점 이상 5배수 내외"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": "11월 9일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성/직무능력검사(온라인)",
+     "date": "11월 9일~12일",
+     "desc": "인성검사(전원)+직무능력검사(정규직 일부)",
+     "note": "미실시자는 면접전형 불가"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 16일~19일",
+     "desc": "업무수행능력 등 4개 항목 평가",
+     "note": "채점평균 70점 이상 합격"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 25일(수)",
+     "desc": "신체검사·신원조사 후 임용",
+     "note": "임용예정일 12월 3일(목)"
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "연령·어학·성별 제한이 없어요.",
+    "highlight": "제한 없음"
+   },
+   "written": {
+    "summary": "필기는 온라인 인성검사와 직무능력검사로 진행돼요. 직무능력검사는 정규직 일부 분야만 해당돼요.",
+    "highlight": "직무능력검사",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": "가치관 등 기본 역량 측정",
+      "note": "전원 대상, 미실시 시 면접 불가",
+      "ncs": false
+     },
+     {
+      "name": "직무능력검사",
+      "count": null,
+      "scope": "이해력, 수리능력, 추리력 등",
+      "note": "정규직(약무 제외) 대상",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }

@@ -1,0 +1,1124 @@
+{
+ "updated": "2026-10-22 02:37",
+ "days": 60,
+ "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
+ "daily": {
+  "hiring.ddolbestory.com": {
+   "20260922": [
+    335,
+    188,
+    188
+   ],
+   "20260923": [
+    5552,
+    3493,
+    3369
+   ],
+   "20260924": [
+    2015,
+    1239,
+    1172
+   ],
+   "20260925": [
+    2772,
+    1488,
+    1410
+   ],
+   "20260926": [
+    2597,
+    1394,
+    1313
+   ],
+   "20260927": [
+    163,
+    104,
+    67
+   ],
+   "20260928": [
+    1166,
+    684,
+    629
+   ],
+   "20260929": [
+    5777,
+    3342,
+    3201
+   ],
+   "20260930": [
+    811,
+    503,
+    442
+   ],
+   "20261001": [
+    100,
+    71,
+    51
+   ],
+   "20261002": [
+    109,
+    72,
+    48
+   ],
+   "20261003": [
+    397,
+    253,
+    226
+   ],
+   "20261004": [
+    202,
+    131,
+    109
+   ],
+   "20261005": [
+    379,
+    259,
+    235
+   ],
+   "20261006": [
+    1703,
+    1151,
+    1048
+   ],
+   "20261007": [
+    5773,
+    4100,
+    3816
+   ],
+   "20261008": [
+    8190,
+    5569,
+    5174
+   ],
+   "20261009": [
+    7370,
+    5021,
+    4773
+   ],
+   "20261010": [
+    9063,
+    6060,
+    5697
+   ],
+   "20261011": [
+    4682,
+    3149,
+    2894
+   ],
+   "20261012": [
+    1364,
+    883,
+    775
+   ],
+   "20261013": [
+    5697,
+    4073,
+    3795
+   ],
+   "20261014": [
+    9675,
+    6237,
+    5713
+   ],
+   "20261015": [
+    13794,
+    9634,
+    9025
+   ],
+   "20261016": [
+    8865,
+    6438,
+    5696
+   ],
+   "20261017": [
+    6761,
+    4679,
+    4193
+   ],
+   "20261018": [
+    7022,
+    4458,
+    4036
+   ],
+   "20261019": [
+    5186,
+    3162,
+    2844
+   ],
+   "20261020": [
+    20830,
+    13868,
+    12913
+   ],
+   "20261021": [
+    9970,
+    6548,
+    6078
+   ]
+  },
+  "hiring01.ddolbestory.com": {
+   "20260922": [
+    1594,
+    1240,
+    1211
+   ],
+   "20260923": [
+    11455,
+    9217,
+    8966
+   ],
+   "20260924": [
+    4234,
+    3159,
+    3142
+   ],
+   "20260925": [
+    4169,
+    3032,
+    2810
+   ],
+   "20260926": [
+    99,
+    73,
+    56
+   ],
+   "20260927": [
+    15,
+    15,
+    1
+   ],
+   "20260928": [
+    12,
+    12,
+    3
+   ],
+   "20260929": [
+    4,
+    3,
+    1
+   ],
+   "20260930": [
+    2,
+    2,
+    0
+   ],
+   "20261002": [
+    2,
+    2,
+    0
+   ],
+   "20261004": [
+    1,
+    1,
+    1
+   ],
+   "20261005": [
+    1,
+    1,
+    1
+   ],
+   "20261006": [
+    3,
+    3,
+    2
+   ],
+   "20261007": [
+    2,
+    2,
+    2
+   ],
+   "20261008": [
+    2,
+    2,
+    2
+   ],
+   "20261010": [
+    1,
+    1,
+    0
+   ]
+  },
+  "hiring03.ddolbestory.com": {
+   "20260922": [
+    99,
+    72,
+    72
+   ],
+   "20260923": [
+    2974,
+    1829,
+    1748
+   ],
+   "20260924": [
+    1339,
+    786,
+    743
+   ],
+   "20260925": [
+    1919,
+    889,
+    842
+   ],
+   "20260926": [
+    2022,
+    721,
+    692
+   ],
+   "20260927": [
+    130,
+    53,
+    37
+   ],
+   "20260928": [
+    1081,
+    472,
+    453
+   ],
+   "20260929": [
+    4826,
+    2275,
+    2203
+   ],
+   "20260930": [
+    4614,
+    2060,
+    1999
+   ],
+   "20261001": [
+    5480,
+    2614,
+    2515
+   ],
+   "20261002": [
+    5674,
+    2583,
+    2474
+   ],
+   "20261003": [
+    1286,
+    568,
+    523
+   ],
+   "20261004": [
+    246,
+    87,
+    77
+   ],
+   "20261005": [
+    373,
+    161,
+    136
+   ],
+   "20261006": [
+    1311,
+    561,
+    534
+   ],
+   "20261007": [
+    3328,
+    1896,
+    1847
+   ],
+   "20261008": [
+    4805,
+    2764,
+    2646
+   ],
+   "20261009": [
+    3871,
+    2049,
+    1974
+   ],
+   "20261010": [
+    4710,
+    2499,
+    2411
+   ],
+   "20261011": [
+    2672,
+    1365,
+    1305
+   ],
+   "20261012": [
+    977,
+    452,
+    423
+   ],
+   "20261013": [
+    3347,
+    2037,
+    1964
+   ],
+   "20261014": [
+    5958,
+    3160,
+    3022
+   ],
+   "20261015": [
+    7618,
+    4091,
+    3907
+   ],
+   "20261016": [
+    4245,
+    2299,
+    2172
+   ],
+   "20261017": [
+    3228,
+    1745,
+    1659
+   ],
+   "20261018": [
+    4019,
+    2068,
+    1962
+   ],
+   "20261019": [
+    2851,
+    1457,
+    1353
+   ],
+   "20261020": [
+    10623,
+    5856,
+    5656
+   ],
+   "20261021": [
+    5482,
+    2851,
+    2719
+   ]
+  },
+  "ac.ddolbestory.com": {
+   "20260930": [
+    4405,
+    2708,
+    2602
+   ],
+   "20261001": [
+    6170,
+    3880,
+    3665
+   ],
+   "20261002": [
+    6116,
+    3603,
+    3444
+   ],
+   "20261003": [
+    907,
+    559,
+    514
+   ],
+   "20261004": [
+    32,
+    30,
+    14
+   ],
+   "20261005": [
+    20,
+    17,
+    9
+   ],
+   "20261006": [
+    43,
+    31,
+    27
+   ],
+   "20261007": [
+    29,
+    19,
+    12
+   ],
+   "20261008": [
+    20,
+    15,
+    9
+   ],
+   "20261009": [
+    20,
+    14,
+    5
+   ],
+   "20261010": [
+    17,
+    10,
+    7
+   ],
+   "20261011": [
+    14,
+    13,
+    7
+   ],
+   "20261012": [
+    22,
+    20,
+    11
+   ],
+   "20261013": [
+    11,
+    10,
+    7
+   ],
+   "20261014": [
+    18,
+    12,
+    6
+   ],
+   "20261015": [
+    35,
+    22,
+    16
+   ],
+   "20261016": [
+    32,
+    18,
+    10
+   ],
+   "20261017": [
+    11,
+    10,
+    4
+   ],
+   "20261018": [
+    16,
+    14,
+    8
+   ],
+   "20261019": [
+    31,
+    18,
+    11
+   ],
+   "20261020": [
+    30,
+    18,
+    15
+   ],
+   "20261021": [
+    4,
+    2,
+    2
+   ]
+  }
+ },
+ "sources": {
+  "hiring.ddolbestory.com": {
+   "20260922": {
+    "(direct)": 333,
+    "blogger.com": 2
+   },
+   "20260923": {
+    "(direct)": 5511,
+    "blogger.com": 20,
+    "l.threads.com": 18,
+    "naver": 2,
+    "instagram.com": 1
+   },
+   "20260924": {
+    "(direct)": 1989,
+    "l.threads.com": 13,
+    "blogger.com": 12,
+    "(not set)": 1
+   },
+   "20260925": {
+    "(direct)": 2725,
+    "l.threads.com": 41,
+    "blogger.com": 5,
+    "m.naver.com": 1
+   },
+   "20260926": {
+    "(direct)": 2544,
+    "l.threads.com": 43,
+    "blogger.com": 7,
+    "(not set)": 1,
+    "claude.ai": 1,
+    "masterpeace01.blogspot.com": 1
+   },
+   "20260927": {
+    "(direct)": 142,
+    "blogger.com": 11,
+    "l.threads.com": 7,
+    "m.facebook.com": 3
+   },
+   "20260928": {
+    "(direct)": 1138,
+    "l.threads.com": 17,
+    "blogger.com": 5,
+    "google": 5,
+    "claude.ai": 1
+   },
+   "20260929": {
+    "(direct)": 5661,
+    "l.threads.com": 100,
+    "blogger.com": 8,
+    "naver": 4,
+    "google": 3,
+    "claude.ai": 1
+   },
+   "20260930": {
+    "(direct)": 779,
+    "l.threads.com": 24,
+    "blogger.com": 6,
+    "facebook.com": 1,
+    "google": 1
+   },
+   "20261001": {
+    "(direct)": 88,
+    "google": 5,
+    "blogger.com": 4,
+    "l.threads.com": 3
+   },
+   "20261002": {
+    "(direct)": 91,
+    "blogger.com": 10,
+    "l.threads.com": 5,
+    "nextgeeker.com": 2,
+    "google": 1
+   },
+   "20261003": {
+    "(direct)": 369,
+    "l.threads.com": 18,
+    "blogger.com": 7,
+    "claude.ai": 2,
+    "google": 1
+   },
+   "20261004": {
+    "(direct)": 190,
+    "l.threads.com": 11,
+    "claude.ai": 1
+   },
+   "20261005": {
+    "(direct)": 362,
+    "l.threads.com": 12,
+    "(not set)": 2,
+    "blogger.com": 1,
+    "claude.ai": 1,
+    "google": 1
+   },
+   "20261006": {
+    "(direct)": 1574,
+    "l.threads.com": 112,
+    "(not set)": 12,
+    "blogger.com": 4,
+    "google": 1
+   },
+   "20261007": {
+    "(direct)": 5500,
+    "l.threads.com": 259,
+    "masterpeace01.blogspot.com": 7,
+    "blogger.com": 3,
+    "m.search.naver.com": 3,
+    "naver": 1
+   },
+   "20261008": {
+    "(direct)": 7813,
+    "l.threads.com": 352,
+    "blogger.com": 13,
+    "(not set)": 5,
+    "claude.ai": 4,
+    "m.naver.com": 1,
+    "m.search.naver.com": 1,
+    "masterpeace01.blogspot.com": 1
+   },
+   "20261009": {
+    "(direct)": 6997,
+    "l.threads.com": 369,
+    "blogger.com": 2,
+    "claude.ai": 1,
+    "google": 1
+   },
+   "20261010": {
+    "(direct)": 8646,
+    "l.threads.com": 402,
+    "l.instagram.com": 8,
+    "google": 7
+   },
+   "20261011": {
+    "(direct)": 4507,
+    "l.threads.com": 158,
+    "m.search.naver.com": 6,
+    "google": 4,
+    "naver": 4,
+    "(not set)": 2,
+    "blogger.com": 1
+   },
+   "20261012": {
+    "(direct)": 1311,
+    "l.threads.com": 42,
+    "blogger.com": 6,
+    "claude.ai": 5
+   },
+   "20261013": {
+    "(direct)": 5492,
+    "l.threads.com": 195,
+    "google": 6,
+    "blogger.com": 2,
+    "(not set)": 1,
+    "facebook.com": 1
+   },
+   "20261014": {
+    "(direct)": 9285,
+    "l.threads.com": 373,
+    "(not set)": 6,
+    "blogger.com": 4,
+    "google": 4,
+    "naver": 2,
+    "masterpeace01.blogspot.com": 1
+   },
+   "20261015": {
+    "(direct)": 13219,
+    "l.threads.com": 539,
+    "google": 20,
+    "(not set)": 7,
+    "m.search.naver.com": 5,
+    "blogger.com": 3,
+    "l.instagram.com": 1
+   },
+   "20261016": {
+    "(direct)": 8450,
+    "l.threads.com": 396,
+    "m.search.naver.com": 6,
+    "google": 4,
+    "blogger.com": 3,
+    "(not set)": 2,
+    "kmmbox.korea.kr": 2,
+    "l.instagram.com": 2
+   },
+   "20261017": {
+    "(direct)": 6459,
+    "l.threads.com": 290,
+    "google": 6,
+    "(not set)": 3,
+    "blogger.com": 2,
+    "l.instagram.com": 1
+   },
+   "20261018": {
+    "(direct)": 6684,
+    "l.threads.com": 309,
+    "l.instagram.com": 14,
+    "google": 8,
+    "(not set)": 4,
+    "instagram.com": 2,
+    "m.search.naver.com": 1
+   },
+   "20261019": {
+    "(direct)": 4944,
+    "l.threads.com": 229,
+    "google": 8,
+    "(not set)": 2,
+    "blogger.com": 1,
+    "m.naver.com": 1,
+    "naver": 1
+   },
+   "20261020": {
+    "(direct)": 20043,
+    "l.threads.com": 752,
+    "google": 22,
+    "m.search.naver.com": 4,
+    "(not set)": 3,
+    "blogger.com": 3,
+    "masterpeace01.blogspot.com": 2,
+    "m.naver.com": 1
+   },
+   "20261021": {
+    "(direct)": 9359,
+    "l.threads.com": 363,
+    "(not set)": 223,
+    "google": 15,
+    "l.instagram.com": 8,
+    "blogger.com": 1,
+    "facebook.com": 1,
+    "m.search.naver.com": 1
+   }
+  },
+  "hiring01.ddolbestory.com": {
+   "20260922": {
+    "(direct)": 1591,
+    "l.threads.com": 3
+   },
+   "20260923": {
+    "(direct)": 11386,
+    "l.threads.com": 52,
+    "naver": 6,
+    "m.search.naver.com": 5,
+    "m.facebook.com": 4,
+    "blogger.com": 1,
+    "facebook.com": 1
+   },
+   "20260924": {
+    "(direct)": 4199,
+    "l.threads.com": 30,
+    "blogger.com": 4,
+    "m.search.naver.com": 1
+   },
+   "20260925": {
+    "(direct)": 4103,
+    "l.threads.com": 60,
+    "naver": 4,
+    "m.search.naver.com": 2
+   },
+   "20260926": {
+    "(direct)": 82,
+    "l.threads.com": 9,
+    "blogger.com": 3,
+    "m.search.naver.com": 2,
+    "claude.ai": 1,
+    "masterpeace01.blogspot.com": 1,
+    "naver": 1
+   },
+   "20260927": {
+    "(direct)": 13,
+    "l.threads.com": 2
+   },
+   "20260928": {
+    "(direct)": 11,
+    "l.threads.com": 1
+   },
+   "20260929": {
+    "(direct)": 3,
+    "l.threads.com": 1
+   },
+   "20260930": {
+    "(direct)": 2
+   },
+   "20261002": {
+    "(direct)": 2
+   },
+   "20261004": {
+    "(direct)": 1
+   },
+   "20261005": {
+    "(direct)": 1
+   },
+   "20261006": {
+    "(direct)": 2,
+    "l.threads.com": 1
+   },
+   "20261007": {
+    "(direct)": 2
+   },
+   "20261008": {
+    "(direct)": 2
+   },
+   "20261010": {
+    "(direct)": 1
+   }
+  },
+  "hiring03.ddolbestory.com": {
+   "20260922": {
+    "(direct)": 97,
+    "blogger.com": 2
+   },
+   "20260923": {
+    "(direct)": 2952,
+    "l.threads.com": 10,
+    "naver": 7,
+    "blogger.com": 5
+   },
+   "20260924": {
+    "(direct)": 1321,
+    "l.threads.com": 11,
+    "blogger.com": 4,
+    "google": 2,
+    "(not set)": 1
+   },
+   "20260925": {
+    "(direct)": 1884,
+    "l.threads.com": 33,
+    "blogger.com": 2
+   },
+   "20260926": {
+    "(direct)": 1984,
+    "l.threads.com": 32,
+    "blogger.com": 3,
+    "facebook.com": 1,
+    "l.instagram.com": 1,
+    "m.naver.com": 1
+   },
+   "20260927": {
+    "(direct)": 114,
+    "claude.ai": 9,
+    "blogger.com": 5,
+    "l.threads.com": 2
+   },
+   "20260928": {
+    "(direct)": 1059,
+    "l.threads.com": 11,
+    "google": 9,
+    "blogger.com": 1,
+    "claude.ai": 1
+   },
+   "20260929": {
+    "(direct)": 4727,
+    "l.threads.com": 78,
+    "google": 9,
+    "naver": 8,
+    "claude.ai": 2,
+    "(not set)": 1,
+    "blogger.com": 1
+   },
+   "20260930": {
+    "(direct)": 4434,
+    "l.threads.com": 176,
+    "google": 2,
+    "blogger.com": 1,
+    "claude.ai": 1
+   },
+   "20261001": {
+    "(direct)": 5261,
+    "l.threads.com": 205,
+    "google": 12,
+    "blogger.com": 1,
+    "claude.ai": 1
+   },
+   "20261002": {
+    "(direct)": 5353,
+    "l.threads.com": 314,
+    "nextgeeker.com": 5,
+    "blogger.com": 2
+   },
+   "20261003": {
+    "(direct)": 1228,
+    "l.threads.com": 57,
+    "blogger.com": 1
+   },
+   "20261004": {
+    "(direct)": 234,
+    "l.threads.com": 12
+   },
+   "20261005": {
+    "(direct)": 358,
+    "l.threads.com": 11,
+    "(not set)": 2,
+    "m.keep.naver.com": 2
+   },
+   "20261006": {
+    "(direct)": 1203,
+    "l.threads.com": 83,
+    "(not set)": 19,
+    "blogger.com": 6
+   },
+   "20261007": {
+    "(direct)": 3146,
+    "l.threads.com": 168,
+    "m.search.naver.com": 7,
+    "(not set)": 4,
+    "blogger.com": 2,
+    "naver": 1
+   },
+   "20261008": {
+    "(direct)": 4594,
+    "l.threads.com": 198,
+    "blogger.com": 7,
+    "(not set)": 4,
+    "google": 1,
+    "l.instagram.com": 1
+   },
+   "20261009": {
+    "(direct)": 3601,
+    "l.threads.com": 267,
+    "(not set)": 1,
+    "blogger.com": 1,
+    "claude.ai": 1
+   },
+   "20261010": {
+    "(direct)": 4452,
+    "l.threads.com": 214,
+    "google": 35,
+    "l.instagram.com": 8,
+    "(not set)": 1
+   },
+   "20261011": {
+    "(direct)": 2569,
+    "l.threads.com": 74,
+    "google": 15,
+    "m.search.naver.com": 5,
+    "naver": 4,
+    "(not set)": 3,
+    "blogger.com": 2
+   },
+   "20261012": {
+    "(direct)": 945,
+    "google": 17,
+    "l.threads.com": 13,
+    "claude.ai": 2
+   },
+   "20261013": {
+    "(direct)": 3211,
+    "l.threads.com": 116,
+    "google": 12,
+    "(not set)": 6,
+    "blogger.com": 2
+   },
+   "20261014": {
+    "(direct)": 5710,
+    "l.threads.com": 217,
+    "google": 16,
+    "blogger.com": 6,
+    "(not set)": 5,
+    "naver": 4
+   },
+   "20261015": {
+    "(direct)": 7249,
+    "l.threads.com": 281,
+    "google": 60,
+    "(not set)": 14,
+    "blogger.com": 8,
+    "m.search.naver.com": 5,
+    "claude.ai": 1
+   },
+   "20261016": {
+    "(direct)": 4015,
+    "l.threads.com": 200,
+    "blogger.com": 10,
+    "m.search.naver.com": 9,
+    "google": 5,
+    "(not set)": 4,
+    "kmmbox.korea.kr": 2
+   },
+   "20261017": {
+    "(direct)": 3079,
+    "l.threads.com": 141,
+    "google": 5,
+    "(not set)": 3
+   },
+   "20261018": {
+    "(direct)": 3812,
+    "l.threads.com": 180,
+    "google": 14,
+    "l.instagram.com": 9,
+    "instagram.com": 3,
+    "blogger.com": 1
+   },
+   "20261019": {
+    "(direct)": 2718,
+    "l.threads.com": 109,
+    "google": 13,
+    "naver": 6,
+    "(not set)": 2,
+    "m.naver.com": 2,
+    "blogger.com": 1
+   },
+   "20261020": {
+    "(direct)": 10159,
+    "l.threads.com": 403,
+    "google": 34,
+    "chatgpt.com": 10,
+    "(not set)": 9,
+    "m.search.naver.com": 4,
+    "l.instagram.com": 2,
+    "blogger.com": 1
+   },
+   "20261021": {
+    "(direct)": 4975,
+    "(not set)": 310,
+    "l.threads.com": 185,
+    "google": 23,
+    "l.instagram.com": 11,
+    "blogger.com": 6,
+    "facebook.com": 1,
+    "instagram.com": 1
+   }
+  },
+  "ac.ddolbestory.com": {
+   "20260930": {
+    "(direct)": 4237,
+    "l.threads.com": 164,
+    "blogger.com": 4
+   },
+   "20261001": {
+    "(direct)": 5931,
+    "l.threads.com": 238,
+    "facebook.com": 1
+   },
+   "20261002": {
+    "(direct)": 5824,
+    "l.threads.com": 291,
+    "l.instagram.com": 1
+   },
+   "20261003": {
+    "(direct)": 867,
+    "l.threads.com": 39,
+    "claude.ai": 1
+   },
+   "20261004": {
+    "(direct)": 29,
+    "l.threads.com": 3
+   },
+   "20261005": {
+    "(direct)": 15,
+    "google": 2,
+    "m.keep.naver.com": 2,
+    "l.threads.com": 1
+   },
+   "20261006": {
+    "(direct)": 43
+   },
+   "20261007": {
+    "(direct)": 26,
+    "google": 3
+   },
+   "20261008": {
+    "(direct)": 17,
+    "google": 3
+   },
+   "20261009": {
+    "(direct)": 16,
+    "google": 4
+   },
+   "20261010": {
+    "(direct)": 12,
+    "google": 5
+   },
+   "20261011": {
+    "(direct)": 9,
+    "google": 5
+   },
+   "20261012": {
+    "(direct)": 11,
+    "google": 11
+   },
+   "20261013": {
+    "(direct)": 8,
+    "google": 3
+   },
+   "20261014": {
+    "(direct)": 14,
+    "google": 4
+   },
+   "20261015": {
+    "(direct)": 25,
+    "google": 10
+   },
+   "20261016": {
+    "(direct)": 19,
+    "google": 8,
+    "blogger.com": 5
+   },
+   "20261017": {
+    "google": 7,
+    "(direct)": 4
+   },
+   "20261018": {
+    "(direct)": 9,
+    "google": 6,
+    "blogger.com": 1
+   },
+   "20261019": {
+    "(direct)": 17,
+    "google": 13,
+    "blogger.com": 1
+   },
+   "20261020": {
+    "google": 12,
+    "chatgpt.com": 10,
+    "(direct)": 7,
+    "blogger.com": 1
+   },
+   "20261021": {
+    "(direct)": 4
+   }
+  }
+ }
+}
