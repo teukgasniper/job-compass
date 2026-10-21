@@ -51,6 +51,15 @@
                   (같은 공고는 같은 날 한 계정만 → 계정끼리 날짜만 다르게), 다른 계정 글의 훅·유형과 겹치지 않게 작성
 [2026-10-20 수정] 계정 확장 대비 — 각색 후보: 전체 계정 통틀어 조회수 높은 순 → 조회수 없는 다른 계정 공고도 점수순
                   (터진 글이 바닥나도 멈추지 않음) / 같은 날 같은 공고는 한 계정만 — 수동 공고에서 일반 공고까지 확대
+[2026-10-21 수정] 마감 임박 ⚠️ 글 전면 변경 (수동·일반 공고 공통)
+                  · 범위 D-2~3 / D-1 공고는 쓰레드에서 아예 건너뜀(일반 글로도 안 올림) → 다음 순위로
+                  · 공고당 전체 계정 통틀어 ⚠️ 마감 글 1번 — 어느 계정이든 한 번 올리면 끝
+                  · 계정끼리 순환 — 가장 최근 ⚠️ 마감 글을 올린 계정은 이번 회차에 마감 글을 안 올림(다른 게 없을 때만 예외)
+                  · 조회수 높은 공고부터 — 우리 쓰레드 글 최고 조회수 → hiring03 본문 조회수 → 점수 순
+[2026-10-21 수정] 수동 공고(MN-) 2일 간격 — 같은 수동 공고는 다른 계정이 마지막으로 올린 날부터 2일이 지나야 다음 계정이 올림
+                  (예: A계정 10/21 → B계정 10/23 → C계정 10/25). ⚠️ 마감 글에도 같은 간격 적용
+[2026-10-21 수정] 쓰레드 동기화 보강 — 직접 올린 글이 같은 기관 공고 여럿과 동점이면(3개 이하) 동점 공고 전부를 '올림'으로 기록
+                  (예: 정부청사 정기채용 + 변경공고) → 자동발행이 같은 공고를 다시 올리지 않게
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
@@ -92,8 +101,10 @@ FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
 MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
 NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] 접수 시작 N일 이내 = 1순위 신규
-MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-1 ~ D-3, 전체 계정 통틀어 ⚠️ 글 1번
-URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "2") or 2)      # [2026-10-15] 마감 D-1 ~ D-N = 2순위 마감 임박
+MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-2 ~ D-3 ([2026-10-21] D-1 제외), 전체 계정 통틀어 ⚠️ 글 1번
+MANUAL_GAP_DAYS = int(os.environ.get("MANUAL_GAP_DAYS", "2") or 2)   # [2026-10-21] 같은 수동 공고는 계정끼리 2일 간격
+LAST_DDAY = 2            # [2026-10-21] 쓰레드는 마감 D-2까지만 — D-1이면 수동·일반 공고 모두 건너뜀 (다음 순위로)
+URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "3") or 3)      # [2026-10-21] 마감 D-2 ~ D-N(3) = 2순위 마감 임박, 전체 계정 통틀어 공고당 1번
 URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
 # [2026-10-19] 긴급형(⚠️) 쏠림 방지 — 최근 URGENT_WINDOW건 안에 긴급형이 URGENT_MAX개 이상이면 이번엔 긴급형 금지
 #              (10/17~19 세 계정 글의 절반 이상이 ⚠️ 마감 글 → 같은 톤 반복으로 조회수 급락)
@@ -604,6 +615,11 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     recent_ids_list = [str(p["id"]) for p in history[-12:]]
     exclude = exclude or set()
     live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
+    # [2026-10-21] 마감 D-1 공고는 쓰레드에서 건너뜀 (수동·일반 모두) — 다음 우선순위로
+    n_live = len(live)
+    live = [j for j in live if j.get("always") or dday(j.get("pbancEndYmd", ""), today) >= LAST_DDAY]
+    if n_live > len(live):
+        print(f"마감 D-1 공고 {n_live - len(live)}개는 건너뜀")
 
     want_priv = want_private_now(history)
     n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
@@ -630,7 +646,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     if not pool:
         return None, 0, 0, None
 
-    # [2026-10-15] 순위: ① 신규(접수 시작 NEW_DAYS일 이내) ② 마감 임박(D-1~D-URGENT_DAYS) ③ 나머지 새 공고
+    # [2026-10-15] 순위: ① 신규(접수 시작 NEW_DAYS일 이내) ② 마감 임박(D-2~D-URGENT_DAYS) ③ 나머지 새 공고
     #              ④ 우리 다른 계정에서 터진 글 각색 ⑤ 내 글 재발행
     def opened_days(j):
         try:
@@ -639,7 +655,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
             return 999
 
     def is_urgent(j):
-        return not j.get("always") and 1 <= dday(j.get("pbancEndYmd", ""), today) <= URGENT_DAYS
+        return not j.get("always") and LAST_DDAY <= dday(j.get("pbancEndYmd", ""), today) <= URGENT_DAYS
 
     def posts_first(cands):
         """같은 순위 안에서 본문 있는 공고 → 본문 없는 공고, 나라일터(인원·학력 없음)는 맨 뒤 [2026-10-14]"""
@@ -656,6 +672,20 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         fresh.sort(key=lambda j: hot_score(j, today), reverse=True)
         top = fresh[:5]
         return random.choices(top, weights=[max(hot_score(j, today), 1) for j in top], k=1)[0]
+
+    # [2026-10-21] 마감 글은 조회수 높은 공고부터 — 우리 쓰레드 글 최고 조회수 → hiring03 본문 조회수 → 점수
+    thread_views = {}
+    for p in list(history) + other_posts:
+        k = str(p.get("id"))
+        thread_views[k] = max(thread_views.get(k, 0), int(p.get("views") or 0))
+
+    def choose_urgent(cands):
+        fresh = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
+        fresh = sorted(fresh, key=lambda j: (thread_views.get(str(j["recrutPblntSn"]), 0), views_of(j),
+                                             hot_score(j, today)), reverse=True)
+        j = fresh[0]
+        print(f"마감 글 선택: {j['instNm']} (쓰레드 조회 {thread_views.get(str(j['recrutPblntSn']), 0)} · 본문 조회 {views_of(j)})")
+        return j
 
     # [2026-10-16] 0순위 수동 공고 — 공공/민간 차례·다른 계정 발행 여부와 상관없이 각 계정에 최소 1번
     #              (직전 글이 수동 공고면 이번 회차는 건너뛰어 수동 공고만 연달아 나가지 않게)
@@ -679,9 +709,28 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         pool = [j for j in pool if str(j["recrutPblntSn"]) not in others_today]   # 마감 알림·각색·재발행으로도 안 나가게
         if n_before > len(pool):
             print(f"다른 계정이 오늘 올린 공고 {n_before - len(pool)}개는 오늘 후보에서 제외")
-    # [2026-10-17] 수동 공고 마감 임박(D-1~3)은 전체 계정 통틀어 ⚠️ 글 1번 — 이미 누가 올렸으면 그 공고는 끝
+    # [2026-10-21] 같은 수동 공고는 계정끼리 MANUAL_GAP_DAYS(2)일 간격 — 다른 계정이 마지막으로 올린 날부터 2일이 지나야 올림
+    #              (예: A계정 10/21 → B계정 10/23 → C계정 10/25)
+    m_last_other = {}
+    for p in other_posts:
+        if is_manual_id(p.get("id")) and p.get("at"):
+            try:
+                d0 = dt.datetime.strptime(p["at"][:10], "%Y-%m-%d").date()
+            except Exception:
+                continue
+            k = str(p["id"])
+            m_last_other[k] = max(m_last_other.get(k, d0), d0)
+    gap_held = {str(j["recrutPblntSn"]) for j in manual_live if str(j["recrutPblntSn"]) in m_last_other
+                and (today - m_last_other[str(j["recrutPblntSn"])]).days < MANUAL_GAP_DAYS}
+    if gap_held:
+        print(f"수동 공고: 다른 계정이 {MANUAL_GAP_DAYS}일 안에 올린 {len(gap_held)}개는 간격 대기 — "
+              + ", ".join(f"{k}(마지막 {m_last_other[k]})" for k in sorted(gap_held)))
+        manual_live = [j for j in manual_live if str(j["recrutPblntSn"]) not in gap_held]
+        pool = [j for j in pool if str(j["recrutPblntSn"]) not in gap_held]
+    # [2026-10-17] 수동 공고 마감 임박은 전체 계정 통틀어 ⚠️ 글 1번 — 이미 누가 올렸으면 그 공고는 끝
+    # [2026-10-21] 범위 D-2~3 (D-1은 위 live에서 이미 빠짐)
     def m_is_urgent(j):
-        return not j.get("always") and 1 <= dday(j.get("pbancEndYmd", ""), today) <= MANUAL_URGENT_DAYS
+        return not j.get("always") and LAST_DDAY <= dday(j.get("pbancEndYmd", ""), today) <= MANUAL_URGENT_DAYS
     all_urgent_done = {str(p["id"]) for p in list(history) + other_posts if p.get("urgent") and is_manual_id(p.get("id"))}
     m_closed = [j for j in manual_live if m_is_urgent(j) and str(j["recrutPblntSn"]) in all_urgent_done]
     if m_closed:
@@ -693,7 +742,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys]
         print(f"수동 공고: 진행 중 {len(manual_live)} / 내 계정 미발행 {len(m_new)} / 마감 임박 알림 대기 {len(m_urgent)}")
         if m_urgent:
-            return choose(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
+            return choose_urgent(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
         if m_new:                                  # 최근에 넣은 수동 공고부터 (접수 시작일 최신순 → 본문 있는 것 → 점수)
             m_new.sort(key=lambda j: (-m_count.get(str(j["recrutPblntSn"]), 0), j.get("pbancBgngYmd") or "",
                                       str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
@@ -707,8 +756,9 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
           f"다른 계정만 올린 {sum(1 for j in new if not never_posted(j))})")
     tier1 = [j for j in new if opened_days(j) <= NEW_DAYS and not is_urgent(j)]
     # 마감 임박: 안 올린 공고 + 내가 올렸던 공고(마감 알림으로 아직 안 올린 것만). 다른 계정이 올린 공고는 제외(중복 방지)
-    urgent_done = {str(p["id"]) for p in history if p.get("urgent")}
-    urgent_new = [j for j in new if is_urgent(j)]
+    # [2026-10-21] 마감 글은 공고당 전체 계정 통틀어 1번 — 다른 계정이 이미 ⚠️ 글을 올렸으면 끝
+    urgent_done = {str(p["id"]) for p in list(history) + other_posts if p.get("urgent")}
+    urgent_new = [j for j in new if is_urgent(j) and str(j["recrutPblntSn"]) not in urgent_done]
     urgent_mine = [j for j in pool if is_urgent(j) and not is_new(j)
                    and (str(j["recrutPblntSn"]) in my_ids or job_key(j) in my_keys)
                    and str(j["recrutPblntSn"]) not in urgent_done and str(j["recrutPblntSn"]) not in recent_ids
@@ -719,13 +769,19 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
 
     recent_n = history[-max(URGENT_EVERY - 1, 0):] if URGENT_EVERY > 1 else []
     urgent_due = not any(p.get("urgent") for p in recent_n)
+    # [2026-10-21] 계정끼리 순환 — 전체 계정 중 가장 최근 ⚠️ 마감 글을 이 계정이 올렸으면 이번엔 마감 글 차례 아님
+    last_u = max(([(p.get("at") or "", "me") for p in history if p.get("urgent")]
+                  + [(p.get("at") or "", "other") for p in other_posts if p.get("urgent")]), default=None)
+    if tier2 and last_u and last_u[1] == "me" and others:
+        print("마감 글 순환: 직전 마감 글을 이 계정이 올려서 이번엔 다른 공고 먼저")
+        urgent_due = False
     u_block = urgent_blocked(history)              # [2026-10-19] 최근 긴급형이 많으면 마감 글은 맨 마지막 수단으로
     print(f"순위별 후보: 신규 {len(tier1)} / 마감 임박 {len(tier2)} (안 올린 {len(urgent_new)}·알림 {len(urgent_mine)}) "
           f"/ 나머지 {len(tier3)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due and not u_block else "")
           + (f" — 최근 {URGENT_WINDOW}건에 긴급형 {URGENT_MAX}개 이상이라 마감 글은 뒤로" if u_block and tier2 else ""))
 
     if tier2 and not u_block and (urgent_due or not tier1):
-        return choose(tier2), 2, len(tier2), None
+        return choose_urgent(tier2), 2, len(tier2), None
     if tier1:
         return choose(tier1), 1, len(tier1), None
     if tier3:
@@ -749,7 +805,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     if not mine:
         if tier2:                                  # [2026-10-19] 긴급형 제한 중이어도 올릴 게 마감 글뿐이면 발행
             print("다른 후보가 없어 마감 임박 글로 발행")
-            return choose(tier2), 2, len(tier2), None
+            return choose_urgent(tier2), 2, len(tier2), None
         return None, 0, 0, None
     repeat = [j for j in mine if str(j["recrutPblntSn"]) not in recent_ids] or mine
 
@@ -2161,6 +2217,10 @@ def match_post_to_job(text: str, ts: str, cands: list, first_rest: str = ""):
     ranked = sorted(((sc(j), j) for j in cands), key=lambda x: -x[0])
     if ranked[0][0] > 0 and ranked[0][0] > ranked[1][0]:
         return ranked[0][1]
+    # [2026-10-21] 동점이 3개 이하면 동점 공고 전부 반환 (정기채용+변경공고처럼 사실상 같은 공고) → 전부 '올림'으로 기록
+    ties = [j for sc_, j in ranked if sc_ == ranked[0][0]]
+    if ranked[0][0] > 0 and len(ties) <= 3:
+        return ties
     return None
 
 
@@ -2191,17 +2251,22 @@ def sync_from_threads(state: dict, jobs: list) -> int:
         j = match_post_to_job(text, it.get("timestamp") or "", cands, m.group(2))
         if not j:
             continue
+        matched = j if isinstance(j, list) else [j]   # [2026-10-21] 동점 공고 여러 개면 전부 기록
+        if len(matched) > 1:
+            print(f"쓰레드 동기화: '{m.group(1)}' 글을 하나로 못 가려 {len(matched)}개 모두 '올림'으로 기록 — "
+                  + ", ".join(str(x["recrutPblntSn"]) for x in matched))
         try:
             at = dt.datetime.strptime(it["timestamp"][:19], "%Y-%m-%dT%H:%M:%S").replace(
                 tzinfo=dt.timezone.utc).astimezone(KST).strftime("%Y-%m-%d %H:%M")
         except Exception:
             at = ""
         hook = "\n".join(text.split("\n\n")[0].split("\n")[:2])
-        state["posts"].append({
-            "id": j["recrutPblntSn"], "instNm": norm_inst(j["instNm"]), "title": j["recrutPbancTtl"],
-            "combo_idx": None, "combo_cat": None, "hook": hook, "tier": 0, "thread_id": tid, "at": at, "synced": True,
-        })
-        added += 1
+        for j in matched:
+            state["posts"].append({
+                "id": j["recrutPblntSn"], "instNm": norm_inst(j["instNm"]), "title": j["recrutPbancTtl"],
+                "combo_idx": None, "combo_cat": None, "hook": hook, "tier": 0, "thread_id": tid, "at": at, "synced": True,
+            })
+            added += 1
     if added:
         state["posts"].sort(key=lambda p: p.get("at") or "")
         print(f"쓰레드 동기화: 기록에 없던 발행글 {added}건 자동 복구")
