@@ -60,6 +60,8 @@
                   (예: A계정 10/21 → B계정 10/23 → C계정 10/25). ⚠️ 마감 글에도 같은 간격 적용
 [2026-10-21 수정] 쓰레드 동기화 보강 — 직접 올린 글이 같은 기관 공고 여럿과 동점이면(3개 이하) 동점 공고 전부를 '올림'으로 기록
                   (예: 정부청사 정기채용 + 변경공고) → 자동발행이 같은 공고를 다시 올리지 않게
+[2026-10-22 수정] 같은 기관 수동 공고는 한 묶음 — 계정마다 기관당 1번, 계정 간 2일 간격·⚠️ 마감 글 1번·같은 날 금지 모두 기관 단위
+                  (연세대 미래캠퍼스 일반Ⅰ·일반Ⅱ 카드 2개가 4계정에 11번 나간 사례). 수동 공고는 0순위로만 발행(일반 순위·각색·재발행 제외)
 [2026-10-07 수정] 공공 8 : 민간 2 비율 — 최근 10건 중 민간이 2건 미만일 때만 민간에서 뽑음 (민간 연속 금지)
                   (민간 +45 고정 가산 때문에 민간이 90% 가까이 뽑히던 문제)
                   같은 그룹(한화·효성·신세계·LS·SK 등) 최근 6건 안에 있으면 건너뜀 — 계열사 연달아 발행 방지
@@ -692,19 +694,30 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     manual_live = [j for j in live if is_manual_id(j["recrutPblntSn"]) and j.get("threads") is not False]   # "threads": false = 쓰레드 제외
     pool = [j for j in pool if j.get("threads") is not False]   # [2026-10-17] 토스 등 쓰레드 제외 공고는 일반 순위로도 안 나가게
     last_manual = bool(history) and is_manual_id(history[-1]["id"])
+    # [2026-10-22] 같은 기관 수동 공고는 한 묶음 — 계정마다 기관당 1번, 2일 간격·마감 글 1번도 기관 단위
+    #              (연세대 미래캠퍼스 일반Ⅰ·일반Ⅱ처럼 카드가 나뉘어도 같은 기관이 너무 자주 안 나오게)
+    def m_grp(name):
+        return norm_key(norm_inst(name or ""))
+    id2grp = {str(j["recrutPblntSn"]): m_grp(j.get("instNm")) for j in jobs if is_manual_id(j.get("recrutPblntSn"))}
+    def p_grp(p):
+        return id2grp.get(str(p.get("id"))) or m_grp(p.get("instNm"))
+    def j_grp(j):
+        return m_grp(j.get("instNm"))
+    my_m_grps = {p_grp(p) for p in history if is_manual_id(p.get("id"))}
     # [2026-10-17] 같은 수동 공고는 같은 날 한 계정만 — 다른 계정이 오늘 올린 수동 공고는 오늘 건너뜀 (내일 이 계정 차례)
     # [2026-10-20] 일반 공고까지 확대 — 다른 계정이 오늘(KST) 올린 공고는 각색·마감 알림·재발행 모두 오늘은 안 올림
     today_s = today.isoformat()
     others_today = {str(p["id"]) for p in other_posts if (p.get("at") or "")[:10] == today_s}
-    m_count = {}                                   # 수동 공고별로 지금까지 올린 계정 수 (적게 올라간 공고부터)
+    m_count = {}                                   # 수동 공고 기관별로 지금까지 올린 계정 수 (적게 올라간 기관부터) [2026-10-22 기관 단위]
     for acc_posts in list(others.values()) + [history]:
-        for sid in {str(p["id"]) for p in acc_posts if is_manual_id(p.get("id"))}:
-            m_count[sid] = m_count.get(sid, 0) + 1
+        for g in {p_grp(p) for p in acc_posts if is_manual_id(p.get("id"))}:
+            m_count[g] = m_count.get(g, 0) + 1
+    others_today_grp = {p_grp(p) for p in other_posts if is_manual_id(p.get("id")) and (p.get("at") or "")[:10] == today_s}
     if others_today:
-        held = [j for j in manual_live if str(j["recrutPblntSn"]) in others_today]
+        held = [j for j in manual_live if str(j["recrutPblntSn"]) in others_today or j_grp(j) in others_today_grp]
         if held:
-            print(f"수동 공고: 다른 계정이 오늘 올린 {len(held)}개는 내일로 미룸 — " + ", ".join(str(j["recrutPblntSn"]) for j in held))
-        manual_live = [j for j in manual_live if str(j["recrutPblntSn"]) not in others_today]
+            print(f"수동 공고: 다른 계정이 오늘 올린 기관 {len(held)}개 공고는 내일로 미룸 — " + ", ".join(str(j["recrutPblntSn"]) for j in held))
+        manual_live = [j for j in manual_live if j not in held]
         n_before = len(pool)
         pool = [j for j in pool if str(j["recrutPblntSn"]) not in others_today]   # 마감 알림·각색·재발행으로도 안 나가게
         if n_before > len(pool):
@@ -718,39 +731,42 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
                 d0 = dt.datetime.strptime(p["at"][:10], "%Y-%m-%d").date()
             except Exception:
                 continue
-            k = str(p["id"])
+            k = p_grp(p)                           # [2026-10-22] 기관 단위
             m_last_other[k] = max(m_last_other.get(k, d0), d0)
-    gap_held = {str(j["recrutPblntSn"]) for j in manual_live if str(j["recrutPblntSn"]) in m_last_other
-                and (today - m_last_other[str(j["recrutPblntSn"])]).days < MANUAL_GAP_DAYS}
+    gap_held = {str(j["recrutPblntSn"]) for j in manual_live if j_grp(j) in m_last_other
+                and (today - m_last_other[j_grp(j)]).days < MANUAL_GAP_DAYS}
     if gap_held:
-        print(f"수동 공고: 다른 계정이 {MANUAL_GAP_DAYS}일 안에 올린 {len(gap_held)}개는 간격 대기 — "
-              + ", ".join(f"{k}(마지막 {m_last_other[k]})" for k in sorted(gap_held)))
+        print(f"수동 공고: 같은 기관을 다른 계정이 {MANUAL_GAP_DAYS}일 안에 올려서 {len(gap_held)}개는 간격 대기 — "
+              + ", ".join(sorted(gap_held)))
         manual_live = [j for j in manual_live if str(j["recrutPblntSn"]) not in gap_held]
         pool = [j for j in pool if str(j["recrutPblntSn"]) not in gap_held]
     # [2026-10-17] 수동 공고 마감 임박은 전체 계정 통틀어 ⚠️ 글 1번 — 이미 누가 올렸으면 그 공고는 끝
     # [2026-10-21] 범위 D-2~3 (D-1은 위 live에서 이미 빠짐)
     def m_is_urgent(j):
         return not j.get("always") and LAST_DDAY <= dday(j.get("pbancEndYmd", ""), today) <= MANUAL_URGENT_DAYS
-    all_urgent_done = {str(p["id"]) for p in list(history) + other_posts if p.get("urgent") and is_manual_id(p.get("id"))}
-    m_closed = [j for j in manual_live if m_is_urgent(j) and str(j["recrutPblntSn"]) in all_urgent_done]
+    all_urgent_done = {p_grp(p) for p in list(history) + other_posts if p.get("urgent") and is_manual_id(p.get("id"))}   # [2026-10-22] 기관 단위
+    m_closed = [j for j in manual_live if m_is_urgent(j) and j_grp(j) in all_urgent_done]
     if m_closed:
         print(f"수동 공고: 마감 임박 글이 이미 나간 {len(m_closed)}개는 더 안 올림 — " + ", ".join(str(j["recrutPblntSn"]) for j in m_closed))
     manual_live = [j for j in manual_live if j not in m_closed]
     pool = [j for j in pool if not (is_manual_id(j["recrutPblntSn"]) and m_is_urgent(j))]   # 마감 임박 수동 공고는 아래 0순위에서만
     if manual_live and not last_manual:
         m_urgent = [j for j in manual_live if m_is_urgent(j)]
-        m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys]
+        m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys
+                 and j_grp(j) not in my_m_grps]    # [2026-10-22] 같은 기관 수동 공고를 이미 올렸으면 이 계정은 끝 (기관당 1번)
         print(f"수동 공고: 진행 중 {len(manual_live)} / 내 계정 미발행 {len(m_new)} / 마감 임박 알림 대기 {len(m_urgent)}")
         if m_urgent:
             return choose_urgent(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
         if m_new:                                  # 최근에 넣은 수동 공고부터 (접수 시작일 최신순 → 본문 있는 것 → 점수)
-            m_new.sort(key=lambda j: (-m_count.get(str(j["recrutPblntSn"]), 0), j.get("pbancBgngYmd") or "",
+            m_new.sort(key=lambda j: (-m_count.get(j_grp(j), 0), j.get("pbancBgngYmd") or "",
                                       str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
             fresh_m = [j for j in m_new if group_key(j["instNm"]) not in recent_insts] or m_new
             return fresh_m[0], 0, len(m_new), None
     elif manual_live:
         print("수동 공고: 직전 글이 수동 공고라 이번 회차는 다른 공고")
 
+    # [2026-10-22] 수동 공고는 0순위(위)에서만 — 일반 순위(신규·마감·각색·재발행)로는 안 나가게 (기관당 1번 유지)
+    pool = [j for j in pool if not is_manual_id(j["recrutPblntSn"])]
     new = [j for j in pool if is_new(j)]
     print(f"내 계정 안 올린 공고 {len(new)}개 (아무도 안 올린 {sum(1 for j in new if never_posted(j))} · "
           f"다른 계정만 올린 {sum(1 for j in new if not never_posted(j))})")
