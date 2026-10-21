@@ -106,6 +106,68 @@ def fetch_views():
     return views
 
 
+TRAFFIC_FILE = "traffic.json"   # [2026-10-22] 사이트별 일별 페이지뷰 — Claude가 카드페이지 추이를 읽는 용도
+TRAFFIC_DAYS = int(os.environ.get("TRAFFIC_DAYS") or 60)
+
+
+def _report(token, prop, body):
+    url = f"https://analyticsdata.googleapis.com/v1beta/properties/{prop}:runReport"
+    rows, offset = [], 0
+    while True:
+        res = post_json(url, dict(body, limit=10000, offset=offset), headers={"Authorization": f"Bearer {token}"})
+        got = res.get("rows", [])
+        rows += got
+        offset += len(got)
+        if not got or offset >= int(res.get("rowCount", 0)):
+            return rows
+
+
+def fetch_traffic():
+    """[2026-10-22] 일별·사이트별 페이지뷰 / 세션 / 사용자 + 카드페이지 유입 경로 → traffic.json
+    - hiring.ddolbestory.com(카드), hiring03(본문) 등 ddolbestory 도메인 전부
+    - 카드페이지가 다른 GA4 속성이면 Variables의 GA4_PROPERTY_ID_CARD 에 그 속성 ID를 넣으면 같이 읽음
+    - 공개 저장소라 광고 수익·클릭 같은 애드센스 지표는 저장하지 않음 (페이지뷰·세션·유입경로만)
+    실패해도 조회수 수집·보강은 그대로 진행"""
+    token = ga4_token()
+    props = [os.environ["GA4_PROPERTY_ID"]]
+    if os.environ.get("GA4_PROPERTY_ID_CARD") and os.environ["GA4_PROPERTY_ID_CARD"] not in props:
+        props.append(os.environ["GA4_PROPERTY_ID_CARD"])
+    rng = [{"startDate": f"{TRAFFIC_DAYS}daysAgo", "endDate": "today"}]
+    daily, sources = {}, {}
+    for prop in props:
+        for r in _report(token, prop, {"dateRanges": rng,
+                                       "dimensions": [{"name": "date"}, {"name": "hostName"}],
+                                       "metrics": [{"name": "screenPageViews"}, {"name": "sessions"}, {"name": "activeUsers"}]}):
+            d, host = (v["value"] for v in r["dimensionValues"])
+            if "ddolbestory" not in host:
+                continue
+            pv, ss, us = (int(float(v["value"])) for v in r["metricValues"])
+            cur = daily.setdefault(host, {}).setdefault(d, [0, 0, 0])
+            cur[0] += pv; cur[1] += ss; cur[2] += us
+        # 카드페이지·본문 유입 경로 (쓰레드·검색·직접 등) — 일별
+        for r in _report(token, prop, {"dateRanges": rng,
+                                       "dimensions": [{"name": "date"}, {"name": "hostName"}, {"name": "sessionSource"}],
+                                       "metrics": [{"name": "screenPageViews"}]}):
+            d, host, src = (v["value"] for v in r["dimensionValues"])
+            if "ddolbestory" not in host:
+                continue
+            day = sources.setdefault(host, {}).setdefault(d, {})
+            day[src] = day.get(src, 0) + int(float(r["metricValues"][0]["value"]))
+    # 유입 경로는 날짜별 상위 8개만 (파일 크기)
+    for host in sources:
+        for d in sources[host]:
+            top = sorted(sources[host][d].items(), key=lambda kv: -kv[1])[:8]
+            sources[host][d] = dict(top)
+    out = {"updated": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "days": TRAFFIC_DAYS,
+           "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
+           "daily": {h: dict(sorted(v.items())) for h, v in daily.items()},
+           "sources": {h: dict(sorted(v.items())) for h, v in sources.items()}}
+    json.dump(out, open(TRAFFIC_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    for h, v in daily.items():
+        last = sorted(v)[-7:]
+        print(f"트래픽 {h}: 최근 7일 페이지뷰 {sum(v[d][0] for d in last):,}")
+
+
 def load(path, default):
     try:
         with open(path, encoding="utf-8") as f:
@@ -128,6 +190,10 @@ def main():
     json.dump({"updated": now.strftime("%Y-%m-%d %H:%M"), "views": views},
               open(VIEWS_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"조회수 수집: hiring03 글 {len(views)}개 (총 {sum(views.values()):,}회)")
+    try:
+        fetch_traffic()                                        # [2026-10-22] 사이트별 일별 트래픽 → traffic.json
+    except Exception as e:
+        print(f"[참고] 사이트별 트래픽 수집 실패 → 건너뜀: {str(e)[:200]}")
 
     jobs = {str(j["recrutPblntSn"]): j for j in load(JOBS_FILE, {"result": []})["result"]}
     mapping = load(MAPPING_FILE, {})
