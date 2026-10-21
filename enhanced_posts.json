@@ -9840,5 +9840,156 @@
     "callout": null
    }
   }
+ },
+ "WK-181626": {
+  "at": "2026-10-22 06:57",
+  "url": "https://hiring03.ddolbestory.com/2026/10/celltrion-wk181626.html",
+  "source": "기업 채용 페이지 (https://celltrion.recruiter.co.kr/career/jobs/131085)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "전공 무관 학사 이상 학위가 필요해요",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형/역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 채용검진/처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 최종합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305928": {
+  "at": "2026-10-22 06:57",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bohun-305928.html",
+  "source": "대전보훈요양원 요양보호사 공개채용 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "요양보호사 자격증 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격증 보유 등 지원자격 요건 충족 시 서류 합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "10월 30일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "11월 9일(월)",
+     "desc": "직무역량 면접, 60% 이상 득점자 중 고득점자 선정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 11일(수)",
+     "desc": "임용서류 준비 후 1차 임용(8명) 발령",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-181629": {
+  "at": "2026-10-22 06:57",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kt-wk181629.html",
+  "source": "기업 채용 페이지 이미지 10조각 (https://kt.recruiter.co.kr/career/jobs/131221)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "정규 4년제 대학 졸업(예정)자(2027년 2월까지 졸업 가능한 자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차/2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
