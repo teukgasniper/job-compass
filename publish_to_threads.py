@@ -323,6 +323,12 @@ def eligible(job: dict, today: dt.date) -> bool:
             return False
     if any(w in title for w in DOCTOR_WORDS):
         return False
+    # [2026-10-22] 제목이 '체험형'인데 고용형태 칸이 '채용형'으로 잘못 들어오는 공고(한전 체험형 청년인턴 450명) — 제목 기준으로 제외
+    if "체험형" in title and not re.search(r"채용형|전환형|정규직", title):
+        return False
+    # [2026-10-22] 박사 학위자만 뽑는 신입 공고 ('AI 박사 신입사원') — 일반 취준생 대상 아님
+    if re.search(r"박사\s*(신입|사원|채용|공채)", title) and not re.search(r"석사|학사|대졸|박사\s*(및|또는|,)", title):
+        return False
     if not_newbie(title):
         return False
     # [2026-10-05] 학력이 석사·박사뿐인 공고는 일반 취준생 대상이 아니라 제외
