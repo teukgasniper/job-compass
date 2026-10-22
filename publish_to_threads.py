@@ -125,6 +125,8 @@ LOGO_DIR = "logos"
 MISSING_PATH = "logos_missing.txt"
 LOGO_RETRY_DAYS = 14
 LOGO_ALIAS = {"주휴스턴 대한민국 총영사관": "외교부"}   # [2026-10-22] 상위 기관 로고를 쓰는 곳 (이름에 상위 기관이 안 들어간 경우)
+# [2026-10-22] 재외공관(주○○ 대사관·총영사관·영사관·대표부·분관)은 로고가 없으면 항상 외교부 로고(logos/외교부.png)
+MOFA_POST_RE = re.compile(r"^주\s*\S+.*(대사관|총영사관|영사관|대표부|분관)|대한민국\s*(대사관|총영사관|영사관|대표부)")
 
 STATE_DIR = "threads_state"
 STATE_PATH = os.path.join(STATE_DIR, f"{ACCOUNT}.json")
@@ -2250,6 +2252,8 @@ def _resolve_logo(inst, job, state):
                 break
         if not path:
             path = find_logo_file(LOGO_ALIAS.get(inst, "")) if LOGO_ALIAS.get(inst) else None
+        if not path and (MOFA_POST_RE.search(norm_inst(inst)) or MOFA_POST_RE.search(norm_inst((job or {}).get("instNm") or ""))):
+            path = find_logo_file("외교부")              # [2026-10-22] 재외공관 → 외교부 로고
     if path:
         return raw_url(path), f"로고 있음 ({path})"
 
