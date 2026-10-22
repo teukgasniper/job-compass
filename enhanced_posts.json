@@ -10366,5 +10366,242 @@
    "language": null,
    "written": null
   }
+ },
+ "306114": {
+  "at": "2026-10-23 02:34",
+  "url": "https://hiring03.ddolbestory.com/2026/10/comwel-306114.html",
+  "source": "261016 [고객센터] 공무직(일반상담사) 채용 공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "광주 6명, 울산 2명, 인천 4명 등 총 12명을 뽑아요.",
+    "columns": [
+     "광주",
+     "울산",
+     "인천"
+    ],
+    "rows": [
+     {
+      "label": "일반상담사",
+      "values": [
+       6,
+       2,
+       4
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력·경력·연령 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 27일~29일",
+     "desc": "응시원서 기준 정량평가(100점, 우대가점 포함 110점)",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 30일(금) 16:00"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 5일~9일",
+     "desc": "직업기초능력·직무수행능력 평가(100점)",
+     "note": "지역별 면접일 상이"
+    },
+    {
+     "type": "notice",
+     "label": "서류검증",
+     "date": "11월 10일~13일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 17일(화) 16:00",
+     "desc": "임용후보자 등록 후 12월 1일 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306181": {
+  "at": "2026-10-23 02:34",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306181.html",
+  "source": "채용공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 학예(4·5급) 2명, 일반운영직 방호 1명, 기간제 교육·전시운영 각 1명을 뽑아요.",
+    "columns": [
+     "인원"
+    ],
+    "rows": [
+     {
+      "label": "정규직 4급(학예)",
+      "values": [
+       1
+      ]
+     },
+     {
+      "label": "정규직 5급(학예)",
+      "values": [
+       1
+      ]
+     },
+     {
+      "label": "일반운영직(방호)",
+      "values": [
+       1
+      ]
+     },
+     {
+      "label": "기간제 5급상당(교육)",
+      "values": [
+       1
+      ]
+     },
+     {
+      "label": "기간제 운영직상당(전시운영)",
+      "values": [
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 11일~12일",
+     "desc": "경력·자격증 정량평가 + 자기소개서·직무수행계획서",
+     "note": "일반직 30배수"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 21일~22일",
+     "desc": "인성검사 + 논술평가(주관식 1~3문항)",
+     "note": "일반직 5배수"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 9일~11일",
+     "desc": "직무발표면접 또는 상황·경험면접",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "서류검증·결격사유 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사와 논술평가로 진행돼요. 논술은 직무 관련 1~3문항이에요.",
+    "highlight": "논술 1~3문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": "50분 내외, 면접 참고자료로 활용",
+      "ncs": false
+     },
+     {
+      "name": "논술평가",
+      "count": "1~3문항",
+      "scope": "내용 이해도, 전문지식 및 응용 능력, 논리적 사고, 표현력",
+      "note": "60분, 주관식",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-181230": {
+  "at": "2026-10-23 02:34",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyundai-wk181230.html",
+  "source": "기업 채용 페이지 이미지 8조각 (https://recruit.ehyundai.com/recruit-info/announcement/view.nhd?hireId=2026590&regCoCd=HDGF)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 12일~25일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인 인성검사 및 1차 실무면접",
+     "date": null,
+     "desc": "온라인으로 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차 임원면접",
+     "date": null,
+     "desc": "대면으로 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 신체검사 및 인턴실습",
+     "date": null,
+     "desc": "인턴실습 5주 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 3차 최종면접 및 정규입사",
+     "date": null,
+     "desc": "대면 면접 후 정규입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
