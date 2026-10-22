@@ -10603,5 +10603,129 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-306076": {
+  "at": "2026-10-23 06:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/knps-gj306076.html",
+  "source": "[공고문] 2026년 금정산국립공원 국립공원지킴이(녹색순찰대) 모집 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·전공, 나이 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 30일~11월 19일",
+     "desc": "서류항목 60%+직무적합성평가 40% 합산, 가·감점 적용",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": "홈페이지 게시 및 합격자 개별통보",
+     "note": "11월 25일 근로계약·근무 시작"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305970": {
+  "at": "2026-10-23 06:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305970.html",
+  "source": "[대전] 2026년 10월 충남대학교병원 업무지원직(주차) 공개채용 공고_최종.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 13일~27일",
+     "desc": "응시자격 충족 여부 적부심사",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "10월~11월 중",
+     "desc": "종합면접(인성·조직적합·직무역량 평가)",
+     "note": "모집인원의 1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 중",
+     "desc": "결격사유 조회, 신체검사 등 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306131": {
+  "at": "2026-10-23 06:53",
+  "url": "https://hiring03.ddolbestory.com/2026/10/klac-306131.html",
+  "source": "대한법률구조공단 상용직(기술관리직 갑종) 직원 채용 공고.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력 및 거주지 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "필요지식·경력, 지원동기, 업무수행계획 정성평가(100점)",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 12일(목)",
+     "desc": "경험면접 및 상황면접(20분)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": "예비합격자 2명 별도 선정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
