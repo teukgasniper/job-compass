@@ -2,7 +2,7 @@ name: 쓰레드 자동발행 (compass)
 
 on:
   schedule:
-    - cron: "11 * * * *"  # 매시간 11분 — jami(41분)와 30분 어긋나게. 발행 간격은 MIN_GAP_MIN으로 약 2시간 유지
+    - cron: "11 * * * *"  # 매시간 11분 — jami(41분)와 30분 어긋나게. 발행 간격은 MIN_GAP_MIN으로 약 3시간 유지
   repository_dispatch:            # 외부 예약(cron-job.org)이 깨우는 자동 실행 — GitHub 예약이 빠져도 발행되게
     types: [threads-compass]
   workflow_dispatch:
@@ -46,7 +46,7 @@ jobs:
           COMMENT_LINK: ${{ vars.COMMENT_LINK_COMPASS || 'profile' }}
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
           JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
-          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '100' || '60' }}   # 자동 실행은 100분 → 실제 평균 약 2시간 간격
+          MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '160' || '60' }}   # [2026-10-22] 자동 실행은 160분 → 매시간 깨우므로 실제 약 3시간 간격 (2시간 → 3시간)
         run: python publish_to_threads.py
 
       - name: 사용 기록 저장
