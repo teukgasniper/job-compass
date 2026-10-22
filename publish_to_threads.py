@@ -104,7 +104,7 @@ JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
 MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
 NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] 접수 시작 N일 이내 = 1순위 신규
 MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-2 ~ D-3 ([2026-10-21] D-1 제외), 전체 계정 통틀어 ⚠️ 글 1번
-MANUAL_GAP_DAYS = int(os.environ.get("MANUAL_GAP_DAYS", "2") or 2)   # [2026-10-21] 같은 수동 공고는 계정끼리 2일 간격
+MANUAL_GAP_DAYS = int(os.environ.get("MANUAL_GAP_DAYS", "3") or 3)   # [2026-10-21] 같은 수동 공고는 계정끼리 간격 ([2026-10-22] 2→3일)
 LAST_DDAY = 2            # [2026-10-21] 쓰레드는 마감 D-2까지만 — D-1이면 수동·일반 공고 모두 건너뜀 (다음 순위로)
 URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "3") or 3)      # [2026-10-21] 마감 D-2 ~ D-N(3) = 2순위 마감 임박, 전체 계정 통틀어 공고당 1번
 URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
@@ -117,6 +117,7 @@ URGENT_MAX = int(os.environ.get("URGENT_MAX", "1") or 1)
 REPOST_MIN_DAYS = int(os.environ.get("REPOST_MIN_DAYS", "3") or 3)
 REPOST_MAX = int(os.environ.get("REPOST_MAX", "2") or 2)
 SAME_ACCOUNT_GAP_DAYS = 3   # [2026-10-22] 한 계정에 같은 공고는 최소 3일 간격 (마감 글·수동 공고 포함 모든 순위)
+CROSS_GAP_DAYS = 3          # [2026-10-22] 다른 계정이 올린 공고는 마지막 발행(어느 계정이든) 후 3일이 지나야 이 계정에 올림
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
 REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
@@ -493,7 +494,7 @@ GROUPS = {
     # [2026-10-14] 나라일터 — 같은 부처 소속(우체국 여러 곳 등)이 연달아 나가지 않게
     "우정": ["과학기술정보통신부우정사업본부"], "법무부": ["법무부"], "기상청": ["기상청"],
 }
-NOT_GROUP = ("엔에이치엔", "엘에스이")          # 이름만 비슷한 비계열사
+NOT_GROUP = ("엔에이치엔", "엘에스이", "하나머티리얼즈", "하나마이크론")   # 이름만 비슷한 비계열사 [2026-10-22 하나금융 아님]
 PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
 
 
@@ -687,7 +688,15 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         return cands
 
     def choose(cands):
-        cands = posts_first(cands)
+        # [2026-10-22] 아무도 안 올린 공고가 있으면 그것부터 — 없으면 다른 계정 글 조회수 높은 순
+        never = [j for j in cands if never_posted(j)]
+        if not never:
+            rest = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
+            rest = sorted(rest, key=lambda j: (thread_views.get(str(j["recrutPblntSn"]), 0), hot_score(j, today)), reverse=True)
+            j = rest[0]
+            print(f"다른 계정이 올렸던 공고 중 조회수 1위: {j['instNm']} (쓰레드 조회 {thread_views.get(str(j['recrutPblntSn']), 0)})")
+            return j
+        cands = posts_first(never)
         fresh = [j for j in cands if group_key(j["instNm"]) not in recent_insts] or cands
         fresh.sort(key=lambda j: hot_score(j, today), reverse=True)
         top = fresh[:5]
@@ -785,10 +794,28 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
 
     # [2026-10-22] 수동 공고는 0순위(위)에서만 — 일반 순위(신규·마감·각색·재발행)로는 안 나가게 (기관당 1번 유지)
     pool = [j for j in pool if not is_manual_id(j["recrutPblntSn"])]
+    # [2026-10-22] 다른 계정이 올린 공고는 어느 계정이든 마지막 발행 후 CROSS_GAP_DAYS(3)일이 지나야 후보
+    #              — 고를 땐 아무도 안 올린 공고 먼저, 그다음 다른 계정 글 조회수 높은 순 (1만 같은 하한은 없음, 우선순위만)
+    any_last = {}
+    for p in other_posts:
+        try:
+            d0 = dt.datetime.strptime((p.get("at") or "")[:10], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        for k in (str(p.get("id")), norm_key(norm_inst(p.get("instNm"))) + "|" + norm_key(p.get("title"))):
+            any_last[k] = max(any_last.get(k, d0), d0)
+    def cross_wait(j):
+        ds = [any_last[k] for k in (str(j["recrutPblntSn"]), job_key(j)) if k in any_last]
+        return bool(ds) and (today - max(ds)).days < CROSS_GAP_DAYS
     new = [j for j in pool if is_new(j)]
+    n_wait = sum(1 for j in new if cross_wait(j))
+    if n_wait:
+        print(f"다른 계정이 {CROSS_GAP_DAYS}일 안에 올린 공고 {n_wait}개는 간격 대기")
+    new = [j for j in new if not cross_wait(j)]
     print(f"내 계정 안 올린 공고 {len(new)}개 (아무도 안 올린 {sum(1 for j in new if never_posted(j))} · "
           f"다른 계정만 올린 {sum(1 for j in new if not never_posted(j))})")
-    tier1 = [j for j in new if opened_days(j) <= NEW_DAYS and not is_urgent(j)]
+    # [2026-10-22] 1·3순위는 아무도 안 올린 공고만 — 다른 계정이 올린 공고는 3-2순위(조회수 높은 순)로 따로
+    tier1 = [j for j in new if never_posted(j) and opened_days(j) <= NEW_DAYS and not is_urgent(j)]
     # 마감 임박: 안 올린 공고 + 내가 올렸던 공고(마감 알림으로 아직 안 올린 것만). 다른 계정이 올린 공고는 제외(중복 방지)
     # [2026-10-21] 마감 글은 공고당 전체 계정 통틀어 1번 — 다른 계정이 이미 ⚠️ 글을 올렸으면 끝
     urgent_done = {str(p["id"]) for p in list(history) + other_posts if p.get("urgent")}
@@ -799,7 +826,8 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
                    and repost_ok(j["recrutPblntSn"], history, today)]   # [2026-10-19] 재발행 간격·횟수 제한
     # 안 올린 공고가 나라일터(인원·학력 없음)뿐이면 내가 올렸던 본문 있는 공고의 마감 알림이 더 나음 → 합쳐서 posts_first로 고름
     tier2 = urgent_new + urgent_mine
-    tier3 = [j for j in new if j not in tier1 and not is_urgent(j)]
+    tier3 = [j for j in new if never_posted(j) and j not in tier1 and not is_urgent(j)]
+    tier3b = [j for j in new if not never_posted(j) and not is_urgent(j)]
 
     recent_n = history[-max(URGENT_EVERY - 1, 0):] if URGENT_EVERY > 1 else []
     urgent_due = not any(p.get("urgent") for p in recent_n)
@@ -811,7 +839,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         urgent_due = False
     u_block = urgent_blocked(history)              # [2026-10-19] 최근 긴급형이 많으면 마감 글은 맨 마지막 수단으로
     print(f"순위별 후보: 신규 {len(tier1)} / 마감 임박 {len(tier2)} (안 올린 {len(urgent_new)}·알림 {len(urgent_mine)}) "
-          f"/ 나머지 {len(tier3)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due and not u_block else "")
+          f"/ 나머지 {len(tier3)} / 다른 계정 글(3일 지남) {len(tier3b)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due and not u_block else "")
           + (f" — 최근 {URGENT_WINDOW}건에 긴급형 {URGENT_MAX}개 이상이라 마감 글은 뒤로" if u_block and tier2 else ""))
 
     if tier2 and not u_block and (urgent_due or not tier1):
@@ -820,9 +848,11 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         return choose(tier1), 1, len(tier1), None
     if tier3:
         return choose(tier3), 3, len(tier3), None
+    if tier3b:                                     # [2026-10-22] 다른 계정이 3일 이상 전에 올린 공고 — 조회수 높은 순
+        return choose(tier3b), 3, len(tier3b), None
 
     # [2026-10-12] 새 공고 소진 → ④ 우리 다른 계정 글을 가져와 각색 (조회수 높은 순 → 나머지 점수순) [2026-10-20]
-    borrows = borrow_candidates(others, pool, my_ids, my_keys, today)
+    borrows = borrow_candidates(others, [j for j in pool if not cross_wait(j)], my_ids, my_keys, today)   # [2026-10-22] 3일 간격 유지
     if borrows:
         fresh_b = [b for b in borrows if group_key(b[0]["instNm"]) not in recent_insts] or borrows
         j, src, acct = fresh_b[0]
@@ -852,6 +882,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
 
     repeat.sort(key=lambda j: (                    # [2026-10-12] 인기순 재발행 — 2번 이상 올린 공고만 뒤로
         times(j) >= 2,
+        -thread_views.get(str(j["recrutPblntSn"]), 0),   # [2026-10-22] 쓰레드 조회수 높은 순 (전체 계정 중 최고)
         str(j["recrutPblntSn"]) not in posts,
         -hot_score(j, today),
         last_at(j),
