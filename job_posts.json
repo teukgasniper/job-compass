@@ -7734,5 +7734,45 @@
   "instNm": "메리츠증권",
   "slug": "wk-182160",
   "published": "2026-10-22 13:51"
+ },
+ "MN-HYUNDAICARD-01": {
+  "postId": "4806609378471247764",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyundaicard-mn01.html",
+  "title": "[현대카드] 2026 계약직 채용 — 여의도 본사 5개 팀 (챗봇·소비자보호·Collection·Fraud) | 계약직 채용, 11월 14일 마감",
+  "instNm": "현대카드",
+  "slug": "hyundaicard-mn01",
+  "published": "2026-10-22 14:29",
+  "manual": "html",
+  "html_hash": "83d329cbf39c"
+ },
+ "MN-NONGSHIM-01": {
+  "postId": "7108647999753128652",
+  "url": "https://hiring03.ddolbestory.com/2026/10/nongshim-mn01.html",
+  "title": "[농심] 생산직 정규사원 채용 — 부산 녹산·경기 안성 공장 (호텔농심 프런트 포함) | 정규직 외 채용, 12월 14일 마감",
+  "instNm": "농심",
+  "slug": "nongshim-mn01",
+  "published": "2026-10-22 14:29",
+  "manual": "html",
+  "html_hash": "43e67e470cf2"
+ },
+ "MN-DREAMTOWER-01": {
+  "postId": "6640795357355663104",
+  "url": "https://hiring03.ddolbestory.com/2026/10/dreamtower-mn01.html",
+  "title": "[제주 드림타워] 카지노·호텔 신입 수시채용 (객실·식음·조리·카지노·예약센터) | 계약직 채용, 채용 시 마감",
+  "instNm": "제주 드림타워",
+  "slug": "dreamtower-mn01",
+  "published": "2026-10-22 14:29",
+  "manual": "html",
+  "html_hash": "99d736274607"
+ },
+ "MN-BGFLOGIS-01": {
+  "postId": "2682245268793735810",
+  "url": "https://hiring03.ddolbestory.com/2026/10/bgflogis-mn01.html",
+  "title": "[BGF로지스] 2026년 4분기 채용연계형 인턴 — 물류관리 직군 (CU 물류센터 전국 권역) | 정규직전환형 채용, 11월 3일 마감",
+  "instNm": "BGF로지스",
+  "slug": "bgflogis-mn01",
+  "published": "2026-10-22 14:29",
+  "manual": "html",
+  "html_hash": "bd9986dd68be"
  }
 }
