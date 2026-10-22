@@ -117,6 +117,7 @@ URGENT_MAX = int(os.environ.get("URGENT_MAX", "1") or 1)
 REPOST_MIN_DAYS = int(os.environ.get("REPOST_MIN_DAYS", "3") or 3)
 REPOST_MAX = int(os.environ.get("REPOST_MAX", "2") or 2)
 SAME_ACCOUNT_GAP_DAYS = 3   # [2026-10-22] 한 계정에 같은 공고는 최소 3일 간격 (마감 글·수동 공고 포함 모든 순위)
+SAME_INST_GAP_DAYS = 3      # [2026-10-22] 한 계정에 같은 기관은 공고가 달라도 최소 3일 간격 (피로도)
 CROSS_GAP_DAYS = 3          # [2026-10-22] 다른 계정이 올린 공고는 마지막 발행(어느 계정이든) 후 3일이 지나야 이 계정에 올림
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
@@ -655,6 +656,25 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     live = [j for j in live if not too_soon(j)]
     if n_live > len(live):
         print(f"이 계정이 {SAME_ACCOUNT_GAP_DAYS}일 안에 올린 공고 {n_live - len(live)}개는 건너뜀")
+    # [2026-10-22] 한 계정에 같은 기관도 최소 SAME_INST_GAP_DAYS(3)일 간격 — 공고가 달라도 (피로도 → 조회수 하락 방지)
+    #              예) 한국보훈복지의료공단: 부산보훈병원(10/21) → 대전보훈병원(10/22) 연속 발행 사례
+    #              후보가 전부 걸리면(드묾) 규칙을 풀고 그대로 진행 — 발행이 멈추지 않게
+    inst_last = {}
+    for p in history:
+        try:
+            d0 = dt.datetime.strptime((p.get("at") or "")[:10], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        k = norm_key(norm_inst(p.get("instNm")))
+        if k:
+            inst_last[k] = max(inst_last.get(k, d0), d0)
+    def inst_too_soon(j):
+        d0 = inst_last.get(norm_key(norm_inst(j.get("instNm"))))
+        return d0 is not None and (today - d0).days < SAME_INST_GAP_DAYS
+    kept = [j for j in live if not inst_too_soon(j)]
+    if len(kept) < len(live):
+        print(f"이 계정이 {SAME_INST_GAP_DAYS}일 안에 올린 기관의 공고 {len(live) - len(kept)}개는 건너뜀")
+    live = kept or live
 
     want_priv = want_private_now(history)
     n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
@@ -1363,9 +1383,12 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
     if tenure:                                    # [2026-10-19] 무기계약·공무직 — 정년까지 근무를 팩트로 넘김
         data["고용 안정(리스트에 반드시 명시)"] = "무기계약 — 정해진 근무 기간 없이 정년까지 근무"
     few = few_heads(job)
-    if few:                                       # [2026-10-17] 5명 이하 — 인원은 넘기지 않음
+    # [2026-10-22] 정규직·계약직이 섞인 공고는 모집인원이 계약직·체험형 인턴까지 합친 숫자 → "정규직 8명"처럼 잘못 쓰여서 넘기지 않음
+    #              (대전보훈병원 8명 = 정규직 + 계약직(영선) + 청년인턴(체험형) 합계인데 "정규직 8명"으로 발행된 사례)
+    mixed = bool(hire_pos) and hire_neg
+    if few or mixed:                              # [2026-10-17] 5명 이하 — 인원은 넘기지 않음
         data.pop("모집인원", None)
-    head = "" if few else "인원·"
+    head = "" if (few or mixed) else "인원·"
     if low_pay:                                   # [2026-10-12] 3천만원 미만 제시 연봉은 넘기지 않음
         data.pop("공고 제시 연봉(클린아이)", None)
     if (job.get("recrutSeNm") or "").strip() == "경력":   # [2026-10-20] 경력 공고 — '경력' 값은 넘기지 않음 (진입장벽)
@@ -1755,7 +1778,8 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
         for c in cands:
             r, err = validate_candidate(c, inst, edu_hidden(job, post_text) or is_gojobs(job), is_cleaneye(job), is_gojobs(job),
                                         urgent, is_private(job),
-                                        contract_only(job), few_heads(job), hire_parts(job)[1], tenure_job(job),
+                                        contract_only(job), few_heads(job) or (bool(hire_parts(job)[0]) and hire_parts(job)[1]),   # [2026-10-22] 정규직·계약직 섞인 공고도 인원 언급 금지
+                                        hire_parts(job)[1], tenure_job(job),
                                         recent_frames)
             if r:
                 valid.append(r)
