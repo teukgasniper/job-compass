@@ -7972,5 +7972,45 @@
   "instNm": "산림청 남부지방산림청",
   "slug": "gj-306365",
   "published": "2026-10-22 19:22"
+ },
+ "MN-SEOULMETRO-01": {
+  "postId": "3626350251306000691",
+  "url": "https://hiring03.ddolbestory.com/2026/10/seoulmetro-mn01.html",
+  "title": "서울교통공사 2026년 하반기 신입사원(채용형 인턴) 공개채용 | 청년인턴(채용형) 482명, 11월 9일 마감",
+  "instNm": "서울교통공사",
+  "slug": "seoulmetro-mn01",
+  "published": "2026-10-22 21:19",
+  "manual": "html",
+  "html_hash": "196a93f14794"
+ },
+ "MN-SUHYUP-01": {
+  "postId": "3476488407572443092",
+  "url": "https://hiring03.ddolbestory.com/2026/10/suhyup-mn01.html",
+  "title": "수협중앙회 2026년 하반기 신입직원 채용 | 정규직 32명, 11월 6일 마감",
+  "instNm": "수협중앙회",
+  "slug": "suhyup-mn01",
+  "published": "2026-10-22 21:19",
+  "manual": "html",
+  "html_hash": "37984cd3eb87"
+ },
+ "MN-KETI-01": {
+  "postId": "8036505077090629891",
+  "url": "https://hiring03.ddolbestory.com/2026/10/keti-mn01.html",
+  "title": "한국전자기술연구원 2026년 정규직 공개채용 | 정규직 46명, 11월 5일 마감",
+  "instNm": "한국전자기술연구원",
+  "slug": "keti-mn01",
+  "published": "2026-10-22 21:19",
+  "manual": "html",
+  "html_hash": "5337da079642"
+ },
+ "MN-KRICT-01": {
+  "postId": "4698048572465967275",
+  "url": "https://hiring03.ddolbestory.com/2026/10/krict-mn01.html",
+  "title": "한국화학연구원 2026년 하반기 정규직 채용 | 정규직 외 11명, 11월 6일 마감",
+  "instNm": "한국화학연구원",
+  "slug": "krict-mn01",
+  "published": "2026-10-22 21:19",
+  "manual": "html",
+  "html_hash": "d4a727fd96ec"
  }
 }
