@@ -39,6 +39,7 @@
 [2026-10-22 수정] 공채속보 공공 공고를 버리지 않음 — 잡알리오·클린아이·나라일터에 없는 공공 공고(서울교통공사 등)가 통째로 빠지던 문제
                   기업구분(coClcdNm)이 공공기관·공기업이거나 이름이 공사·공단·진흥원 등 → 공공 카드(_source "work24pub", 공공기관·공무직 탭)
                   재단·연구원·협회 등은 한국·국립·시도·시군구 이름이면 공공, 아니면 민간(중견기업) — 대한산업안전협회 같은 민간 법인
+                  수동 공고(MN-)가 있으면 같은 공고의 API 카드는 빼고 수동 카드만 남김 (원문 기준이라 더 정확)
                   병합 순서: 잡알리오 → 클린아이 → 공채속보 공공 → 나라일터(정보 부실이라 공공 중 마지막) → 공채속보 민간
                   다른 출처에 같은 기관(이름 느슨 비교)의 같은 마감일 또는 비슷한 제목 공고가 있으면 중복으로 버림
 """
@@ -1073,6 +1074,17 @@ merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_item
 
 
 # [2026-10-08] 수동 공고 — 저장소의 manual_jobs.json (API에 없는 공고 직접 추가)
+def manual_same(x, y):
+    """[2026-10-22] 수동 공고 x와 API 카드 y가 같은 공고인지 — 기관명 느슨 비교 + (같은 마감일 또는 제목 60% 이상)"""
+    import difflib
+    xi, yi = _loose_inst(x.get("instNm")), _loose_inst(y.get("instNm"))
+    if not xi or not yi or not (xi == yi or (min(len(xi), len(yi)) >= 4 and (xi in yi or yi in xi))):
+        return False
+    if x.get("pbancEndYmd") and x.get("pbancEndYmd") == y.get("pbancEndYmd"):
+        return True
+    return difflib.SequenceMatcher(None, _loose_title(x.get("recrutPbancTtl")), _loose_title(y.get("recrutPbancTtl"))).ratio() >= 0.6
+
+
 def add_manual(merged, path="manual_jobs.json"):
     if not os.path.exists(path):
         return
@@ -1086,15 +1098,26 @@ def add_manual(merged, path="manual_jobs.json"):
     have_id = {x.get("recrutPblntSn") for x in merged}
     have_key = {dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) for x in merged}
     added = expired = dup = 0
+    replaced = []
     for x in items:
         if (x.get("pbancEndYmd") or "") < today_str:
             expired += 1; continue
-        if x.get("recrutPblntSn") in have_id or dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) in have_key:
+        if x.get("recrutPblntSn") in have_id:
             dup += 1; continue
+        # [2026-10-22] 수동 공고가 우선 — 같은 공고의 API 카드(같은 기관 + 같은 마감일 또는 비슷한 제목)는 빼고 수동 카드만 남김
+        #   (수동 카드는 원문 기준 강화 본문이 붙고 인원·고용형태가 정확함. 예: 서울교통공사 482명 — 공채속보 카드는 인원 0)
+        key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
+        same = [y for y in merged if not y.get("_manual")
+                and (dedup_key(y.get("instNm", ""), y.get("recrutPbancTtl", "")) == key or manual_same(x, y))]
+        for y in same:
+            merged.remove(y)
+            replaced.append(f"{y.get('recrutPblntSn')} {y.get('instNm', '')} → {x.get('recrutPblntSn')}")
         x = {k: v for k, v in x.items() if k not in ("detail", "post_url", "post_id", "manual_post")}   # 본문용 입력 칸은 카드에서 뺌
         x["_manual"] = True; x["ongoingYn"] = "Y"
         merged.append(x); added += 1
-    print(f"[수동 공고] {added}건 추가 (마감 지남 {expired}건 · 중복 {dup}건 제외)")
+    print(f"[수동 공고] {added}건 추가 (마감 지남 {expired}건 · 중복 {dup}건 제외 · 같은 공고 API 카드 {len(replaced)}건 대체)")
+    for r_ in replaced[:20]:
+        print(f"    ↺ {r_}")
 
 
 # [2026-10-02 추가] 수집 실패 시 직전 jobs.json 공고 재사용 (마감 전 + 이번 결과와 중복 아닌 것만)
