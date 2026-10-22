@@ -9991,5 +9991,114 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-181656": {
+  "at": "2026-10-22 14:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/nongshim-wk181656.html",
+  "source": "기업 채용 페이지 (https://recruit.nongshim.com/recruit/notice/view?companyCd=04&useYear=2026&useSeq=7)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "학력 : 전문대졸 이상",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 충족 여부 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "11월 9일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": "검진 통과 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-181136": {
+  "at": "2026-10-22 14:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-181136.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262173)",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 및 전공 무관",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서 작성 및 제출",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형(SKCT)",
+     "date": "11월 7일",
+     "desc": null,
+     "note": "일정 변동 가능"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월~12월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 중",
+     "desc": "입사는 2027년 1월이에요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기전형은 SKCT(SK종합역량검사)로 진행돼요.",
+    "highlight": "SKCT",
+    "subjects": [],
+    "callout": null
+   }
+  }
  }
 }

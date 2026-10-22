@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-22 06:57",
+ "updated": "2026-10-22 14:17",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -150,14 +150,14 @@
     12913
    ],
    "20261021": [
-    13302,
-    8784,
-    8125
+    13306,
+    8926,
+    8076
    ],
    "20261022": [
-    1759,
-    1067,
-    1018
+    4515,
+    2843,
+    2669
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -389,14 +389,14 @@
     5656
    ],
    "20261021": [
-    7505,
-    3973,
-    3765
+    7539,
+    4013,
+    3761
    ],
    "20261022": [
-    1209,
-    574,
-    559
+    3045,
+    1507,
+    1454
    ]
   },
   "ac.ddolbestory.com": {
@@ -511,9 +511,9 @@
     4
    ],
    "20261022": [
-    1,
-    1,
-    1
+    7,
+    4,
+    3
    ]
   }
  },
@@ -737,19 +737,21 @@
     "m.naver.com": 1
    },
    "20261021": {
-    "(direct)": 12539,
-    "l.threads.com": 465,
-    "(not set)": 269,
-    "google": 19,
+    "(direct)": 12778,
+    "l.threads.com": 488,
+    "google": 21,
+    "(not set)": 8,
     "l.instagram.com": 8,
     "blogger.com": 1,
     "facebook.com": 1,
     "m.search.naver.com": 1
    },
    "20261022": {
-    "(direct)": 1627,
-    "l.threads.com": 115,
-    "(not set)": 16,
+    "(direct)": 4156,
+    "l.threads.com": 231,
+    "(not set)": 116,
+    "l.instagram.com": 6,
+    "m.search.naver.com": 5,
     "threads": 1
    }
   },
@@ -1032,20 +1034,23 @@
     "blogger.com": 1
    },
    "20261021": {
-    "(direct)": 6882,
-    "(not set)": 379,
-    "l.threads.com": 228,
-    "google": 27,
+    "(direct)": 7214,
+    "l.threads.com": 250,
+    "google": 38,
+    "(not set)": 16,
     "l.instagram.com": 11,
     "blogger.com": 6,
     "facebook.com": 1,
     "instagram.com": 1
    },
    "20261022": {
-    "(direct)": 1105,
-    "l.threads.com": 78,
-    "(not set)": 23,
-    "google": 3
+    "(direct)": 2739,
+    "(not set)": 153,
+    "l.threads.com": 134,
+    "google": 8,
+    "l.instagram.com": 6,
+    "m.search.naver.com": 4,
+    "facebook.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1148,7 +1153,8 @@
     "google": 3
    },
    "20261022": {
-    "google": 1
+    "(direct)": 4,
+    "google": 3
    }
   }
  }
