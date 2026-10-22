@@ -36,6 +36,11 @@
 [2026-10-07 수정] 공채속보 — 대기업 그룹 계열사는 이름에 '연구원·재단' 등이 있어도 공공으로 빼지 않음 (현대경제연구원 누락 문제)
 [2026-10-08 추가] 수동 공고(manual_jobs.json) 합치기 — API에 없는 공고(토스 등)를 직접 추가
                   마감일(상시 공고는 정리 날짜) 지난 항목은 자동 제외 / 수집 실패 재사용 대상에서는 제외
+[2026-10-22 수정] 공채속보 공공 공고를 버리지 않음 — 잡알리오·클린아이·나라일터에 없는 공공 공고(서울교통공사 등)가 통째로 빠지던 문제
+                  기업구분(coClcdNm)이 공공기관·공기업이거나 이름이 공사·공단·진흥원 등 → 공공 카드(_source "work24pub", 공공기관·공무직 탭)
+                  재단·연구원·협회 등은 한국·국립·시도·시군구 이름이면 공공, 아니면 민간(중견기업) — 대한산업안전협회 같은 민간 법인
+                  병합 순서: 잡알리오 → 클린아이 → 공채속보 공공 → 나라일터(정보 부실이라 공공 중 마지막) → 공채속보 민간
+                  다른 출처에 같은 기관(이름 느슨 비교)의 같은 마감일 또는 비슷한 제목 공고가 있으면 중복으로 버림
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -175,7 +180,7 @@ def is_quality_post(x):
         return True
     if x.get("_source") == "cleaneye":
         return True  # 클린아이는 collect 단계에서 이미 필터됨
-    if x.get("_source") == "work24":
+    if x.get("_source") in ("work24", "work24pub"):
         return True  # 공채속보도 collect 단계에서 정규직 포함 공고만 남김
     ht = x.get("hireTypeNmLst") or ""
     types = [h.strip() for h in ht.split(",")]
@@ -648,6 +653,10 @@ PUBLIC_WORDS = ["공사", "공단", "재단", "진흥원", "연구원", "관리�
 # [2026-10-06] 협동조합 — 이름에 '중앙회'가 있어도 공공기관이 아님 (다른 3개 출처에 없음) → 공채속보에서 수집
 COOP_WORDS = ["농협", "농업협동조합", "축협", "엔에이치", "NH", "수협", "수산업협동조합",
               "신협", "신용협동조합", "산림조합", "새마을금고"]
+# [2026-10-22] 이름만으로 공공이라 볼 수 있는 단어 / 재단·연구원·협회 등은 한국·국립·지역 이름일 때만 공공
+STRONG_PUBLIC_WORDS = ["공사", "공단", "진흥원", "평가원", "관리원", "개발원", "인재원", "공제회"]
+PUBLIC_NAME_RE = re.compile(r"^(한국|국립|국가|대한민국|서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|충청|"
+                            r"전북|전남|전라|경북|경남|경상|제주)|[가-힣]{1,4}(시|군|구)[가-힣]*(재단|연구원|교육원|센터)")
 GONGCHAE_TITLE_EXCLUDE = ["체험형", "합격자", "취소", "연기", "정정", "대체인력", "단기", "아르바이트"]
 
 
@@ -667,7 +676,10 @@ def gongchae_biz_type(x):
     if any(name.startswith(g) for g in BIG_GROUPS):
         return "대기업"
     if any(w in name for w in PUBLIC_WORDS):
-        return "공공"
+        # [2026-10-22] 공사·공단·진흥원 등은 공공 / 재단·연구원·협회 등은 한국·국립·지역 이름일 때만 공공, 아니면 민간 법인
+        if any(w in name for w in STRONG_PUBLIC_WORDS) or PUBLIC_NAME_RE.search(name):
+            return "공공"
+        return "중견기업"
     # 그룹명으로 시작하지만 그룹 계열이 아닌 회사 (NHN ≠ NH농협, 엘에스이 ≠ LS그룹) — 오탐 발견 시 여기에 추가
     if any(name.startswith(n) for n in NOT_BIG):
         return "중견기업"
@@ -795,7 +807,7 @@ def collect_gongchae():
         time.sleep(0.5)
     print(f"[공채속보] 목록 수집: {len(raw)}건")
 
-    n = {"마감": 0, "고용형태": 0, "제목": 0, "공공": 0, "의사·임원": 0}
+    n = {"마감": 0, "고용형태": 0, "제목": 0, "공공(카드 후보)": 0, "의사·임원": 0}
     kept, public_names = [], []
     for x in raw:
         title = x.get("empWantedTitle", "")
@@ -808,10 +820,9 @@ def collect_gongchae():
         if any(k in title for k in DOCTOR_KEYWORDS) or any(k in title for k in EXECUTIVE_KEYWORDS):
             n["의사·임원"] += 1; continue
         biz = gongchae_biz_type(x)
-        if biz == "공공":
-            n["공공"] += 1
+        if biz == "공공":                              # [2026-10-22] 버리지 않고 공공 카드 후보로 (병합 때 다른 출처와 중복 소거)
+            n["공공(카드 후보)"] += 1
             public_names.append(f"{x.get('empBusiNm', '')} | {title[:30]}")
-            continue
         x["_biz"] = biz
         kept.append(x)
 
@@ -821,7 +832,7 @@ def collect_gongchae():
     prev = {}
     try:
         for p_ in get_json("https://teukgasniper.github.io/job-compass/jobs.json", 30).get("result", []):
-            if p_.get("_source") == "work24" and p_.get("_detailAt"):
+            if p_.get("_source") in ("work24", "work24pub") and p_.get("_detailAt"):
                 prev[p_["recrutPblntSn"]] = p_
     except Exception as e:
         print(f"[공채속보] 직전 데이터 불러오기 실패 → 전부 새로 조회: {e}")
@@ -877,17 +888,18 @@ def collect_gongchae():
             "replmprYn": "N",
             "ongoingYn": "Y",
             "ncsCdNmLst": ",".join(d.get("fields", [])[:5]),
-            "bizType": x["_biz"],                       # 대기업 / 중견기업 → '대기업·중견기업' 탭
+            "bizType": "" if x["_biz"] == "공공" else x["_biz"],   # 대기업 / 중견기업 → '대기업·중견기업' 탭 (공공은 빈 값)
             "logoUrl": x.get("regLogImgNm", ""),
             "_detailAt": d.get("_at", ""),               # 상세 정보 받은 시각 (캐시 판단용)
-            "_source": "work24",
+            "_source": "work24pub" if x["_biz"] == "공공" else "work24",   # [2026-10-22] work24pub = 공공 카드(공공기관·공무직 탭)
         })
 
     big = sum(1 for x in out if x["bizType"] == "대기업")
-    print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big}) · 상세조회 {detail_cnt}회 + 재사용 {reuse_cnt}건 · {int(time.time()-t0)}초")
+    pub = sum(1 for x in out if x["_source"] == "work24pub")
+    print(f"[공채속보] 최종 {len(out)}건 (대기업 {big} / 중견기업 {len(out)-big-pub} / 공공 후보 {pub}) · 상세조회 {detail_cnt}회 + 재사용 {reuse_cnt}건 · {int(time.time()-t0)}초")
     print(f"  제외 — " + " / ".join(f"{k}: {v}" for k, v in n.items()))
     if public_names:                                  # [2026-10-06] 놓친 공고 확인용
-        print(f"  공공으로 제외된 공고 (최대 20건):")
+        print(f"  공공으로 판정된 공고 → 병합 때 다른 출처에 없으면 공공 카드 (최대 20건):")
         for nm in public_names[:20]:
             print(f"    - {nm}")
     return out
@@ -938,6 +950,34 @@ def remember(x, seen_items):
          "src": x.get("_source")})
 
 
+# [2026-10-22] 공채속보 공공 공고 중복 판별용 — 출처마다 다른 기관명 표기를 맞춤
+INST_SPELL = {"케이피에스": "KPS", "엘에이치": "LH", "에스에이치": "SH", "케이티": "KT", "에이치디": "HD",
+              "코레일": "한국철도공사", "케이알": "KR"}
+
+def _loose_inst(name):
+    n = normalize_inst(name or "")
+    for k, v in INST_SPELL.items():
+        n = n.replace(k, v)
+    return re.sub(r"[^가-힣A-Za-z0-9]", "", n).upper()
+
+def public_dup(x, merged, against=None):
+    """against 없으면 공채속보 외 출처(잡알리오·클린아이·나라일터)와 비교, 있으면 그 출처들하고만 비교"""
+    import difflib
+    inst, end = _loose_inst(x.get("instNm")), x.get("pbancEndYmd")
+    t = _loose_title(x.get("recrutPbancTtl"))
+    for y in merged:
+        if (y.get("_source") not in against) if against else (y.get("_source") in ("work24", "work24pub")):
+            continue
+        yi = _loose_inst(y.get("instNm"))
+        sim = difflib.SequenceMatcher(None, t, _loose_title(y.get("recrutPbancTtl"))).ratio()
+        same_inst = bool(inst) and bool(yi) and (inst == yi or (min(len(inst), len(yi)) >= 4 and (inst in yi or yi in inst)))
+        if same_inst and (y.get("pbancEndYmd") == end or sim >= 0.6):
+            return True
+        if end and y.get("pbancEndYmd") == end and sim >= 0.75:
+            return True
+    return False
+
+
 def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=()):
     seen = set()
     seen_items = {}   # [2026-10-14] 기관별 (접수기간·느슨한 제목) — 출처 간 같은 공고 판별용
@@ -965,12 +1005,33 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
         else:
             ce_skipped += 1
 
-    # 3순위: 나라일터
+    pub_items = [x for x in gongchae_items if x.get("_source") == "work24pub"]
+    # [2026-10-22] 3순위: 공채속보 공공 공고 — 잡알리오·클린아이에 없는 것만 공공 카드로
+    #   나라일터보다 앞 (나라일터는 학력·인원·고용형태가 비어 있어 정보가 가장 부실 → 겹치면 나라일터를 버림)
+    #   출처마다 기관명 표기가 달라서(한전케이피에스 ↔ 한전KPS(주)) 느슨하게 비교:
+    #   같은 기관 + (같은 마감일 또는 제목 60% 이상 비슷) → 중복 / 기관명이 달라도 같은 마감일 + 제목 75% 이상 → 중복
+    wp_added, wp_names, wp_dups = 0, [], []
+    for x in pub_items:
+        key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
+        if key in seen or same_posting(x, seen_items) or public_dup(x, merged):
+            wp_dups.append(x.get("instNm", ""))
+            continue
+        seen.add(key)
+        merged.append(x)
+        remember(x, seen_items)
+        wp_added += 1
+        wp_names.append(f"{x.get('instNm', '')} | {(x.get('recrutPbancTtl') or '')[:30]}")
+    print(f"[병합] 공채속보 공공 공고 {len(pub_items)}건 → 다른 출처와 중복 {len(wp_dups)}건 / 새 공공 카드 {wp_added}건")
+    for nm in wp_names[:20]:
+        print(f"    + {nm}")
+
+    # 4순위: 나라일터 (정보가 가장 부실 — 공공 출처 중 마지막)
     gj_added, gj_skipped = 0, 0
     for gj in gojobs_items:
         converted = gojobs_to_alio_format(gj)
         key = dedup_key(converted["instNm"], converted["recrutPbancTtl"])
-        if key not in seen and not same_posting(converted, seen_items):
+        if key not in seen and not same_posting(converted, seen_items) \
+                and not public_dup(converted, merged, against=("work24pub",)):   # [2026-10-22] 공채속보 공공 카드와 겹치면 나라일터를 버림
             seen.add(key)
             merged.append(converted)
             remember(converted, seen_items)
@@ -978,9 +1039,11 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
         else:
             gj_skipped += 1
 
-    # 4순위: 공채속보 (대기업·중견기업)
+    # 5순위: 공채속보 (대기업·중견기업)
     wk_added, wk_skipped = 0, 0
     for x in gongchae_items:
+        if x.get("_source") == "work24pub":
+            continue
         key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
         if key not in seen and not same_posting(x, seen_items):
             seen.add(key)
@@ -1054,6 +1117,8 @@ def reuse_previous(source, label, merged):
                 continue
             if dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) in have_key:
                 continue
+            if source == "gojobs" and public_dup(x, merged, against=("work24pub",)):   # [2026-10-22] 공채속보 공공 카드가 우선
+                continue
             reused.append(x)
         merged.extend(reused)
         print(f"[{label}] 수집 실패 있음 → 직전 데이터 {len(reused)}건 재사용")
@@ -1067,6 +1132,7 @@ if GOJOBS_KEY and (not gojobs_items or NARA_FAILED):   # 일부 검색어만 실
     reuse_previous("gojobs", "나라일터", merged)
 if WORK24_KEY and (GONGCHAE_FAILED or not gongchae_items):
     reuse_previous("work24", "공채속보", merged)
+    reuse_previous("work24pub", "공채속보 공공", merged)   # [2026-10-22]
 
 # ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
 before = len(merged)

@@ -312,7 +312,7 @@ def eligible(job: dict, today: dt.date) -> bool:
         # [2026-10-12] 클린아이는 학력 항목이 원래 없음 → 학력 없이 발행 (리스트·훅에서 학력 언급 금지)
         if not is_private(job) and not is_cleaneye(job) and not has_value(job.get("acbgCondNmLst")):
             return False
-        if not is_private(job):                       # 민간 공고는 인원 데이터가 원래 없음 → 예외
+        if not is_private(job) and job.get("_source") != "work24pub":   # 민간·공채속보 공공 공고는 인원 데이터가 원래 없음 → 예외
             if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
                 return False
         hire = job.get("hireTypeNmLst") or ""
@@ -524,7 +524,12 @@ def is_manual_id(pid) -> bool:
     return str(pid).startswith("MN-")
 
 
+PUBLIC_WK_IDS = set()   # [2026-10-22] 공채속보 공공 공고 번호 (WK-지만 공공) — main에서 jobs.json 읽을 때 채움
+
+
 def is_private_id(pid) -> bool:
+    if str(pid) in PUBLIC_WK_IDS:                   # [2026-10-22] 공채속보 공공 공고는 공공 비율로 셈
+        return False
     return str(pid).startswith(("WK-", "MN-"))      # 공채속보 + 수동 공고(토스 등) [2026-10-08]
 
 
@@ -2458,6 +2463,7 @@ def too_soon(state: dict, where: str) -> bool:
 def main():
     today = dt.datetime.now(KST).date()
     jobs = requests.get(JOBS_URL, timeout=30).json()["result"]
+    PUBLIC_WK_IDS.update(str(j["recrutPblntSn"]) for j in jobs if j.get("_source") == "work24pub")   # [2026-10-22]
     posts = requests.get(POSTS_URL, timeout=30).json()
     state = load_state()
     sync_from_threads(state, jobs)

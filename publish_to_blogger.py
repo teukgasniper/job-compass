@@ -372,7 +372,10 @@ def is_manual(job):
     return bool(job.get("_manual")) or str(job.get("recrutPblntSn", "")).startswith("MN-")
 
 def is_private_job(job):
-    """민간 공고 (공채속보 + 수동 공고) [2026-10-08]"""
+    """민간 공고 (공채속보 + 수동 공고) [2026-10-08]
+    [2026-10-22] 공채속보 공공 공고(_source work24pub)는 번호가 WK-여도 공공"""
+    if job.get("_source") == "work24pub":
+        return False
     return job.get("_source") == "work24" or is_work24(job)
 
 def related_jobs(job, jobs, now):
