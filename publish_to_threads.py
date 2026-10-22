@@ -116,6 +116,7 @@ URGENT_MAX = int(os.environ.get("URGENT_MAX", "1") or 1)
 #              (sniper가 동천안우체국 공고 2개를 3일 사이 4번 올린 사례)
 REPOST_MIN_DAYS = int(os.environ.get("REPOST_MIN_DAYS", "3") or 3)
 REPOST_MAX = int(os.environ.get("REPOST_MAX", "2") or 2)
+SAME_ACCOUNT_GAP_DAYS = 3   # [2026-10-22] 한 계정에 같은 공고는 최소 3일 간격 (마감 글·수동 공고 포함 모든 순위)
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
 REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
@@ -622,6 +623,23 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     live = [j for j in live if j.get("always") or dday(j.get("pbancEndYmd", ""), today) >= LAST_DDAY]
     if n_live > len(live):
         print(f"마감 D-1 공고 {n_live - len(live)}개는 건너뜀")
+    # [2026-10-22] 한 계정에 같은 공고(같은 기관+같은 공고)는 최소 SAME_ACCOUNT_GAP_DAYS(3)일 간격
+    #              — 마감 글·수동 공고·재발행 등 모든 순위 공통 (공고번호가 달라도 같은 기관+같은 공고명이면 같은 공고)
+    my_last = {}
+    for p in history:
+        try:
+            d0 = dt.datetime.strptime((p.get("at") or "")[:10], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        for k in (str(p.get("id")), norm_key(norm_inst(p.get("instNm"))) + "|" + norm_key(p.get("title"))):
+            my_last[k] = max(my_last.get(k, d0), d0)
+    def too_soon(j):
+        ds = [my_last[k] for k in (str(j["recrutPblntSn"]), job_key(j)) if k in my_last]
+        return bool(ds) and (today - max(ds)).days < SAME_ACCOUNT_GAP_DAYS
+    n_live = len(live)
+    live = [j for j in live if not too_soon(j)]
+    if n_live > len(live):
+        print(f"이 계정이 {SAME_ACCOUNT_GAP_DAYS}일 안에 올린 공고 {n_live - len(live)}개는 건너뜀")
 
     want_priv = want_private_now(history)
     n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
@@ -920,58 +938,83 @@ def has_open_fact(job: dict, post_text: str) -> bool:
 # [v3.5] 노잼 대부분이 인물형에서 나와 인물 30%→15%, 1인칭 독백 20%→35%
 #        점심시간 동료 장면·vs 비교 조합 삭제
 # [2026-10-06] 특가 '포기 방지'와 '바보 손실' 분리 — 포기 방지는 열린 조건(need_open)이 있는 공고에서만
+# [2026-10-22] 수동 계정에서 터진 훅(3만~18만) 기준으로 유형 재편 — 자동 계정 감정형 훅은 같은 공고에서 수백~수천에 그침
+#   공통: 훅 2줄 안에 '뭔 자리인지'가 보여야 함 (고용형태·열린 조건·인원·연봉·지역·기관 종류·마감 요일 중 3가지 이상)
+#   인물 대화형·감정만 있는 독백(조용히 넣음·다짐·늦게 안 손해)·바보 손실은 뺌
 COMBOS = [
-    # 인물 대화형 15% — 진짜 있을 법한 오해 + 진짜 피식할 때만. 안 나오면 담백한 1인칭으로 대체
-    {"cat": "person", "person": "부모님", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무를 일상 한 마디로 재정의 → 부모님의 진짜 오해(사기치지 말라고) → 공고 보여줬더니 전환. "
-             "오해는 요즘 기준으로 현실적이어야 함('차에 컴퓨터가 왜 있냐' 같은 비현실 반응 금지). 피식 포인트가 없으면 쓰지 말 것"},
-    {"cat": "person", "person": "여자친구", "structure": "오해→부정반응→역전", "emoji": "📍",
-     "desc": "기관 업무 한 마디 재정의 → 여자친구 진짜 오해(사기꾼이냐고 차일 뻔함) → 공고 보여줬더니 전환. "
-             "오해는 요즘 기준으로 현실적이어야 함. 피식 포인트가 없으면 쓰지 말 것"},
-    # 1인칭 독백형 35% — 상황극 없이 감정 하나. 도로공사 베스트(31만 조회) 계열
-    {"cat": "monologue", "person": "본인", "structure": "포기→의외의 역전", "emoji": "📍",
-     "desc": "어차피 안 되겠지 싶어서 그냥 넣어봤는데 / 조건 다시 보니까 나도 되는 자리였음 — 첫 줄 포기, 둘째 줄 역전. "
-             "역전까지 반드시 훅 2줄 안에서 끝낸다(실패 상태로 끝나는 훅 금지). 역전 근거는 모두에게 열린 조건(학력무관 등)이나 "
-             "브랜드·연봉 같은 매력이어야 하고, '전문학사도 됨'처럼 특정 학력 허용을 근거로 쓰지 않는다"},
-    {"cat": "monologue", "person": "본인", "structure": "조용히 넣었다", "emoji": "📍",
-     "desc": "아무한테도 말 안 하고 조용히 넣었다 — N명이면 해볼 만하다고 봤음. 감정 하나로 담백하게 ('합격하면 그때 말하려고'는 고정 클로저라 금지). "
-             "최근 글에 같은 문장 틀이 있으면 표현을 바꿀 것"},
-    {"cat": "monologue", "person": "본인", "structure": "다짐·선언", "emoji": "📍",
-     "desc": "이번엔 진짜 넣는다 / ○○ 포기하고 이거 하나만 파기로 했음 — 취준생 누구나 하는 결심"},
-    {"cat": "monologue", "person": "본인", "structure": "늦게 안 손해", "emoji": "📍",
-     "desc": "이 공고 마감 직전에 알았으면 진짜 억울할 뻔 / 작년에 이거 몰라서 못 넣었음"},
-    # 팩트 충격형 20% — 숫자를 포장하지 말고 그대로 세게
-    {"cat": "fact", "person": "—", "structure": "숫자·규모 충격", "emoji": "📍",
-     "desc": "역대 최대 N명인데 학력무관 / 평균연봉 N만 회사가 신입을 N명 뽑음 — 'N개 중 1개' 같은 숫자 포장 금지. "
-             "민간이면 평균연봉·브랜드로"},
-    {"cat": "fact", "person": "—", "structure": "조건 나열", "emoji": "📍",
-     "desc": "정규직 + 학력무관 + N명 — 이 조합이 한 공고에 다 있음. 넣을 이유만 나열하고 학력 하한·어학·전형 단계는 나열 금지. "
-             "최근 글에 같은 둘째 줄이 있으면 둘째 줄을 새로 쓸 것"},
-    # 긴급형 15%
-    {"cat": "urgent", "person": "—", "structure": "경고", "emoji": "⚠️",
-     "desc": "N명 학력무관인데 안 넣는 게 사기임 / 취준생 심장 약하면 스크롤 멈춰 — 훅에 이 공고의 알맹이(고용형태·학력무관·인원·연봉·하는 일·근무지 중 1개 이상)를 반드시 넣을 것"},
-    {"cat": "urgent", "person": "—", "structure": "시한폭탄 / 막차", "emoji": "⚠️",
-     "desc": "D-N이라 이번 주 안에 넣어야 됨 — 마감만 말하는 훅 금지('접수 마감이 코앞', '이번 주 막차' 같은 빈 훅 X). "
-             "훅에 이 공고의 알맹이(고용형태·학력무관·인원·연봉·하는 일·근무지·기관 성격 중 1개 이상)를 마감과 함께 넣을 것"},
-    # 특가스나이퍼형 15% — 비교(vs) 금지, 읽는 사람 상황을 바로 저격
-    {"cat": "sniper", "person": "—", "structure": "포기 방지", "emoji": "📍", "need_open": True,
-     "desc": "스펙 없어서 공기업 접은 사람 다시 펴 — 포기를 뒤집을 열린 조건(학력무관·자소서 없음 등)을 리스트에 반드시 넣을 것. "
-             "근거 없이 '다시 봐'만 하면 안 됨. 조건을 겹겹이 단 꼬인 문장 금지"},
-    {"cat": "sniper", "person": "—", "structure": "바보 손실", "emoji": "📍",
-     "desc": "이거 안 넣는 게 손해가 아니라 바보임 — 근거는 강한 팩트(대규모 인원·학력무관·평균연봉·브랜드). "
-             "최근 글에 같은 문장 틀이 있으면 표현을 바꿀 것"},
-    {"cat": "sniper", "person": "—", "structure": "상황 저격", "emoji": "📍",
-     "desc": "지방 사는 취준생인데 이거 모르면 손해 / 스펙 없는 신입이면 이건 꼭 봐 — A vs B 비교 금지. "
-             "특정 학력 집단(전문대생 등)을 지목하지 말 것"},
+    # 팩트 조합형 55% — 수동 베스트 대부분
+    {"cat": "fact", "person": "—", "structure": "조건 조합 + 출근 장면", "emoji": "📍",
+     "desc": "1줄: 이 공고의 강한 조건 3~4개를 ' + '로 묶기 (정규직·무기계약·공무직·학력무관·나이무관·필기 없음·정년 60세·인원·지역). "
+             "2줄: 어디로 출근하는지 그림이 그려지게 (예: '부산 도심 국립공원으로 출근', '항구 도시에서 출근하는 공기업', "
+             "'세종부터 제주까지 청사마다 같이 뽑음'). 베스트: '📍무기계약 + 학력무관 + 필기 없음 / 부산 도심 국립공원으로 출근'(7.6만)"},
+    {"cat": "fact", "person": "—", "structure": "지역 + 기관 종류 직구", "emoji": "📍",
+     "desc": "1줄: '지역 + 기관 종류(공기업·공단·공공기관·정부기관 등) + 고용형태(+ 인원)'을 그대로. 2줄: 강점 하나 (신입만 뽑음·학력무관·출퇴근 가능 지역 등). "
+             "베스트: '📍충남 공기업 정규직 6명 / 신입만 뽑는 공고임'(6.1만), '📍수원·대전·대구에서 출퇴근 가능한 / 학력무관 정규직이 ○○공단에 뜸'(4.3만)"},
+    {"cat": "fact", "person": "—", "structure": "제한 없음 나열", "emoji": "📍", "need_open": True,
+     "desc": "1줄: 안 보는 조건을 가운뎃점으로 나열 (예: '성별·학력·경력·나이 다 안 보는'). 2줄: 기관 종류 + 고용형태(+ 인원). "
+             "데이터에 있는 열린 조건만. 베스트: '📍성별·학력·경력·나이 다 안 보는 / 공공기관 공무직 12명'(10.1만)"},
+    {"cat": "fact", "person": "—", "structure": "필기 없음 직구", "emoji": "📍", "need_nowritten": True,
+     "desc": "1줄: '필기 없이 서류·면접만 보고'처럼 전형이 가볍다는 팩트. 2줄: 정년·기관 종류·고용형태·하는 일. "
+             "베스트: '📍필기 없이 서류·면접만 보고 / 정년 60세 국가 기념관 공무직'(18.4만)"},
+    {"cat": "fact", "person": "—", "structure": "근무지 골라 넣기", "emoji": "📍", "need_multi_region": True,
+     "desc": "1줄: 고용형태(+ 인원) + 근무 지역 여러 곳 나열. 2줄: '집 가까운 데 골라 넣는 공고'처럼 고를 수 있다는 점. "
+             "베스트: '📍공무직 8명 + 서울·수원·영주·진주 / 집 가까운 데 골라 넣는 공고'(3.7만)"},
+    # 조건 역전 독백 15% — 자동 계정에서 터진 것(6~8만)은 전부 '조건'이 드러남
+    {"cat": "monologue", "person": "본인", "structure": "포기→조건 역전", "emoji": "📍",
+     "desc": "첫 줄 선입견, 둘째 줄 그걸 뒤집는 구체 조건 (학력무관·신입 전용·정년·연봉 등)을 단어 그대로. "
+             "감정만 있고 조건이 안 보이는 훅은 금지. 베스트: '📍정규직인데 / 학력 보는 칸이 없음'(8.2만), "
+             "'📍생산직 공고는 / 다 경력직인 줄 알았음'(6.5만), '📍어차피 안 되겠지 싶어서 그냥 넘겼는데 / 학력무관 조건 보고 다시 열어봤음'(6만)"},
+    # 마감형 15% — 무엇(규모·조건) + 어디 + 무슨 요일
+    {"cat": "urgent", "person": "—", "structure": "규모·조건 + 요일 마감", "emoji": "⚠️",
+     "desc": "1줄: 고용형태 + 인원/연봉 + 지역·기관 종류 (예: '정규직 111명을 한 번에 뽑는 대구 공단'). "
+             "2줄: 마감 요일 그대로 (예: '수요일이면 접수 닫힘'). '코앞'·'막차'·'이번 주 넘기면' 같은 막연한 표현만으로 쓰지 말 것. "
+             "베스트: '⚠️정규직 111명을 한 번에 뽑는 대구 공단 / 수요일이면 접수 닫힘'(16.1만)"},
+    {"cat": "urgent", "person": "—", "structure": "요일 마감 + 연봉·지역", "emoji": "⚠️",
+     "desc": "1줄: 'N일 ○요일에 접수 닫힘'. 2줄: 연봉(3천 이상일 때)·지역·고용형태로 무슨 자리인지. "
+             "베스트: '⚠️26일 월요일에 접수 닫힘 / 연봉 3,400 넘는 포항 정규직 공고'(5.2만)"},
+    # 취향·지역 저격 15%
+    {"cat": "sniper", "person": "—", "structure": "취향 저격", "emoji": "📍",
+     "desc": "하는 일과 진짜 연결되는 취향 하나로 저격 (예: 배달직이면 '오토바이 타는 거 좋아하면', 바다 근무면 '바다 보면서 일하고 싶으면', "
+             "전시·해설이면 '전시 보는 거 좋아하면'). 2줄에 지역·기관 종류·고용형태·마감 요일 중 2개 이상. 억지 연결 금지. "
+             "베스트: '⚠️오토바이 타는 거 좋아하면 / 이번 주 금요일까지 대구 우체국 봐'(3.2만)"},
+    {"cat": "sniper", "person": "—", "structure": "지역 저격", "emoji": "📍",
+     "desc": "그 지역 사는 사람을 바로 부르기 + 구체 조건 (예: '대구·경북 사는 사람이면 / 정규직 111명 공채 이번 주에 닫힘'). "
+             "'그냥 넘기지 마' 같은 빈 말 대신 조건으로 끝낼 것. 지역 제한 공고면 특히 잘 맞음"},
 ]
 
-# 유형별 가중치 (비중 반영) — sniper는 조합이 3개라 10으로 맞춤 (전체 비중 유지)
-CAT_WEIGHTS = {"person": 15, "monologue": 35, "fact": 20, "urgent": 15, "sniper": 10}
+# 유형별 가중치 [2026-10-22] — 조합 개수 반영 (fact 5개 55 / monologue 1개 15 / urgent 2개 15 / sniper 2개 15)
+CAT_WEIGHTS = {"fact": 11, "monologue": 15, "urgent": 7.5, "sniper": 7.5, "person": 0}
+
+def no_written(job: dict, post_text: str = "") -> bool:
+    """[2026-10-22] 필기 없이 서류·면접만인 공고인지 — 전형방법(클린아이)·본문 발췌 기준"""
+    jm = job.get("judgeMethod") or ""
+    if jm and "필기" not in jm and re.search(r"서류", jm) and re.search(r"면접", jm):
+        return True
+    txt = (post_text or "") + "\n" + jm
+    return bool(re.search(r"필기\s*(시험|전형)?\s*(없|미실시|생략|면제)", txt))
 
 
-def pick_combo(state, d_left: int, open_fact: bool = True):
+def multi_region(job: dict) -> bool:
+    """[2026-10-22] 근무지가 여러 지역인지"""
+    rg = job.get("workRgnNmLst") or ""
+    return len([x for x in re.split(r"[,·/]", rg) if x.strip()]) >= 2
+
+
+def combo_ok(c, open_fact, job=None, post_text="") -> bool:
+    """[2026-10-22] 조합에 필요한 팩트가 이 공고에 있는지"""
+    if c.get("need_open") and not open_fact:      # [2026-10-06] 근거 없는 포기 방지·제한 없음 나열 금지
+        return False
+    if c.get("need_nowritten") and not (job and no_written(job, post_text)):
+        return False
+    if c.get("need_multi_region") and not (job and multi_region(job)):
+        return False
+    return True
+
+
+def pick_combo(state, d_left: int, open_fact: bool = True, job: dict = None, post_text: str = ""):
     recent = state["posts"][-10:]
-    recent_idxs = {p.get("combo_idx") for p in recent if p.get("combo_idx") is not None}
+    # [2026-10-22] 유형 재편(combo_v 2) 이후 기록만, 최근 4건 조합만 피함 (조합 10개라 10건 다 피하면 고를 게 없음)
+    recent_idxs = {p.get("combo_idx") for p in recent[-4:] if p.get("combo_idx") is not None and p.get("combo_v") == 2}
     recent_cats = [p.get("combo_cat") for p in recent[-2:] if p.get("combo_cat")]
 
     # 최근 2건 중 인물형이 하나라도 있으면 비인물형 강제 (인물 상황극 연속 금지)
@@ -986,19 +1029,21 @@ def pick_combo(state, d_left: int, open_fact: bool = True):
             continue
         if no_urgent and c["cat"] == "urgent":
             continue
-        if d_left > 7 and c["structure"] in ("시한폭탄 / 막차",):
+        if d_left > 7 and c["cat"] == "urgent":   # [2026-10-22] 마감형은 요일 마감이 핵심 → 일주일 안쪽일 때만
             continue
-        if c.get("need_open") and not open_fact:    # [2026-10-06] 근거 없는 포기 방지 금지
+        if not combo_ok(c, open_fact, job, post_text):
             continue
         pool.append(i)
 
     if not pool:
-        pool = [i for i in range(len(COMBOS)) if open_fact or not COMBOS[i].get("need_open")]
+        pool = [i for i in range(len(COMBOS)) if combo_ok(COMBOS[i], open_fact, job, post_text)
+                and not (d_left > 7 and COMBOS[i]["cat"] == "urgent")]
         if force_nonperson:
             pool = [i for i in pool if COMBOS[i]["cat"] != "person"] or pool
         if no_urgent:
             pool = [i for i in pool if COMBOS[i]["cat"] != "urgent"] or pool
 
+    pool = [i for i in pool if CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) > 0] or [0]
     # 가중 랜덤 — 유형별 비중 반영
     weights = [CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) for i in pool]
     idx = random.choices(pool, weights=weights, k=1)[0]
@@ -1008,10 +1053,14 @@ def pick_combo(state, d_left: int, open_fact: bool = True):
 # ─────────────────────────── Claude 프롬프트 (v3.4) ───────────────────────────
 SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작가다. 아래 규격을 100% 지킨다.
 
-[최상위 원칙 — v3.5]
-- 웃길 거면 확실하게, 아니면 담백하게. 모든 글이 웃길 필요는 없다.
-  웃기는 컨셉을 쓸 거면 "실제로 있을 법한 장면 + 읽고 진짜 피식하는 포인트"가 둘 다 있어야 한다.
-  어설프게 웃기려다 실패한 글이 최악이다. 확신이 없으면 담백한 1인칭 감정 한 줄로 간다.
+[최상위 원칙 — 2026-10-22 실측]
+- 훅 2줄만 읽어도 "뭔 자리인지" 보여야 한다. 고용형태(정규직·무기계약·공무직·정년) / 열린 조건(학력무관·나이무관·필기 없음·신입만) /
+  인원 / 연봉 / 지역·출근 장면 / 기관 종류(공기업·공단·공공기관·정부기관·청사·국가 기념관·우체국) / 마감 요일 중 **3가지 이상**을 훅에 넣는다.
+- 감정만 있는 훅은 같은 공고에서 수십 배 진다: "이 공고만 안 보고 넘어갈 뻔했음"(4.6천) vs 수동 "정부청사 + 공무직 + 학력무관 + 정년까지"(3.7만),
+  "올해는 지원서 하나만 끝까지 붙잡기로 했음"(462) vs "충남 공기업 정규직 6명 / 신입만 뽑는 공고임"(6.1만),
+  "⚠️접수 마감이 코앞으로 다가옴"(511) vs "성별·학력·경력·나이 다 안 보는 / 공공기관 공무직 12명"(10.1만),
+  "포항에 공공기관 있는 줄도 몰랐는데"(348) vs "⚠️26일 월요일에 접수 닫힘 / 연봉 3,400 넘는 포항 정규직 공고"(5.2만).
+- 웃기려 하지 않는다. 담백한 팩트 조합이 제일 잘 나온다. 인물 대화형(엄마·여자친구)은 쓰지 않는다.
 - 공감 우선. 읽는 사람이 "내 얘기다" 느껴야 한다. 공고문 절차 디테일로 훅을 만들지 않는다.
 - 과장은 OK, 거짓은 NO. 훅·클로저는 과장 가능. 리스트 5개는 [공고 데이터]/[본문 발췌]에 있는 팩트만.
 - 훅은 화면상 2줄 안에 끝낸다: 최대 2줄, 한 줄 26자 이내(이모지 제외). 질질 끌지 않는다.
@@ -1020,12 +1069,17 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 - 모두에게 열린 말로 쓴다. 조건도 언어도 — 특정 학력 집단을 지목하지 않고, 업계를 모르는 사람도 한 번에 알아듣게.
 
 [포맷]
-- 훅: 최대 2줄, 줄당 26자 이내. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관명·줄임말 절대 넣지 않음.
+- 훅: 최대 2줄, 줄당 26자 이내. 맨 앞에 지정된 이모지(📍 또는 ⚠️) 1개. 기관 정식명칭·줄임말은 넣지 않음.
+  대신 기관 종류(공기업·공단·공공기관·정부기관·청사·국가 기념관·우체국 등)와 지역은 적극적으로 쓴다 ("대구 공단", "충남 공기업").
+  조건을 묶을 땐 ' + '나 가운뎃점(·)으로 짧게 ("정규직 + 학력무관 + 나이무관", "성별·학력·경력·나이").
 - 리스트: 정확히 5개. 1번은 반드시 '기관(기업) 정식명칭' 작은따옴표 + 핵심 팩트 1개(인원·고용형태 정도).
   필수 팩트: 고용형태, 학력조건, 마감일. 지역 제한(거주·연고자 한정)이 있으면 반드시 명시. 각 항목 짧게 한 줄.
   한 항목에 팩트 1개. 같은 팩트를 두 항목에 반복 금지 — 학력은 한 항목에만, 날짜(마감일·접수기간)는 5번 한 곳에만.
   5개가 모두 서로 다른 정보여야 함 (1번에 여러 팩트를 몰아넣고 아래에서 다시 쓰지 말 것).
-- 클로저: 1줄. 과장 OK. 인물형이면 훅과 스토리 연결.
+- 클로저: 1줄. 과장 OK. [2026-10-22] 그 기관·그 지역에서만 나오는 장면이나 희소성으로 끝낸다
+  (예: "도심 한복판 국립공원은 금정산이 처음임", "바다 보이는 사무실이 공기업에도 있었음", "서울 안 가도 공기업 정규직 되는 길이 있었음",
+   "경력자랑 안 겨루는 신입 전용 공채", "이 규모 공채는 대구에서 1년에 몇 번 없음", "시험 공부 없이 박물관 쪽 커리어 시작하는 길").
+  예시 문장을 그대로 쓰지 말고 이 공고에 맞게 새로 쓴다.
 - 반말 구어체. 링크·해시태그 금지. 훅 앞 이모지 외 이모지 금지.
 
 [제외 패턴 23종 — 절대 사용 금지]
@@ -1064,23 +1118,29 @@ OK: "나 돈 찍는 데 취직한다" → "사기치지 말라고" (조폐공사
 NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지 말장난, 무시하다 연봉 듣고 태도 바뀜,
     번호·주민센터·병원비 같은 생활 민원 오해 → 걱정·부탁·칭찬 반응(23번). 확실히 웃기지 않으면 인물형 대신 1인칭으로.
 
-[검증된 베스트]
+[실측 베스트 — 2026-10-22, 우리 수동 계정 (이 방향으로 쓴다)]
+📍필기 없이 서류·면접만 보고 / 정년 60세 국가 기념관 공무직 (18.4만)
+⚠️정규직 111명을 한 번에 뽑는 대구 공단 / 수요일이면 접수 닫힘 (16.1만)
+📍성별·학력·경력·나이 다 안 보는 / 공공기관 공무직 12명 (10.1만)
+📍무기계약 + 학력무관 + 필기 없음 / 부산 도심 국립공원으로 출근 (7.6만)
+📍충남 공기업 정규직 6명 / 신입만 뽑는 공고임 (6.1만)
+📍정부기관 + 사무직 + 정년 60세 + 대전 / 접수는 딱 나흘만 받음 (5.9만)
+⚠️26일 월요일에 접수 닫힘 / 연봉 3,400 넘는 포항 정규직 공고 (5.2만)
+📍수원·대전·대구에서 출퇴근 가능한 / 학력무관 정규직이 ○○공단에 뜸 (4.3만)
+📍공무직 8명 + 서울·수원·영주·진주 / 집 가까운 데 골라 넣는 공고 (3.7만)
+⚠️오토바이 타는 거 좋아하면 / 이번 주 금요일까지 대구 우체국 봐 (3.2만)
+📍정규직 + 학력무관 + 나이무관 / 항구 도시에서 출근하는 공기업 (2.8만)
+자동 계정에서 터진 것도 전부 조건이 드러남: 📍정규직인데 / 학력 보는 칸이 없음 (8.2만), 📍생산직 공고는 / 다 경력직인 줄 알았음 (6.5만)
+리스트도 구체적으로: "서류 → 면접, 필기시험 없음", "월 약 265만원 + 명절휴가비", "일반직 7급·공무직 신입", "경기(수원)·대전·대구 분쟁조정위원회 근무"처럼
+데이터에 있는 팩트를 그대로 짧게.
+
+[예전 베스트 — 참고만]
 (담백 — 1인칭 감정 하나, 조회 31만)
 📍어차피 안 되겠지 싶어서 그냥 넣어봤는데
 서류 붙고 조건 다시 보니까 나도 되는 자리였음
 1. '한국도로공사' 안전순찰원 43명 채용
 (…리스트 생략)
 포기하려던 자리가 정년 보장 무기계약직이었던 거임
-
-(웃김 — 진짜 오해, 조회 50만)
-📍엄마한테 "나 돈 찍는 데 취직한다" 했더니
-사기치지 말라고 하길래 공고 보여줬음
-1. '한국조폐공사' 57명 정규직 채용
-2. 화폐·여권·신분증 만드는 공기업
-3. 학력 안 봄 - 누구나 지원 가능
-4. 대전·서울·경산·부여 배치
-5. 10/2 마감 - 아직 열흘 남음
-공고 보더니 본인도 넣겠다고 함
 
 (경고 — 팩트가 셀 때 한 줄, 조회 39만)
 ⚠️취준생 심장 약하면 스크롤 멈춰
@@ -1122,7 +1182,7 @@ NG: 밋밋한 질문("어딘데?") → 밋밋한 긍정("좋은 데네"), 억지
 
 [출력]
 설명 없이 JSON 객체 하나만 출력. 코드블록 금지.
-후보 4개를 서로 다른 방향으로 쓴다: 2개는 지정된 유형대로, 2개는 담백한 훅(웃기려 하지 않는 1인칭 감정·팩트·경고 중 지정 유형과 다른 것).
+후보 4개를 서로 다른 방향으로 쓴다: 2개는 지정된 유형대로, 2개는 [실측 베스트]의 다른 구조로 (전부 담백하게, 전부 훅에 구체 팩트 3가지 이상).
 {"candidates": [
   {"type": "funny 또는 plain", "cat": "person|monologue|fact|urgent|sniper", "emoji": "📍 또는 ⚠️",
    "hook": "훅(줄바꿈은 \\\\n, 최대 2줄)", "items": ["1번", "2번", "3번", "4번", "5번"], "closer": "클로저 1줄"}
@@ -1134,7 +1194,8 @@ JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이
 
 채점 기준 (각 0~10):
 - relate: 취준생이 "내 얘기다" 느끼나
-- curious: 리스트를 끝까지 읽고 싶어지나
+- curious: 리스트를 끝까지 읽고 싶어지나 — [2026-10-22] 훅 2줄만 보고 '뭔 자리인지'(고용형태·조건·인원·연봉·지역·기관 종류·마감 요일) 보이면 높게,
+  감정·다짐만 있고 무슨 자리인지 안 보이는 훅은 3점 이하 (실측: 같은 공고에서 팩트 조합 훅 3만~18만 vs 감정 훅 수백~수천)
 - fresh: [최근 발행 훅·클로저]와 장면·인물·문장 구조가 안 겹치나
 - funny: type이 funny일 때만 — 실제로 있을 법한 장면인가 + 읽고 진짜 피식하나. 억지 상황극·말장난·무시하다 태도 바뀜·설명 같은 재정의는 0~3점
 
@@ -1235,9 +1296,11 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
         "학력조건": edu_for_prompt(job) + (f" ({job['_edu_text']})" if job.get("_edu_text") else ""),
         "근무지역": job.get("workRgnNmLst"),
         ("모집분야" if is_private(job) else "직무분야(NCS)"): job.get("ncsCdNmLst"),
-        "마감일": f"{end.month}월 {end.day}일",
+        "마감일": f"{end.month}월 {end.day}일({'월화수목금토일'[end.weekday()]}요일)",   # [2026-10-22] 요일 마감 훅용
         "D-day": f"D-{d_left}",
     }
+    if no_written(job, post_text):               # [2026-10-22] 필기 없음은 수동 베스트 단골 팩트 — 확인된 공고만 넘김
+        data["전형(확인됨)"] = "필기시험 없음 — 서류 → 면접"
     if job.get("always"):                         # [2026-10-08] 상시채용 — 정리용 날짜를 마감일로 쓰지 않게
         data.pop("D-day")
         data["마감일"] = (job.get("endLabel") or "상시채용") + " (정해진 마감일 없음 — 날짜·D-day·마감 임박 표현 금지, 리스트 5번은 이 표기 그대로)"
@@ -1459,6 +1522,28 @@ REPEAT_FRAMES = [
 def frames_in(texts) -> set:
     """[2026-10-19] 글 목록에 쓰인 반복 금지 문장 틀 이름"""
     return {name for name, rx in REPEAT_FRAMES for t in texts if rx.search(t or "")}
+# [2026-10-22] 훅 팩트 종류 — 수동 베스트 15개는 전부 3종 이상, 자동 계정 감정 훅은 0~2종 (같은 공고에서 수십 배 차이)
+HOOK_REGION = (r"서울|부산|대구|인천|대전|광주|울산|세종|제주|경기|강원|충북|충남|전북|전남|경북|경남|수도권|지방|"
+               r"수원|포항|여수|광양|보령|안산|창원|청주|천안|전주|진주|원주|영주|김해|성남|고양|용인|화성|평택|구미|경산|"
+               r"도심|바다|항구|해안|섬|본사|전국|지역|동네|집\s*가까|근처|출근|출퇴근|캠퍼스")
+HOOK_FACT_CATS = {
+    "고용형태": r"정규직|무기\s*계약|공무직|정년|채용형|전환|평생",
+    "열린 조건": r"학력|나이|성별|경력.{0,4}(무관|없|안\s*봄|제한)|스펙|필기|서류|면접|자소서|누구나|제한\s*없|신입",
+    "인원·규모": r"\d+\s*명|역대|최대|대규모|공채",
+    "연봉": r"연봉|월급|초봉|평균|\d{1,2},\d{3}|\d+\s*만\s*원|\d+만",
+    "지역·출근": HOOK_REGION,
+    "기관 종류": r"공기업|공공기관|공단|공사|재단|정부|청사|기념관|박물관|우체국|국립|국가|병원|대학|은행|연구원|발전소|센터|기관|"
+                 r"대기업|그룹|계열|증권|항공|호텔|카드|보험|제약|바이오|자동차|조선|반도체|건설|유통|백화점",
+    "마감 요일": r"[월화수목금토일]요일|\d{1,2}\s*일|\d{1,2}/\d{1,2}|내일|모레|나흘|사흘|이틀|하루|D-?\s*\d",
+}
+HOOK_FACT_MIN = int(os.environ.get("HOOK_FACT_MIN", "3") or 3)
+
+
+def hook_fact_cats(hook: str) -> list:
+    h = re.sub(r"^(📍|⚠️|⚠)", "", hook or "")
+    return [k for k, rx in HOOK_FACT_CATS.items() if re.search(rx, h)]
+
+
 URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막차|닫힘|닫혀|끝남|끝나|이번\s*주|며칠|이틀|하루")
 
 
@@ -1488,6 +1573,11 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         return None, "마감 임박 글인데 훅에 마감 강조 없음"
     if hook.startswith("⚠") and not URGENT_SUBSTANCE_RE.search(re.sub(r"^(⚠️|⚠)", "", hook)):   # [2026-10-19]
         return None, "긴급형 훅에 알맹이 없음 (마감만 말함)"
+    # [2026-10-22] 훅에 '뭔 자리인지' — 팩트 종류 3가지 이상 (민간·계약직은 학력·고용형태를 못 써서 2가지)
+    need = HOOK_FACT_MIN - (1 if (private or hide_contract and contract) else 0)
+    got = hook_fact_cats(hook)
+    if len(got) < need:
+        return None, f"훅에 팩트 부족 ({len(got)}종: {'·'.join(got) or '없음'} — {need}종 이상 필요)"
     dup = frames_in([hook + "\n" + closer]) & (recent_frames or set())   # [2026-10-19] 최근 글과 같은 문장 틀
     if dup:
         return None, f"최근 글과 같은 문장 틀 ({', '.join(sorted(dup))})"
@@ -2386,16 +2476,16 @@ def main():
         d_left = 99                               # [2026-10-08] 상시채용 → 시한폭탄·막차 조합 제외
     open_fact = has_open_fact(job, post_text)
     urgent = tier == 2                               # [2026-10-15] 마감 임박 → 시한폭탄/막차 조합 고정 + ⚠️ 강제
-    if urgent:
-        combo_idx = next(i for i, c in enumerate(COMBOS) if c["structure"] == "시한폭탄 / 막차")
+    if urgent:                                       # [2026-10-22] 마감형 조합 2개 중 하나
+        combo_idx = random.choice([i for i, c in enumerate(COMBOS) if c["cat"] == "urgent"])
         combo = COMBOS[combo_idx]
     else:
-        combo_idx, combo = pick_combo(state, d_left, open_fact)
+        combo_idx, combo = pick_combo(state, d_left, open_fact, job, post_text)
     if borrow and borrow.get("cat"):                 # [2026-10-12] 원글과 다른 유형으로 각색
         for _ in range(8):
             if combo["cat"] != borrow["cat"]:
                 break
-            combo_idx, combo = pick_combo(state, d_left, open_fact)
+            combo_idx, combo = pick_combo(state, d_left, open_fact, job, post_text)
         print(f"각색 원글 [{borrow['account']} · 조회 {borrow.get('views')}]: {borrow['hook'].replace(chr(10), ' / ')} (유형 {borrow['cat']})")
     print(f"선정 [{tier_label}]: {inst} / {job['recrutPbancTtl']} / D-{d_left} (이 순위 후보 {n_cands}건)")
     print(f"조합: {combo['cat']} / {combo['person']} / {combo['structure']}" + ("" if open_fact else " (열린 조건 없음 → 포기 방지형 제외)"))
@@ -2414,7 +2504,7 @@ def main():
                 for _ in range(8):
                     if combo["cat"] not in used_cats:
                         break
-                    combo_idx, combo = pick_combo(state, d_left, open_fact)
+                    combo_idx, combo = pick_combo(state, d_left, open_fact, job, post_text)
             for p in other_same[-3:]:
                 recent_hooks.insert(0, "[다른 계정에 이미 올라간 같은 공고 글 — 같은 팩트로 쓰되 훅·클로저·장면·유형을 완전히 다르게] "
                                     + p["hook"].replace("\n", " / ") + (f"  ‖ 클로저: {p['closer']}" if p.get("closer") else ""))
@@ -2481,7 +2571,7 @@ def main():
 
     state["posts"].append({
         "id": job["recrutPblntSn"], "instNm": inst, "title": job["recrutPbancTtl"],
-        "combo_idx": combo_idx, "combo_cat": result.get("cat") or combo["cat"], "hook": result["hook"],
+        "combo_idx": combo_idx, "combo_v": 2, "combo_cat": result.get("cat") or combo["cat"], "hook": result["hook"],
         "closer": result["closer"], "hook_type": result.get("type"),
         "tier": tier, "logo": bool(logo_url), "urgent": urgent,
         **({"borrowed_from": borrow["account"], "orig_thread_id": borrow.get("thread_id")} if borrow else {}),
