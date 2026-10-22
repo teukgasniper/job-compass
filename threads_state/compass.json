@@ -1914,6 +1914,23 @@
    "comment_id": "18105926777255668",
    "at": "2026-10-23 01:01",
    "views": 521
+  },
+  {
+   "id": "MN-HYUNDAICARD-01",
+   "instNm": "현대카드",
+   "title": "[현대카드] 2026 계약직 채용 — 여의도 본사 5개 팀 (챗봇·소비자보호·Collection·Fraud)",
+   "combo_idx": 1,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍여의도 카드사 본사에서\n5개 팀을 한꺼번에 뽑음",
+   "closer": "카드사 안에서 이렇게 다양한 팀을 고르는 기회는 흔치 않음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17944613169091461",
+   "comment_id": "17900753079672764",
+   "at": "2026-10-23 04:13"
   }
  ],
  "views_refreshed_at": "2026-10-23 01:56",
