@@ -124,6 +124,7 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "teukgasniper/job-compass")
 LOGO_DIR = "logos"
 MISSING_PATH = "logos_missing.txt"
 LOGO_RETRY_DAYS = 14
+LOGO_ALIAS = {"주휴스턴 대한민국 총영사관": "외교부"}   # [2026-10-22] 상위 기관 로고를 쓰는 곳 (이름에 상위 기관이 안 들어간 경우)
 
 STATE_DIR = "threads_state"
 STATE_PATH = os.path.join(STATE_DIR, f"{ACCOUNT}.json")
@@ -2241,6 +2242,14 @@ def _resolve_logo(inst, job, state):
     if not USE_LOGO:
         return None, "로고 사용 안 함"
     path = find_logo_file(inst)
+    if not path:                                  # [2026-10-22] 상위 기관 로고로 대체 — 나라일터 전체 기관명을 뒤에서부터
+        full = (job or {}).get("instNm") or ""   #   (예: '…우정사업본부 경인지방우정청 용인우체국' → 우정사업본부.png)
+        for tok in reversed(full.split()[:-1] if full.split() and norm_key(full.split()[-1]) == norm_key(inst) else full.split()):
+            path = find_logo_file(tok)
+            if path:
+                break
+        if not path:
+            path = find_logo_file(LOGO_ALIAS.get(inst, "")) if LOGO_ALIAS.get(inst) else None
     if path:
         return raw_url(path), f"로고 있음 ({path})"
 
