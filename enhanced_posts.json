@@ -10727,5 +10727,66 @@
    "language": null,
    "written": null
   }
+ },
+ "306200": {
+  "at": "2026-10-23 14:16",
+  "url": "https://hiring03.ddolbestory.com/2026/10/snubh-306200.html",
+  "source": "채용공고(게시용).pdf",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 23일~11월 2일",
+     "desc": "온라인 지원서 접수 및 서류전형",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 5일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 직무적성검사",
+     "date": "11월 5일~11월 6일",
+     "desc": "온라인으로 실시",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "직무적성검사 합격자 발표",
+     "date": "11월 10일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 16일",
+     "desc": "필요시 필기·실기 등 실무평가 병행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 신체검사",
+     "date": "11월중",
+     "desc": "면접전형 합격자에 한해 실시",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "직무적성검사는 온라인으로 실시해요.",
+    "highlight": null,
+    "subjects": [],
+    "callout": null
+   }
+  }
  }
 }

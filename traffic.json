@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-23 06:53",
+ "updated": "2026-10-23 14:16",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -155,14 +155,14 @@
     8076
    ],
    "20261022": [
-    13991,
-    9169,
-    8558
+    13989,
+    9297,
+    8516
    ],
    "20261023": [
-    1281,
-    869,
-    834
+    4628,
+    3112,
+    2876
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -399,14 +399,14 @@
     3761
    ],
    "20261022": [
-    8678,
-    4453,
-    4224
+    8677,
+    4541,
+    4222
    ],
    "20261023": [
-    778,
-    409,
-    403
+    2659,
+    1386,
+    1355
    ]
   },
   "ac.ddolbestory.com": {
@@ -524,6 +524,11 @@
     11,
     8,
     7
+   ],
+   "20261023": [
+    1,
+    1,
+    1
    ]
   }
  },
@@ -757,19 +762,19 @@
     "m.search.naver.com": 1
    },
    "20261022": {
-    "(direct)": 13067,
-    "l.threads.com": 522,
-    "(not set)": 381,
+    "(direct)": 13396,
+    "l.threads.com": 570,
     "google": 6,
     "l.instagram.com": 6,
     "m.search.naver.com": 5,
+    "blogger.com": 2,
     "naver": 2,
-    "blogger.com": 1
+    "(not set)": 1
    },
    "20261023": {
-    "(direct)": 1232,
-    "l.threads.com": 26,
-    "(not set)": 23
+    "(direct)": 4283,
+    "(not set)": 194,
+    "l.threads.com": 151
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1061,20 +1066,21 @@
     "instagram.com": 1
    },
    "20261022": {
-    "(direct)": 7766,
-    "(not set)": 562,
-    "l.threads.com": 308,
+    "(direct)": 8275,
+    "l.threads.com": 352,
     "google": 26,
+    "(not set)": 7,
     "l.instagram.com": 7,
     "m.search.naver.com": 4,
-    "blogger.com": 1,
+    "blogger.com": 2,
     "br.nate.com": 1
    },
    "20261023": {
-    "(direct)": 724,
-    "(not set)": 36,
-    "l.threads.com": 16,
+    "(direct)": 2299,
+    "(not set)": 267,
+    "l.threads.com": 90,
     "facebook.com": 1,
+    "l.instagram.com": 1,
     "lm.facebook.com": 1
    }
   },
@@ -1180,6 +1186,9 @@
    "20261022": {
     "(direct)": 6,
     "google": 5
+   },
+   "20261023": {
+    "(direct)": 1
    }
   }
  }
