@@ -118,6 +118,7 @@ REPOST_MIN_DAYS = int(os.environ.get("REPOST_MIN_DAYS", "3") or 3)
 REPOST_MAX = int(os.environ.get("REPOST_MAX", "2") or 2)
 SAME_ACCOUNT_GAP_DAYS = 3   # [2026-10-22] 한 계정에 같은 공고는 최소 3일 간격 (마감 글·수동 공고 포함 모든 순위)
 SAME_INST_GAP_DAYS = 3      # [2026-10-22] 한 계정에 같은 기관은 공고가 달라도 최소 3일 간격 (피로도)
+NO_REPOST_ACCOUNTS = {"sniper"}   # [2026-10-23] 재탕 금지 실험 — 아무 계정도 안 올린 공고만 발행, 없으면 그 회차는 건너뜀
 CROSS_GAP_DAYS = 3          # [2026-10-22] 다른 계정이 올린 공고는 마지막 발행(어느 계정이든) 후 3일이 지나야 이 계정에 올림
 
 USE_LOGO = os.environ.get("USE_LOGO", "on").strip().lower() != "off"
@@ -675,6 +676,15 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     if len(kept) < len(live):
         print(f"이 계정이 {SAME_INST_GAP_DAYS}일 안에 올린 기관의 공고 {len(live) - len(kept)}개는 건너뜀")
     live = kept or live
+    # [2026-10-23] 재탕 금지 계정(NO_REPOST_ACCOUNTS): 다른 계정이든 내 계정이든 한 번이라도 올라간 공고는 후보에서 뺌
+    #              (첫 발행 중앙 3,477 vs 재탕 1,247 — 낮은 조회수 글이 쌓여 계정 노출이 떨어지는지 실험)
+    #              수동 공고·마감 글·각색·재발행 모두 포함 → 새 공고가 없으면 이번 회차는 발행 안 함
+    if ACCOUNT in NO_REPOST_ACCOUNTS:
+        n0 = len(live)
+        live = [j for j in live if str(j["recrutPblntSn"]) not in used_ids and job_key(j) not in used_keys]
+        print(f"[재탕 금지] 이미 올라간 공고 {n0 - len(live)}개 제외 → 첫 발행 후보 {len(live)}개")
+        if not live:
+            return None, 0, 0, None
 
     want_priv = want_private_now(history)
     n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
