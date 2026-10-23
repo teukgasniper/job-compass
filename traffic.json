@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-24 02:31",
+ "updated": "2026-10-24 06:36",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -160,9 +160,14 @@
     8516
    ],
    "20261023": [
-    10545,
-    7340,
-    6655
+    11301,
+    7821,
+    7128
+   ],
+   "20261024": [
+    468,
+    327,
+    308
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -404,9 +409,14 @@
     4222
    ],
    "20261023": [
-    6063,
-    3114,
-    2953
+    6589,
+    3391,
+    3200
+   ],
+   "20261024": [
+    314,
+    160,
+    158
    ]
   },
   "ac.ddolbestory.com": {
@@ -526,9 +536,14 @@
     7
    ],
    "20261023": [
-    343,
-    196,
-    184
+    478,
+    283,
+    266
+   ],
+   "20261024": [
+    84,
+    45,
+    42
    ]
   }
  },
@@ -772,14 +787,19 @@
     "(not set)": 1
    },
    "20261023": {
-    "(direct)": 9752,
-    "(not set)": 458,
-    "l.threads.com": 324,
+    "(direct)": 10462,
+    "(not set)": 473,
+    "l.threads.com": 355,
     "threads": 6,
     "blogger.com": 2,
     "google": 1,
     "l.instagram.com": 1,
     "m.search.naver.com": 1
+   },
+   "20261024": {
+    "(direct)": 436,
+    "l.threads.com": 24,
+    "(not set)": 8
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1081,14 +1101,19 @@
     "br.nate.com": 1
    },
    "20261023": {
-    "(direct)": 5224,
-    "(not set)": 673,
-    "l.threads.com": 158,
+    "(direct)": 5693,
+    "(not set)": 709,
+    "l.threads.com": 179,
     "google": 4,
     "facebook.com": 1,
     "l.instagram.com": 1,
     "lm.facebook.com": 1,
     "threads": 1
+   },
+   "20261024": {
+    "(direct)": 291,
+    "(not set)": 14,
+    "l.threads.com": 9
    }
   },
   "ac.ddolbestory.com": {
@@ -1195,11 +1220,16 @@
     "google": 5
    },
    "20261023": {
-    "(direct)": 290,
+    "(direct)": 407,
+    "l.threads.com": 25,
     "threads": 23,
-    "l.threads.com": 18,
-    "(not set)": 6,
+    "(not set)": 17,
     "blogger.com": 6
+   },
+   "20261024": {
+    "(direct)": 76,
+    "l.threads.com": 5,
+    "(not set)": 3
    }
   }
  }
