@@ -16,6 +16,7 @@
   CLAUDE_MODEL     기본 claude-sonnet-5
   JITTER_MAX_MIN   발행 전 랜덤 대기 최대 분 (예약 실행 시 자연스럽게)
   USE_LOGO         기본 on — 글 하단에 기관 로고 카드(logos/기관명.png) 첨부, off면 글만
+                   [2026-10-23] 재탕 글(어느 계정이든 이미 올라간 공고)은 USE_LOGO와 상관없이 이미지 없이 발행
   MIN_GAP_MIN      기본 60 — 마지막 발행(수동 포함) 후 이 시간(분)이 안 지났으면 발행하지 않고 건너뜀
                    (예약 실행은 워크플로우에서 110 — 매시간 깨우고 2시간 간격 유지)
 
@@ -2614,7 +2615,16 @@ def main():
     if result is None:
         return
     comment = build_comment(post, d_left)
-    logo_url, logo_msg = resolve_logo(inst, job, state)
+    # [2026-10-23] 재탕 글(어느 계정이든 이미 올라간 공고)은 이미지 없이 글만 발행 — 첫 글만 로고 이미지 첨부
+    #              같은 로고 이미지를 계정마다 반복 첨부하면 노출이 크게 떨어짐 (재탕 중앙 조회: 로고 있음 1,142 vs 없음 3,615)
+    sn_now, key_now = str(job["recrutPblntSn"]), job_key(job)
+    all_hist = state["posts"] + [p for ps in (others or {}).values() for p in ps]
+    repost = any(str(p.get("id")) == sn_now
+                 or norm_key(norm_inst(p.get("instNm"))) + "|" + norm_key(p.get("title")) == key_now for p in all_hist)
+    if repost:
+        logo_url, logo_msg = None, "재탕 글 — 이미지 없이 글만 발행 (같은 이미지 반복 첨부 시 노출 저하)"
+    else:
+        logo_url, logo_msg = resolve_logo(inst, job, state)
     print(f"로고: {logo_msg}" + (f" → {logo_url}" if logo_url else ""))
 
     print("\n" + "=" * 40 + "\n" + result["text"] + "\n" + "=" * 40)
