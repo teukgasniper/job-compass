@@ -2075,6 +2075,23 @@
    "thread_id": "18152518621474264",
    "comment_id": "18079374908401600",
    "at": "2026-10-24 04:03"
+  },
+  {
+   "id": "MN-SHILLASTAY-01",
+   "instNm": "신라스테이",
+   "title": "[신라스테이] 역삼 호텔 인재 채용(프론트)",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "monologue",
+   "hook": "📍경력 없으면 못 넣는 줄 알았는데\n강남 호텔 프론트는 신입도 정규직임",
+   "closer": "외국어 한마디만 돼도 서류에서 바로 눈에 띄는 자리임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18130947376769373",
+   "comment_id": "18134185048793652",
+   "at": "2026-10-24 07:16"
   }
  ],
  "views_refreshed_at": "2026-10-24 02:56",
