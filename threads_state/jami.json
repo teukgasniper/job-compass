@@ -4291,6 +4291,23 @@
    "comment_id": "17992769667026148",
    "at": "2026-10-25 03:21",
    "views": 327
+  },
+  {
+   "id": "MN-BGFLOGIS-01",
+   "instNm": "BGF로지스",
+   "title": "[BGF로지스] 2026년 4분기 채용연계형 인턴 — 물류관리 직군 (CU 물류센터 전국 권역)",
+   "combo_idx": 9,
+   "combo_v": 2,
+   "combo_cat": "sniper",
+   "hook": "📍전국 22곳 CU 물류센터 중\n집 가까운 데 고르는 인턴자리",
+   "closer": "9개 권역 어디서든 집 근처 하나는 걸리는 자리임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18138225088635028",
+   "comment_id": "18127828666884265",
+   "at": "2026-10-25 06:29"
   }
  ],
  "logo_tried": {
