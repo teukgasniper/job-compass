@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25 06:08",
+ "updated": "2026-10-25 08:38",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -170,9 +170,9 @@
     5052
    ],
    "20261025": [
-    1626,
-    1072,
-    1031
+    2225,
+    1491,
+    1433
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -424,9 +424,9 @@
     2555
    ],
    "20261025": [
-    1251,
-    618,
-    608
+    1786,
+    864,
+    848
    ]
   },
   "ac.ddolbestory.com": {
@@ -556,9 +556,9 @@
     1091
    ],
    "20261025": [
-    81,
-    48,
-    46
+    140,
+    85,
+    80
    ]
   }
  },
@@ -822,9 +822,9 @@
     "google": 1
    },
    "20261025": {
-    "(direct)": 1531,
-    "(not set)": 63,
-    "l.threads.com": 31,
+    "(direct)": 2103,
+    "(not set)": 72,
+    "l.threads.com": 49,
     "m.search.naver.com": 1
    }
   },
@@ -1146,10 +1146,11 @@
     "threads": 2
    },
    "20261025": {
-    "(direct)": 1159,
-    "(not set)": 69,
-    "l.threads.com": 20,
-    "l.instagram.com": 2,
+    "(direct)": 1634,
+    "(not set)": 103,
+    "l.threads.com": 38,
+    "google": 7,
+    "l.instagram.com": 3,
     "facebook.com": 1
    }
   },
@@ -1271,8 +1272,9 @@
     "zalo": 1
    },
    "20261025": {
-    "(direct)": 73,
-    "l.threads.com": 8
+    "(direct)": 121,
+    "l.threads.com": 18,
+    "google": 1
    }
   }
  }
