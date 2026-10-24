@@ -11194,5 +11194,229 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-306060": {
+  "at": "2026-10-24 20:31",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306060.html",
+  "source": "2026년 제2차 양양군 공무직근로자 공개채용시험 재공고문(강원도 완화).pdf (글자 없는 PDF → 이미지 14조각)",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "아동통합사례관리, 청소년지도사, 임업기계장비운영, 방문건강관리, 보건업무전담(정신건강분야) 각 1명씩 총 5명을 뽑아요.",
+    "columns": [
+     "아동통합사례관리",
+     "청소년지도사",
+     "임업기계장비운영",
+     "방문건강관리",
+     "보건업무전담"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "운전면허증 및 간호사·청소년지도사 등 분야별 필수자격증 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격 요건 및 제출서류 적정여부 심사",
+     "note": "10배수 초과 시 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "10월 28일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "10월 31일(토) 10:00~",
+     "desc": "객관식 4지선다, 60분, 각 과목·총점 40% 이상",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기 합격자 발표",
+     "date": "11월 9일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "11월 17일(화) 14:00~",
+     "desc": "직무수행에 필요한 능력 등 종합평가",
+     "note": "필기 50%+면접 50% 합산"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 23일(월)",
+     "desc": "양양군청 홈페이지 공고"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 일반상식 20문항과 직무분야 20문항, 총 40문항으로 치러요.",
+    "highlight": "40문항",
+    "subjects": [
+     {
+      "name": "일반상식",
+      "count": "20문항",
+      "scope": null,
+      "note": "임업기계장비운영 분야는 일반상식 40문항",
+      "ncs": false
+     },
+     {
+      "name": "직무분야",
+      "count": "20문항",
+      "scope": "분야별 전공과목(예: 아동복지론 10문항, 공중보건학 10문항 등)",
+      "note": "분야별 과목 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-182204": {
+  "at": "2026-10-24 20:31",
+  "url": "https://hiring03.ddolbestory.com/2026/10/cj-wk182204.html",
+  "source": "기업 채용 페이지 (https://recruit.cj.net/recruit/ko/recruit/recruit/bestDetail.fo?direct=N&zz_jo_num=J20260714038334)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "전문학사 이상 졸업(예정)자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — CFT(CJ Culture Fit Test)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "9월초 예상",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "OPIC IH 이상의 어학 성적을 우대해요.",
+    "highlight": "OPIC IH 이상"
+   },
+   "written": null
+  }
+ },
+ "WK-181965": {
+  "at": "2026-10-24 20:31",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gs-wk181965.html",
+  "source": "기업 채용 페이지 이미지 6조각 (https://gsgcorp.recruiter.co.kr/career/jobs/130527)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "'27년 2월 이전 졸업예정자 또는 기졸업자('27년 1월 초 입사 가능자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 19일~11월 1일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인전형(외국어/역량)",
+     "date": "11월 중",
+     "desc": "서류합격자 대상 외국어면접·역량검사, HR직무는 AI활용능력평가 추가",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 직무면접",
+     "date": "11월 중",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 최종면접",
+     "date": "12월 중",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": "1월 4일",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "영어는 필수로 TOEIC Speaking IH(140점) 또는 OPIc IM2 또는 TOEIC 800점 이상이 필요해요.",
+    "highlight": "TOEIC 800점 이상"
+   },
+   "written": null
+  }
  }
 }
