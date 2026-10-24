@@ -11575,5 +11575,136 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-306473": {
+  "at": "2026-10-25 06:08",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306473.html",
+  "source": "대불자유무역지역관리원 공무직 근로자(조경) 채용 재공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 5일(목)",
+     "desc": "자기소개서·직무수행계획서 평가, 국가기술자격증·경력 등 우대",
+     "note": "3배수 초과 시 고득점순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표 및 면접 일정 안내",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 12일(목)",
+     "desc": "소통·헌신·창의성·윤리의식 4개 요소 평가",
+     "note": "상25·중15·하5점"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 18일(수)",
+     "desc": "신체검사·결격사유 조회 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306397": {
+  "at": "2026-10-25 06:08",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306397.html",
+  "source": "2026년 제4회 공무직근로자 채용시험 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "졸업증명서(또는 학위증명서)는 전문학사 이상 제출",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 10일(화)",
+     "desc": "자격·경력 등 서면 심사로 적격 여부 판단",
+     "note": "5배수 초과 시 고득점순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 12일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 17일(화)",
+     "desc": "직무수행 능력 및 적격성 5개 요소 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 30일(월)",
+     "desc": "수습 임용예정일은 12월 7일(월)이에요"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305832": {
+  "at": "2026-10-25 06:08",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305832.html",
+  "source": "KREI [채용공고문] 2026년도 하반기 환경관리원 보훈특별고용 채용.pdf",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": "광주지방보훈청 추천을 받은 취업지원대상자만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 2일~4일",
+     "desc": "서류전형 배점표 채점, 평균 70점 이상 또는 2/3 적격",
+     "note": "최대 10배수"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 11일~18일",
+     "desc": "구조화된 개별면접, 심사위원 평균 80점 이상 고득점자",
+     "note": "최대 1배수(예비합격 별도)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": "2026.11.30. 임용 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

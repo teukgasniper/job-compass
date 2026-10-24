@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25 01:12",
+ "updated": "2026-10-25 06:08",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -165,9 +165,14 @@
     7093
    ],
    "20261024": [
-    6527,
-    4375,
-    4065
+    8142,
+    5315,
+    5052
+   ],
+   "20261025": [
+    1626,
+    1072,
+    1031
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -414,9 +419,14 @@
     3198
    ],
    "20261024": [
-    4188,
-    2104,
-    2019
+    5366,
+    2664,
+    2555
+   ],
+   "20261025": [
+    1251,
+    618,
+    608
    ]
   },
   "ac.ddolbestory.com": {
@@ -541,9 +551,14 @@
     263
    ],
    "20261024": [
-    1557,
-    1055,
-    987
+    1706,
+    1166,
+    1091
+   ],
+   "20261025": [
+    81,
+    48,
+    46
    ]
   }
  },
@@ -797,14 +812,20 @@
     "m.search.naver.com": 1
    },
    "20261024": {
-    "(direct)": 5996,
-    "l.threads.com": 299,
-    "(not set)": 223,
+    "(direct)": 7502,
+    "l.threads.com": 362,
+    "(not set)": 268,
     "keep.google.com": 3,
     "m.naver.com": 3,
+    "blogger.com": 1,
     "chatgpt.com": 1,
-    "google": 1,
-    "l.instagram.com": 1
+    "google": 1
+   },
+   "20261025": {
+    "(direct)": 1531,
+    "(not set)": 63,
+    "l.threads.com": 31,
+    "m.search.naver.com": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1116,13 +1137,20 @@
     "lm.facebook.com": 1
    },
    "20261024": {
-    "(direct)": 3622,
-    "(not set)": 356,
-    "l.threads.com": 188,
+    "(direct)": 4696,
+    "(not set)": 425,
+    "l.threads.com": 217,
     "keep.google.com": 16,
-    "google": 3,
-    "threads": 2,
-    "chatgpt.com": 1
+    "google": 8,
+    "chatgpt.com": 2,
+    "threads": 2
+   },
+   "20261025": {
+    "(direct)": 1159,
+    "(not set)": 69,
+    "l.threads.com": 20,
+    "l.instagram.com": 2,
+    "facebook.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1235,12 +1263,16 @@
     "blogger.com": 6
    },
    "20261024": {
-    "(direct)": 1409,
-    "(not set)": 85,
-    "l.threads.com": 56,
+    "(direct)": 1549,
+    "(not set)": 86,
+    "l.threads.com": 62,
+    "google": 4,
     "threads": 4,
-    "google": 2,
     "zalo": 1
+   },
+   "20261025": {
+    "(direct)": 73,
+    "l.threads.com": 8
    }
   }
  }
