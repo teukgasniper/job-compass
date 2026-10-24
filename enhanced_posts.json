@@ -11143,5 +11143,56 @@
     "callout": null
    }
   }
+ },
+ "GJ-306272": {
+  "at": "2026-10-24 13:58",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306272.html",
+  "source": "제6회 채용공고문(안).hwpx",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": "공고일 기준 대전·세종·충청 지역에 주민등록이 되어 있는 사람만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건, 직무관련경력, 자기소개서 등 100점 만점 심사",
+     "note": "5배수 미만이면 적부만 판단"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "10월 30일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실기시험",
+     "date": "11월 2일(월)",
+     "desc": "윗몸일으키기·팔굽혀펴기·소포상자 이동하기 체력검정",
+     "note": "국민체력100 3등급 이상 제출 시 면제"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "11월 2일(월)",
+     "desc": "정신자세, 전문지식, 의사표현 등 종합 평가",
+     "note": "실기시험과 같은 날 실시"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 5일(목)",
+     "desc": "면접점수 상위자부터 채용목표 인원 순 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
