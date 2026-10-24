@@ -11418,5 +11418,162 @@
    },
    "written": null
   }
+ },
+ "306192": {
+  "at": "2026-10-25 01:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306192.html",
+  "source": "(한국교통연구원) 2026년 직원 채용(4차) 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "전문연구원 1명, 연구원 10명, 사무원 2명을 뽑아요.",
+    "columns": [
+     "전문연구원",
+     "연구원",
+     "사무원"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       10,
+       2
+      ]
+     }
+    ],
+    "note": "연구원 10명 중 3명은 휴직대체 자리예요."
+   },
+   "edu": {
+    "label": "석사 이상",
+    "text": "전문연구원(정규직) 응시자격은 석사 이상이에요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 17일~19일",
+     "desc": "입사지원서·자기소개서 평가(전공 25점, 경력 45점, 역량 30점)",
+     "note": "60점 이상, 5배수(전문연구원 필기 추가)"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "11월 30일~12월 2일",
+     "desc": "면접전형 대상자 온라인 인성검사(참고자료로 활용)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 7일~10일",
+     "desc": "전문성(50점)+조직 적합성(50점) 중심 개별면접",
+     "note": "80점 이상 중 고득점, 1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "예비합격자 선정 가능, 12월 28일 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306126": {
+  "at": "2026-10-25 01:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306126.html",
+  "source": "2026년도_제2회_공무직근로자(사무원)_채용_공고문(수정).hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 20일~10월 28일",
+     "desc": "응시자격 서면심사, 자기소개서·직무수행계획서 등 평가",
+     "note": "서류전형 합격자 15명 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 13일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 17일(화)",
+     "desc": "소통·공감, 헌신·열정, 창의·혁신, 윤리·책임 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "305734": {
+  "at": "2026-10-25 01:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-305734.html",
+  "source": "공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "박사",
+    "text": "박사급 연구인력을 모집해요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·이력서·연구논문·추천서 제출",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 세미나전형 및 인사위원회 심의",
+     "date": null,
+     "desc": "세미나전형 및 인사위원회 심의로 최종 결정해요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
