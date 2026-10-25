@@ -11706,5 +11706,43 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-182044": {
+  "at": "2026-10-25 14:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/cj-wk182044.html",
+  "source": "기업 채용 페이지 이미지 3조각 (https://recruit.cj.net/recruit/ko/recruit/recruit/detail.fo?zz_jo_num=8822)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 지원서 접수",
+     "date": "10월 31일(토)",
+     "desc": "CJ그룹 채용 사이트에서 온라인 지원",
+     "note": "23:59까지"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류/면접전형",
+     "date": "11월 中",
+     "desc": "서류 및 면접 진행",
+     "note": "합격자 개별 안내"
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 입사",
+     "date": null,
+     "desc": "개별 일정 조율 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
