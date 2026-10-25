@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26 01:46",
+ "updated": "2026-10-26 06:11",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -170,9 +170,14 @@
     5022
    ],
    "20261025": [
-    8814,
-    5758,
-    5438
+    9725,
+    6401,
+    5951
+   ],
+   "20261026": [
+    360,
+    233,
+    221
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -424,9 +429,14 @@
     2553
    ],
    "20261025": [
-    7770,
-    3860,
-    3758
+    8944,
+    4386,
+    4243
+   ],
+   "20261026": [
+    781,
+    290,
+    280
    ]
   },
   "ac.ddolbestory.com": {
@@ -556,9 +566,14 @@
     1095
    ],
    "20261025": [
-    2272,
-    1537,
-    1430
+    2880,
+    1956,
+    1815
+   ],
+   "20261026": [
+    438,
+    230,
+    222
    ]
   }
  },
@@ -822,12 +837,19 @@
     "google": 1
    },
    "20261025": {
-    "(direct)": 8130,
-    "(not set)": 434,
-    "l.threads.com": 245,
+    "(direct)": 8944,
+    "(not set)": 493,
+    "l.threads.com": 282,
     "google": 4,
+    "l.instagram.com": 1,
     "m.facebook.com": 1,
     "m.search.naver.com": 1
+   },
+   "20261026": {
+    "(direct)": 313,
+    "l.threads.com": 33,
+    "(not set)": 13,
+    "google": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1149,12 +1171,20 @@
     "m.naver.com": 1
    },
    "20261025": {
-    "(direct)": 6853,
-    "(not set)": 739,
-    "l.threads.com": 193,
-    "google": 29,
+    "(direct)": 7890,
+    "(not set)": 828,
+    "l.threads.com": 235,
+    "google": 35,
     "l.instagram.com": 5,
     "facebook.com": 1
+   },
+   "20261026": {
+    "(direct)": 656,
+    "(not set)": 88,
+    "l.threads.com": 34,
+    "google": 1,
+    "l.instagram.com": 1,
+    "m.facebook.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1274,12 +1304,18 @@
     "zalo": 1
    },
    "20261025": {
-    "(direct)": 2082,
-    "l.threads.com": 100,
-    "(not set)": 84,
-    "google": 5,
+    "(direct)": 2652,
+    "l.threads.com": 126,
+    "(not set)": 95,
+    "google": 6,
     "l.instagram.com": 1,
     "m.facebook.com": 1
+   },
+   "20261026": {
+    "(direct)": 404,
+    "(not set)": 26,
+    "l.threads.com": 5,
+    "m.facebook.com": 3
    }
   }
  }
