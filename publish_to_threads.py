@@ -319,16 +319,19 @@ def eligible(job: dict, today: dt.date) -> bool:
             if int(job.get("recrutNope") or 0) <= 1:  # 인원 빈 값·1명짜리 제외
                 return False
         hire = job.get("hireTypeNmLst") or ""
-        if not any(h in hire for h in GOOD_HIRE):
+        # [2026-10-26] 체험형 인턴도 후보로 (한전 체험형 청년인턴 450명 등 조회수 높음) — 글에서는 '체험형'·계약직 표현 안 씀
+        #              (hire_parts가 체험형을 단점으로 분류 → 고용형태 칸 빼고 넘김, CONTRACT_WORD_RE가 '체험형' 언급 차단)
+        if not any(h in hire for h in GOOD_HIRE) and "체험형" not in hire and "체험형" not in title:
             return False
         se = job.get("recrutSeNm") or ""
         if not (any(n in se for n in NEWBIE_OK) or "무관" in se):
             return False
     if any(w in title for w in DOCTOR_WORDS):
         return False
-    # [2026-10-22] 제목이 '체험형'인데 고용형태 칸이 '채용형'으로 잘못 들어오는 공고(한전 체험형 청년인턴 450명) — 제목 기준으로 제외
-    if "체험형" in title and not re.search(r"채용형|전환형|정규직", title):
-        return False
+    # [2026-10-26] 체험형 인턴 제목 제외 해제 (이전 2026-10-22: 제목이 '체험형'이면 제외)
+    #              단, 고용형태 칸이 '채용형'으로 잘못 들어온 체험형 공고는 '채용형 인턴'으로 쓰이지 않게 고용형태를 체험형으로 바로잡음
+    if "체험형" in title and not re.search(r"채용형|전환형|정규직", title) and "채용형" in (job.get("hireTypeNmLst") or ""):
+        job["hireTypeNmLst"] = re.sub(r"채용형", "체험형", job["hireTypeNmLst"])
     # [2026-10-22] 박사 학위자만 뽑는 신입 공고 ('AI 박사 신입사원') — 일반 취준생 대상 아님
     if re.search(r"박사\s*(신입|사원|채용|공채)", title) and not re.search(r"석사|학사|대졸|박사\s*(및|또는|,)", title):
         return False

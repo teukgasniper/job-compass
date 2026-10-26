@@ -10,6 +10,8 @@
                   [저녁] 원문 링크 인식 강화 — https 없는 도메인 인식, 이메일 도메인 제외,
                   홈페이지 접수인데 주소 없으면 클린아이 상세에서 기관 홈페이지 읽기,
                   이메일·우편·방문 접수만 클린아이 상세 유지
+[2026-10-26 수정] 체험형 인턴 수집 재개 — 잡알리오 품질필터·나라일터/클린아이/공채속보 제목필터에서 체험형 허용
+                  (쓰레드 자동발행 eligible()은 체험형을 계속 제외)
 [2026-09-24 수정] 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 수집
                   임원급 제외 — 비상임이사·사장공모 등 일반 취준생 대상 아닌 공고 차단
                   나라일터 API 통합 — 잡알리오에 없는 정부부처·지자체 공고 추가 수집
@@ -116,7 +118,7 @@ GOJOBS_TITLE_EXCLUDE = [
     "비상임이사", "상임이사", "이사장 공모", "사장 공모", "감사 공모",
     "임원 공모", "기관장 공모", "원장 공모", "이사 모집", "비상임감사",
     "상임감사", "사장 모집", "이사 공모",
-    "임기제", "전입", "체험형", "시간강사", "도급",
+    "임기제", "전입", "시간강사", "도급",   # [2026-10-26] "체험형" 제외 해제 — 체험형 인턴 수집 (클린아이도 이 목록 공유)
     "합격자", "불합격", "취소", "연기", "정정",
 ]
 
@@ -138,7 +140,7 @@ CLEANEYE_TITLE_EXCLUDE = GOJOBS_TITLE_EXCLUDE + [
 
 # 클린아이 고용형태 중 통과 허용 목록
 CLEANEYE_QUALITY_TYPES = ["일반정규직", "상용정규직", "정규직", "무기계약직"]
-# 인턴은 제목에서 "체험형" 제외 후 통과
+# 인턴은 통과 ([2026-10-26] 체험형 인턴 포함)
 
 
 def _as_text(value):
@@ -185,6 +187,9 @@ def is_quality_post(x):
         return True  # 공채속보도 collect 단계에서 정규직 포함 공고만 남김
     ht = x.get("hireTypeNmLst") or ""
     types = [h.strip() for h in ht.split(",")]
+    # [2026-10-26] 체험형 인턴도 수집 (한전 체험형 청년인턴 450명 등 조회수 높음) — 쓰레드 자동발행은 따로 제외
+    if any("체험형" in t for t in types) or "체험형" in (x.get("recrutPbancTtl") or ""):
+        return True
     return any(t in ("정규직", "무기계약직") or "채용형" in t for t in types)
 
 
@@ -658,7 +663,8 @@ COOP_WORDS = ["농협", "농업협동조합", "축협", "엔에이치", "NH", "�
 STRONG_PUBLIC_WORDS = ["공사", "공단", "진흥원", "평가원", "관리원", "개발원", "인재원", "공제회"]
 PUBLIC_NAME_RE = re.compile(r"^(한국|국립|국가|대한민국|서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|충청|"
                             r"전북|전남|전라|경북|경남|경상|제주)|[가-힣]{1,4}(시|군|구)[가-힣]*(재단|연구원|교육원|센터)")
-GONGCHAE_TITLE_EXCLUDE = ["체험형", "합격자", "취소", "연기", "정정", "대체인력", "단기", "아르바이트"]
+# [2026-10-26] "체험형" 제외 해제 — 체험형 인턴 수집
+GONGCHAE_TITLE_EXCLUDE = ["합격자", "취소", "연기", "정정", "대체인력", "단기", "아르바이트"]
 
 
 def gongchae_biz_type(x):
@@ -814,8 +820,8 @@ def collect_gongchae():
         title = x.get("empWantedTitle", "")
         if (x.get("empWantedEndt") or "") < today_str:
             n["마감"] += 1; continue
-        if "정규직" not in (x.get("empWantedTypeNm") or ""):   # 정규직·정규직전환형 포함 공고만
-            n["고용형태"] += 1; continue
+        if "정규직" not in (x.get("empWantedTypeNm") or "") and "체험형" not in title:   # 정규직·정규직전환형 포함 공고만
+            n["고용형태"] += 1; continue                                                  # [2026-10-26] + 체험형 인턴
         if any(k in title for k in GONGCHAE_TITLE_EXCLUDE):
             n["제목"] += 1; continue
         if any(k in title for k in DOCTOR_KEYWORDS) or any(k in title for k in EXECUTIVE_KEYWORDS):
