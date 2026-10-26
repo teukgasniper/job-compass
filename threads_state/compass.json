@@ -2471,6 +2471,23 @@
    "thread_id": "17991868577858010",
    "comment_id": "18167377165482800",
    "at": "2026-10-26 22:10"
+  },
+  {
+   "id": "MN-POSTECH-01",
+   "instNm": "포항공과대학교",
+   "title": "2026년 하반기 포항공과대학교 직원 채용",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️정규직 전환형 신입 채용\n경북 포항 대학, 금요일 마감",
+   "closer": "국내 최초 연구중심대학 신입 공채, 사흘 지나면 못 봄",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "17887750935496419",
+   "comment_id": "17928379749221438",
+   "at": "2026-10-27 01:05"
   }
  ],
  "views_refreshed_at": "2026-10-26 20:56",
