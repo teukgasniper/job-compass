@@ -7788,12 +7788,13 @@
  "MN-OMAN-01": {
   "postId": "1204992772747416335",
   "url": "https://hiring03.ddolbestory.com/2026/10/oman-mn01.html",
-  "title": "주오만 대한민국 대사관 일반직 행정직원 채용 (재공고) | 정규직(무기계약직) 1명, 10월 26일 마감",
+  "title": "주오만 대한민국 대사관 일반직 행정직원 채용 (재공고·연장) | 정규직(무기계약직) 1명, 10월 30일 마감",
   "instNm": "주오만 대한민국 대사관",
   "slug": "oman-mn01",
   "published": "2026-10-22 14:49",
   "manual": "html",
-  "html_hash": "389446d79c1c"
+  "html_hash": "6908ee585437",
+  "rewritten": "2026-10-26 22:32"
  },
  "MN-LATVIA-01": {
   "postId": "2898587021654714822",
@@ -9932,6 +9933,66 @@
   "instNm": "연천군청소년육성재단",
   "slug": "job-CE-80716",
   "published": "2026-10-26 17:45"
+ },
+ "MN-CAMBODIA-01": {
+  "postId": "7785236936956417251",
+  "url": "https://hiring03.ddolbestory.com/2026/10/cambodia-mn01.html",
+  "title": "주캄보디아 대한민국 대사관 일반직 행정직원 채용 | 정규직(무기계약직) 1명, 11월 5일 마감",
+  "instNm": "주캄보디아 대한민국 대사관",
+  "slug": "cambodia-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "5e37b6434180"
+ },
+ "MN-UN-01": {
+  "postId": "2849827916449967760",
+  "url": "https://hiring03.ddolbestory.com/2026/10/un-mn01.html",
+  "title": "주유엔 대한민국 대표부 일반직 행정직원 채용 | 정규직 1명, 11월 8일 마감",
+  "instNm": "주유엔 대한민국 대표부",
+  "slug": "un-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "57897f690a6e"
+ },
+ "MN-THAILAND-01": {
+  "postId": "4466862010414388986",
+  "url": "https://hiring03.ddolbestory.com/2026/10/thailand-mn01.html",
+  "title": "주태국 대한민국 대사관 임시직 행정직원 채용 (재공고) | 임시직 1명, 11월 6일 마감",
+  "instNm": "주태국 대한민국 대사관",
+  "slug": "thailand-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "c9d8f67b2e79"
+ },
+ "MN-KEPCO-01": {
+  "postId": "2163901024496042120",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kepco-mn01.html",
+  "title": "한국전력공사 2026년도 제2차 체험형 청년인턴 채용 (일반·고졸·사회형평 450명) | 청년인턴(체험형) 450명, 11월 5일 마감",
+  "instNm": "한국전력공사",
+  "slug": "kepco-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "9b18e5cf3f6a"
+ },
+ "MN-KOSME-01": {
+  "postId": "8655479452046403324",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kosme-mn01.html",
+  "title": "2026년 하반기 중소벤처기업진흥공단 체험형 청년인턴(일반) 채용 | 청년인턴(체험형) 55명, 11월 3일 마감",
+  "instNm": "중소벤처기업진흥공단",
+  "slug": "kosme-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "734f5e6e20ff"
+ },
+ "MN-KINPA-01": {
+  "postId": "520268658463618411",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kinpa-mn01.html",
+  "title": "2026년 한국지식재산협회 사무국 직원 채용 | 정규직 채용, 10월 30일 마감",
+  "instNm": "한국지식재산협회",
+  "slug": "kinpa-mn01",
+  "published": "2026-10-26 22:32",
+  "manual": "html",
+  "html_hash": "d12430ff7601"
  },
  "GJ-306702": {
   "postId": "5135055219410061242",
