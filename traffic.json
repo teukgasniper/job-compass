@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26 22:39",
+ "updated": "2026-10-27 05:55",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -175,9 +175,14 @@
     5933
    ],
    "20261026": [
-    6397,
-    4335,
-    4077
+    9438,
+    6456,
+    5926
+   ],
+   "20261027": [
+    669,
+    432,
+    413
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -257,6 +262,11 @@
     2
    ],
    "20261010": [
+    1,
+    1,
+    0
+   ],
+   "20261026": [
     1,
     1,
     0
@@ -434,9 +444,14 @@
     4240
    ],
    "20261026": [
-    5711,
-    2705,
-    2546
+    8122,
+    3815,
+    3556
+   ],
+   "20261027": [
+    653,
+    268,
+    262
    ]
   },
   "ac.ddolbestory.com": {
@@ -571,9 +586,14 @@
     1806
    ],
    "20261026": [
-    1394,
-    920,
-    843
+    1940,
+    1253,
+    1155
+   ],
+   "20261027": [
+    127,
+    90,
+    86
    ]
   }
  },
@@ -846,11 +866,17 @@
     "m.search.naver.com": 1
    },
    "20261026": {
-    "(direct)": 5805,
-    "(not set)": 303,
-    "l.threads.com": 278,
-    "google": 10,
+    "(direct)": 8637,
+    "l.threads.com": 416,
+    "(not set)": 370,
+    "google": 12,
+    "m.search.naver.com": 2,
     "blogger.com": 1
+   },
+   "20261027": {
+    "(direct)": 640,
+    "l.threads.com": 16,
+    "(not set)": 13
    }
   },
   "hiring01.ddolbestory.com": {
@@ -923,6 +949,9 @@
     "(direct)": 2
    },
    "20261010": {
+    "(direct)": 1
+   },
+   "20261026": {
     "(direct)": 1
    }
   },
@@ -1180,13 +1209,20 @@
     "facebook.com": 1
    },
    "20261026": {
-    "(direct)": 4752,
-    "(not set)": 732,
-    "l.threads.com": 198,
-    "google": 28,
+    "(direct)": 6936,
+    "(not set)": 875,
+    "l.threads.com": 279,
+    "google": 30,
     "l.instagram.com": 4,
     "blogger.com": 1,
-    "m.facebook.com": 1
+    "m.facebook.com": 1,
+    "m.search.naver.com": 1
+   },
+   "20261027": {
+    "(direct)": 582,
+    "(not set)": 51,
+    "l.threads.com": 19,
+    "l.instagram.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1313,11 +1349,15 @@
     "m.facebook.com": 1
    },
    "20261026": {
-    "(direct)": 1266,
-    "(not set)": 93,
-    "l.threads.com": 27,
+    "(direct)": 1758,
+    "(not set)": 131,
+    "l.threads.com": 43,
     "google": 5,
     "m.facebook.com": 3
+   },
+   "20261027": {
+    "(direct)": 113,
+    "l.threads.com": 14
    }
   }
  }

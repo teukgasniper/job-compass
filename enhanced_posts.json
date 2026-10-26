@@ -11978,5 +11978,317 @@
    "language": null,
    "written": null
   }
+ },
+ "306336": {
+  "at": "2026-10-27 05:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306336.html",
+  "source": "한국문화예술교육진흥원 26-4차 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "공무직 5명, 계약직(육아휴직대체) 4명, 계약직(전문위원) 1명, 계약직(4급상당) 1명을 뽑아요.",
+    "columns": [
+     "공무직",
+     "계약직(육아휴직대체)",
+     "계약직(전문위원)",
+     "계약직(4급상당)"
+    ],
+    "rows": [
+     {
+      "label": "사업기획운영",
+      "values": [
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "연수기획관리",
+      "values": [
+       2,
+       2,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "자격제도운영",
+      "values": [
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "총무",
+      "values": [
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "재무회계",
+      "values": [
+       null,
+       1,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "국제협력",
+      "values": [
+       null,
+       1,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "공인노무사",
+      "values": [
+       null,
+       null,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "전기안전",
+      "values": [
+       null,
+       null,
+       null,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 전공, 성별 제한 없음(만 18세 미만·60세 초과자 제외)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "교육사항(15)+자격사항(15)+자소서·직무수행계획서(70)",
+     "note": "최종선발 최대9배수(계약직 6배수)"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 24일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 27일(금)",
+     "desc": "NCS 객관식 직업기초능력시험",
+     "note": "정규직·공무직만 시행, 6배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "12월 1일(화)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 9일~10일",
+     "desc": "태도·인성/표현력/경력/문화예술이해도/인재상부합도",
+     "note": "1배수 선발(예비합격자 1배수 별도)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 28일(월)",
+     "desc": "전력조회·채용점검 인사위원회 거쳐 결정"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS 객관식 직업기초능력시험으로 봐요. 정규직·공무직에 한해 시행해요.",
+    "highlight": "NCS 객관식 직업기초능력시험",
+    "subjects": [
+     {
+      "name": "NCS 직업기초능력시험",
+      "count": null,
+      "scope": "의사소통, 문제해결, 자원관리, 조직이해, 직업윤리",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "306339": {
+  "at": "2026-10-27 05:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/nhis-306339.html",
+  "source": "2026년도 제3차 국민건강보험공단 전문인력 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "변호사, 자금운용, AI 시스템구축, AI 모델개발, 안전관리, 약사 등 6개 분야에서 총 15명을 뽑아요.",
+    "columns": [
+     "변호사",
+     "자금운용",
+     "AI시스템구축",
+     "AI모델개발",
+     "안전관리",
+     "약사"
+    ],
+    "rows": [
+     {
+      "label": "3급(팀장/부연구위원)",
+      "values": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     {
+      "label": "4급(과장)",
+      "values": [
+       null,
+       null,
+       null,
+       null,
+       null,
+       9
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "약사 면허증 취득 후 관련분야 경력 1~7년 이상 필요해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 9일~11월 19일",
+     "desc": "자격요건 및 우대사항 반영한 정량·정성 심사",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "11월 20일~11월 23일",
+     "desc": "온라인 인성검사 실시",
+     "note": "미완료 시 면접 포기 간주"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 증빙서류 제출",
+     "date": "11월 20일~11월 23일",
+     "desc": "자격 및 우대요건 증빙서류 제출",
+     "note": "미제출 시 면접 포기 간주"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접심사",
+     "date": "12월 1일~12월 11일",
+     "desc": "공단 본부(원주) 예정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "임용후보자 등록 후 1/18 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306627": {
+  "at": "2026-10-27 05:55",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306627.html",
+  "source": "★2026년 항공기상청 공무직 근로자(항공기상지원관) 채용 공고_문서.hwpx",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "지원코드 01에서 1명, 지원코드 02에서 1명씩 총 2명을 뽑아요.",
+    "columns": [
+     "지원코드 01",
+     "지원코드 02"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·직무수행계획서 평가, 경력·학위·자격증 심사",
+     "note": "5배수 초과 시 고득점자 순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 19일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 26일(목)",
+     "desc": "소통·공감, 헌신·열정, 창의·혁신, 윤리·책임 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 15일(화)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
