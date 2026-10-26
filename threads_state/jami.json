@@ -4363,6 +4363,23 @@
    "comment_id": "17977909866135830",
    "at": "2026-10-27 02:23",
    "views": 176
+  },
+  {
+   "id": "MN-HOUSTON-01",
+   "instNm": "주휴스턴 대한민국 총영사관",
+   "title": "주휴스턴총영사관 일반직 행정직원 채용 (재공고)",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️미국 휴스턴 총영사관 행정직\n목요일 18시 마감, 월 1,950달러",
+   "closer": "목요일 6시 지나면 올해는 더 못 넣는 자리임",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "17938943973122033",
+   "comment_id": "17962523178246420",
+   "at": "2026-10-27 05:49"
   }
  ],
  "logo_tried": {
