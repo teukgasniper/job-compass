@@ -12562,5 +12562,175 @@
    },
    "written": null
   }
+ },
+ "306144": {
+  "at": "2026-10-28 00:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306144.html",
+  "source": "(붙임)2026년도 제3차 신규직원 및 기간제직 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "공무직(R&D사업관리) 1명, 기간제직(행정) 16명, 기간제직(지원) 2명, 기간제직(미화) 3명을 뽑아요.",
+    "columns": [
+     "공무직(R&D사업관리)",
+     "기간제직(행정)",
+     "기간제직(지원)",
+     "기간제직(미화)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       16,
+       2,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "박사·기술사, 석사+5년, 학사+기사+7년 경력 중 하나 충족해야 해요",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자격사항(40점)+자기소개서(60점)+가점",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 6일(금)"
+    },
+    {
+     "type": "notice",
+     "label": "면접심사 대상자 발표",
+     "date": "11월 13일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "11월 19일~20일",
+     "desc": "경험역량면접(문제해결·의사소통·조직이해·직업윤리)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 27일(금)",
+     "desc": "입사서류 제출 후 기간제직은 12월 7일 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306628": {
+  "at": "2026-10-28 00:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306628.html",
+  "source": "(제2026-15호) 2026년 부산지방기상청 공무직근로자(시설물관리원)  채용 공고문 ★.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 거주지, 성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·직무수행계획서 등 서면심사",
+     "note": "3배수 초과 시 정성·정량평가"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 3일(목)",
+     "desc": "개별면접, 평정요소 5개 항목 상·중·하 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 14일(월)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306319": {
+  "at": "2026-10-28 00:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306319.html",
+  "source": "외국어교육과 공무직 근로자(연구원 다급) 채용 공고.hwpx",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "석사 이상",
+    "text": "석사학위 이상 또는 학사+실무경력 2년, 특정 자격증 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 21일~11월 4일",
+     "desc": "자격요건 심사 및 가산점(우대요건·사회형평가점) 합산",
+     "note": "5배수 초과시 40%이상 득점자 중 고득점순"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 10일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 12일(목)",
+     "desc": "5개 평정요소 평가(공무원임용시험령 준용)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": "증빙서류 확인 후 최종합격자 결정",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (우대요건)",
+    "text": "공인 영어성적(TOEFL·TOEIC·FLEX·NEW TEPS)을 보유하면 서류전형에서 점수별로 우대받아요.",
+    "highlight": "점수별로 우대"
+   },
+   "written": null
+  }
  }
 }
