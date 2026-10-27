@@ -12732,5 +12732,133 @@
    },
    "written": null
   }
+ },
+ "WK-182577": {
+  "at": "2026-10-28 05:13",
+  "url": "https://hiring03.ddolbestory.com/2026/10/cj-wk182577.html",
+  "source": "기업 채용 페이지 이미지 2조각 (https://recruit.cj.net/recruit/ko/recruit/recruit/detail.fo?zz_jo_num=8832)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류접수",
+     "date": "10월 22일~11월 5일",
+     "desc": "온라인 지원서 접수",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류/면접전형",
+     "date": null,
+     "desc": "서류 및 면접 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": null,
+     "desc": "합격자에 한해 개별 안내",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306334": {
+  "at": "2026-10-28 05:13",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306334.html",
+  "source": "(재)우체국시설관리단 현장직원 2026년도 12차 통합 채용 공고문.hwp",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기술 8명, 경비 7명, 미화 7명, 기타 1명 등 현장직원 23명을 뽑아요.",
+    "columns": [
+     "기술",
+     "경비",
+     "미화",
+     "기타"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       8,
+       7,
+       7,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 10일~11월 18일",
+     "desc": "자기소개서, 관련경력, 자격증, 가점 심사",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 19일~11월 20일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "11월 21일~11월 25일",
+     "desc": "173문항, 30분간 온라인 진행, 면접 참고자료로 활용",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 30일~12월 7일",
+     "desc": "면접심사표 60점 이상 고득점자 순 선정",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "12월 10일~12월 11일"
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": "2027년 1월 3일",
+     "desc": "결격사유 조회 및 임용서류 심사 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "별도의 필기시험 없이 서류전형 합격자를 대상으로 인성검사만 진행해요. 총 173문항을 30분간 봐요.",
+    "highlight": "173문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "173문항",
+      "scope": null,
+      "note": "면접 시 참고자료로 활용",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
