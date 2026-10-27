@@ -2616,6 +2616,23 @@
    "comment_id": "18101073689324083",
    "at": "2026-10-27 23:04",
    "views": 1236
+  },
+  {
+   "id": "MN-KUWAIT-01",
+   "instNm": "주쿠웨이트 대한민국 대사관",
+   "title": "주쿠웨이트 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 7,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️모레 밤 쿠웨이트 접수 마감\n항공료 나오는 행정직 자리",
+   "closer": "집세까지 대사관이 대신 내주는 자리, 금요일 자정이 끝임",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18125658593514776",
+   "comment_id": "18121224823985403",
+   "at": "2026-10-28 04:11"
   }
  ],
  "views_refreshed_at": "2026-10-28 02:56",
