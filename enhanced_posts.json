@@ -12337,5 +12337,230 @@
    "language": null,
    "written": null
   }
+ },
+ "306294": {
+  "at": "2026-10-27 18:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hrdkorea-306294.html",
+  "source": "채용공고문(하반기 사업지원직).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설물관리원으로 전기 1명, 일반 5명을 채용해요.",
+    "columns": [
+     "전기",
+     "일반"
+    ],
+    "rows": [
+     {
+      "label": "시설물관리원",
+      "values": [
+       1,
+       5
+      ]
+     }
+    ],
+    "note": "일반은 글로벌숙련기술진흥원, 부산남부지사, 대전지역본부, 충북지사, 충남지사에 각 1명씩이에요."
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·성별·연령 제한 없음(시설물관리원 전기는 만 60세 이하)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "직무수행계획서 기반 심사",
+     "note": "모집단위별 2~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "notice",
+     "label": "면접일정 및 장소 발표",
+     "date": "11월 25일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 30일~12월 3일",
+     "desc": "서울·울산 등에서 시행 예정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 10일(목)",
+     "desc": "채용예정인원의 1배수 선발"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306130": {
+  "at": "2026-10-27 18:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306130.html",
+  "source": "26년 채용공고문(한국잡월드)1020.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "콘텐츠 기획 및 운영 3명, 경영사무 1명을 뽑아요.",
+    "columns": [
+     "콘텐츠 기획 및 운영",
+     "경영사무"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       3,
+       1
+      ]
+     }
+    ],
+    "note": "경영사무는 취업지원대상자(보훈) 제한경쟁으로 뽑아요."
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "공개경쟁은 학력 및 전공 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "적격심사 후 자기소개서 정성평가",
+     "note": "채용인원의 30배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 16일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 22일(일)",
+     "desc": "NCS직업기초능력(50문항) + 인성검사",
+     "note": "5배수 범위 내외 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 26일(금)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 3일~4일",
+     "desc": "면접위원 점수 평균 고득점자 순 선발",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 10일(목)",
+     "desc": "신원조회 후 12월 21일(월) 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS직업기초능력(50문항)과 인성검사로 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력",
+      "count": "50문항",
+      "scope": "의사소통, 조직이해, 문제해결, 수리, 자원관리",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": "인성, 심리, 일관성",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-182135": {
+  "at": "2026-10-27 18:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ls-wk182135.html",
+  "source": "기업 채용 페이지 이미지 10조각 (https://lsmtron.recruiter.co.kr/career/jobs/131685)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "신입·경력 대부분 분야가 학사 이상 요건이며 일부는 석사 이상이에요",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 20일~11월 1일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": {
+    "title": "공통 지원자격 어학 기준",
+    "text": "공인 외국어성적 보유자로 토익 기준 인문계 700점, 이공계 600점 이상이에요. OPIc·토익스피킹도 인정돼요.",
+    "highlight": "700점 이상"
+   },
+   "written": null
+  }
  }
 }

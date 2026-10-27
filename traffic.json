@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-27 09:45",
+ "updated": "2026-10-27 18:19",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -176,13 +176,13 @@
    ],
    "20261026": [
     9438,
-    6456,
-    5926
+    6437,
+    5885
    ],
    "20261027": [
-    1474,
-    948,
-    907
+    4541,
+    3138,
+    2938
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -444,14 +444,14 @@
     4240
    ],
    "20261026": [
-    8122,
-    3815,
+    8127,
+    3854,
     3556
    ],
    "20261027": [
-    1348,
-    587,
-    572
+    3343,
+    1578,
+    1523
    ]
   },
   "ac.ddolbestory.com": {
@@ -587,13 +587,13 @@
    ],
    "20261026": [
     1940,
-    1253,
-    1155
+    1252,
+    1146
    ],
    "20261027": [
-    251,
-    174,
-    169
+    607,
+    407,
+    376
    ]
   }
  },
@@ -866,17 +866,18 @@
     "m.search.naver.com": 1
    },
    "20261026": {
-    "(direct)": 8637,
-    "l.threads.com": 416,
-    "(not set)": 370,
+    "(direct)": 8982,
+    "l.threads.com": 441,
     "google": 12,
     "m.search.naver.com": 2,
     "blogger.com": 1
    },
    "20261027": {
-    "(direct)": 1365,
-    "(not set)": 66,
-    "l.threads.com": 43
+    "(direct)": 4241,
+    "(not set)": 171,
+    "l.threads.com": 127,
+    "blogger.com": 1,
+    "keep.google.com": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1209,19 +1210,20 @@
     "facebook.com": 1
    },
    "20261026": {
-    "(direct)": 6936,
-    "(not set)": 875,
-    "l.threads.com": 279,
-    "google": 30,
+    "(direct)": 7737,
+    "l.threads.com": 328,
+    "google": 53,
     "l.instagram.com": 4,
+    "(not set)": 2,
     "blogger.com": 1,
     "m.facebook.com": 1,
     "m.search.naver.com": 1
    },
    "20261027": {
-    "(direct)": 1186,
-    "(not set)": 124,
-    "l.threads.com": 37,
+    "(direct)": 2900,
+    "(not set)": 355,
+    "l.threads.com": 84,
+    "google": 3,
     "l.instagram.com": 1
    }
   },
@@ -1349,16 +1351,16 @@
     "m.facebook.com": 1
    },
    "20261026": {
-    "(direct)": 1758,
-    "(not set)": 131,
-    "l.threads.com": 43,
+    "(direct)": 1865,
+    "l.threads.com": 67,
     "google": 5,
     "m.facebook.com": 3
    },
    "20261027": {
-    "(direct)": 224,
-    "l.threads.com": 17,
-    "(not set)": 10
+    "(direct)": 530,
+    "(not set)": 46,
+    "l.threads.com": 29,
+    "google": 2
    }
   }
  }
