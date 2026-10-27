@@ -12290,5 +12290,52 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-305800": {
+  "at": "2026-10-27 09:45",
+  "url": "https://hiring03.ddolbestory.com/2026/10/knps-gj305800.html",
+  "source": "채용공고문_금정산국립공원사무소 공무직(탐방시설).hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "전공, 학력 등 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "직업기초능력(40%) + 직무수행능력(60%), 우대가점(5~10%)",
+     "note": "채용예정인원의 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 3일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 5일(목)",
+     "desc": "직업기초역량(40%) + 직무수행역량(60%), 우대가점(5~10%)",
+     "note": "청렴성 검증 문항 포함"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 12일(목)",
+     "desc": "서류전형(40%)·면접전형(60%) 합산 고득점자 순",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
