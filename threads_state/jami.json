@@ -4399,6 +4399,23 @@
    "comment_id": "18132335644612484",
    "at": "2026-10-27 09:15",
    "views": 756
+  },
+  {
+   "id": "MN-KOSME-01",
+   "instNm": "중소벤처기업진흥공단",
+   "title": "2026년 하반기 중소벤처기업진흥공단 체험형 청년인턴(일반) 채용",
+   "combo_idx": 2,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️화요일 마감 앞둔\n공공기관 청년인턴 55명",
+   "closer": "화요일 넘기면 올해 하반기 공공기관 인턴은 더 못 넣음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17919382110463407",
+   "comment_id": "18133026691742759",
+   "at": "2026-10-27 13:20"
   }
  ],
  "logo_tried": {
