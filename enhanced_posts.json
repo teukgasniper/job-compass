@@ -12860,5 +12860,187 @@
     "callout": null
    }
   }
+ },
+ "306258": {
+  "at": "2026-10-28 09:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306258.html",
+  "source": "(KIAT 공고 제2026-05호) 한국산업기술진흥원 2026년 하반기 신규직원 공개채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "AI정보화 1명, 정보보안 1명을 뽑아요.",
+    "columns": [
+     "AI정보화",
+     "정보보안"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·전공·연령·성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 11일~16일",
+     "desc": "경력·자격증·경험기술서·자기소개서 정량·정성 심사",
+     "note": "7배수 내외 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사(온라인)",
+     "date": "11월 17일~19일",
+     "desc": "온라인 인성검사(적·부 심사)",
+     "note": "합격자 전원 대상"
+    },
+    {
+     "type": "notice",
+     "label": "인성검사 결과발표",
+     "date": "11월 23일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 30일(월)",
+     "desc": "직무상황면접(발표면접) + 경험면접",
+     "note": "1배수 및 예비합격자 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 11일(금)",
+     "desc": "제출서류 등 검토 후 최종 합격자 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306602": {
+  "at": "2026-10-28 09:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306602.html",
+  "source": "2026-97)공무직 채용 공고문(수목원).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "행정실무원(사서) 1명, 시설관리원(청사시설) 1명을 뽑아요.",
+    "columns": [
+     "행정실무원(사서)",
+     "시설관리원(청사시설)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "행정실무원(사서)은 「도서관법」에 따른 준사서 이상 자격증이 필수예요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·직무수행계획서·경력·자격증 서면심사",
+     "note": "5배수 초과 시 서면심사로 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 26일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "12월 8일(화)",
+     "desc": "직무수행능력·전문지식·공무직원 적격성 평정",
+     "note": "상·중·하 평정, 상 많은 순 합격"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 15일(화)",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306394": {
+  "at": "2026-10-28 09:42",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306394.html",
+  "source": "(공고) 2026년 국립청주박물관 기획운영과 공무직 근로자(전기) 채용 공고문.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시요건 적격여부 심사, 지원배수별 선발기준 적용",
+     "note": "합격예정인원의 3~10배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 12일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 19일(목)",
+     "desc": "개별면접으로 업무수행 능력 및 적격성 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 26일(목)",
+     "desc": "제출서류 진위확인 및 신원조회 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
