@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-29 03:28",
+ "updated": "2026-10-29 07:48",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -185,9 +185,14 @@
     7944
    ],
    "20261028": [
-    13233,
-    9404,
-    9000
+    14612,
+    10334,
+    9812
+   ],
+   "20261029": [
+    997,
+    659,
+    637
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -459,9 +464,14 @@
     3983
    ],
    "20261028": [
-    9196,
-    4689,
-    4576
+    10278,
+    5168,
+    5068
+   ],
+   "20261029": [
+    894,
+    396,
+    391
    ]
   },
   "ac.ddolbestory.com": {
@@ -606,9 +616,14 @@
     927
    ],
    "20261028": [
-    2044,
-    1436,
-    1348
+    2318,
+    1628,
+    1521
+   ],
+   "20261029": [
+    234,
+    142,
+    130
    ]
   }
  },
@@ -898,12 +913,19 @@
     "m.naver.com": 1
    },
    "20261028": {
-    "(direct)": 12587,
-    "(not set)": 325,
-    "l.threads.com": 310,
-    "google": 9,
-    "m.naver.com": 2,
+    "(direct)": 13897,
+    "(not set)": 358,
+    "l.threads.com": 344,
+    "google": 10,
+    "m.naver.com": 3,
     "naver": 1
+   },
+   "20261029": {
+    "(direct)": 946,
+    "(not set)": 35,
+    "l.threads.com": 9,
+    "chatgpt.com": 6,
+    "google": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1254,14 +1276,20 @@
     "l.instagram.com": 1
    },
    "20261028": {
-    "(direct)": 8502,
-    "(not set)": 602,
-    "l.threads.com": 219,
-    "google": 18,
+    "(direct)": 9513,
+    "(not set)": 650,
+    "l.threads.com": 239,
+    "google": 21,
     "l.instagram.com": 8,
     "naver.com": 2,
     "chatgpt.com": 1,
     "instagram.com": 1
+   },
+   "20261029": {
+    "(direct)": 847,
+    "(not set)": 42,
+    "l.threads.com": 4,
+    "google": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1400,10 +1428,15 @@
     "(not set)": 2
    },
    "20261028": {
-    "(direct)": 1907,
-    "l.threads.com": 83,
-    "(not set)": 54,
+    "(direct)": 2163,
+    "l.threads.com": 97,
+    "(not set)": 58,
     "google": 3
+   },
+   "20261029": {
+    "(direct)": 227,
+    "(not set)": 4,
+    "l.threads.com": 3
    }
   }
  }

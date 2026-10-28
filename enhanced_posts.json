@@ -13527,5 +13527,169 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-306794": {
+  "at": "2026-10-29 07:48",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306794.html",
+  "source": "성남우편집중국 2026년 제1회 공무직 우정실무원 공개채용 공고문.hwpx",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "발착팀 3명, 소포팀 5명 등 성남우편집중국 공무직 우정실무원 총 8명을 뽑아요.",
+    "columns": [
+     "발착팀",
+     "소포팀"
+    ],
+    "rows": [
+     {
+      "label": "석(야)근파트(18~22시)",
+      "values": [
+       2,
+       4
+      ]
+     },
+     {
+      "label": "야간파트(21~06시/22~07시)",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건·경력·자소서·자격증·가점 등 100점 평가",
+     "note": "3배수 이상 합격 가능(동점자 모두 합격)"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 11일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 12일(목)~13일(금)",
+     "desc": "직무수행 능력·적격성 등 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 18일(목)",
+     "desc": "홈페이지 게시, 개별통보 없음",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306855": {
+  "at": "2026-10-29 07:48",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306855.html",
+  "source": "2026년 하반기 한국정책방송원 온라인콘텐츠부 공무직 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서·직무수행계획서·경력 등 서면 심사",
+     "note": "10명 이하 3배수, 초과 시 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 25일(수)",
+     "desc": "개별 질의응답으로 업무수행 능력·자세 평가",
+     "note": "서류전형 합격자만 응시"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 1일(화)",
+     "desc": "신원조회 등 거쳐 임용, 수습기간 3개월 운영",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306177": {
+  "at": "2026-10-29 07:48",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306177.html",
+  "source": "붙임1. 2026년도 제4차 정규직(공무직(경비사감)) 채용공고문.pdf",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별, 학력, 전공 등 제한없음",
+    "open": true
+   },
+   "restriction": "취업지원대상자(보훈) 중 경기동부보훈지청 추천을 받은 사람만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 둘째주",
+     "desc": "자격사항·경력사항·자기소개서 평가",
+     "note": "5배수(5명) 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 셋째주"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인 인성검사",
+     "date": "11월 18일~25일",
+     "desc": "면접 참고자료로 활용, 미응시 시 응시포기 간주",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 3일(목)",
+     "desc": "직무면접(50)+종합심층면접(50)으로 평가",
+     "note": "1배수(1명) 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 셋째주",
+     "desc": "임용예정일 2027년 1월 1일(금)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
