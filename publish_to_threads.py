@@ -1294,6 +1294,7 @@ JUDGE_PROMPT = """너는 한국 쓰레드(Threads) 채용 계정의 편집장이
 """
 
 
+GEN_FAIL_MAX = 2       # [2026-10-28] 같은 공고가 하루에 이 횟수만큼 생성 검사 탈락하면 그날은 건너뜀
 SMALL_HEAD_MAX = 5     # [2026-10-17] 이 인원 이하면 글에 인원을 쓰지 않음
 
 
@@ -2521,6 +2522,12 @@ def main():
 
     # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
     excluded = set(state.get("skip_jobs", []))      # [2026-10-19] AI가 박사 이상 전용으로 확인한 공고
+    # [2026-10-28] 같은 공고가 오늘 생성 검사에서 GEN_FAIL_MAX번 탈락했으면 오늘은 건너뜀 (0순위 수동 공고 무한 재시도 방지)
+    gen_fail = state.get("gen_fail", {})
+    stuck = {sn for sn, v in gen_fail.items() if v.get("day") == str(today) and v.get("n", 0) >= GEN_FAIL_MAX}
+    if stuck:
+        print(f"오늘 생성 검사 {GEN_FAIL_MAX}회 탈락한 공고 {len(stuck)}개는 오늘 건너뜀: " + ", ".join(sorted(stuck)))
+        excluded |= stuck
     # [2026-10-20] 계정별 발행 제외 공고 — 워크플로 SKIP_IDS(쉼표 구분). 다른 계정에서 조회수가 안 나온 공고를 이 계정에서만 뺄 때
     skip_env = {x.strip() for x in os.environ.get("SKIP_IDS", "").split(",") if x.strip()}
     if skip_env:
@@ -2616,6 +2623,16 @@ def main():
         summary(f"### ⏭️ 건너뜀\n{inst}: {result['_skip']} (다음 회차부터 후보 제외)")
         return
     if result is None:
+        if not DRY_RUN:                              # [2026-10-28] 탈락 횟수 기록 → 오늘 GEN_FAIL_MAX번이면 다음 회차부터 다른 공고
+            gf = state.setdefault("gen_fail", {})
+            sn = str(job["recrutPblntSn"])
+            v = gf.get(sn) if (gf.get(sn) or {}).get("day") == str(today) else {"day": str(today), "n": 0}
+            v["n"] = v.get("n", 0) + 1
+            gf[sn] = v
+            state["gen_fail"] = {k: x for k, x in gf.items() if x.get("day") == str(today)}   # 지난 날짜 기록은 정리
+            save_state(state)
+            print(f"생성 탈락 기록: {sn} 오늘 {v['n']}회" + (" → 다음 회차부터 오늘은 건너뜀" if v["n"] >= GEN_FAIL_MAX else ""))
+        summary(f"### ⏭️ 건너뜀\n{inst}: 생성 후보가 모두 검사에서 탈락")
         return
     comment = build_comment(post, d_left)
     # [2026-10-23] 재탕 글(어느 계정이든 이미 올라간 공고)은 이미지 없이 글만 발행 — 첫 글만 로고 이미지 첨부
