@@ -4542,6 +4542,23 @@
    "thread_id": "17988949049882119",
    "comment_id": "18356171338168033",
    "at": "2026-10-29 05:27"
+  },
+  {
+   "id": "MN-SEOULMETRO-01",
+   "instNm": "서울교통공사",
+   "title": "서울교통공사 2026년 하반기 신입사원(채용형 인턴) 공개채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍서울 공기업 인턴 482명\n학력무관 + 3개월 후 정규직 전환",
+   "closer": "인턴 딱 3개월이면 정규직 7급표 받는 자리임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "17951835888057595",
+   "comment_id": "18111136643130421",
+   "at": "2026-10-29 08:23"
   }
  ],
  "logo_tried": {
