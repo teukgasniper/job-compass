@@ -13282,5 +13282,250 @@
     "callout": null
    }
   }
+ },
+ "GJ-306852": {
+  "at": "2026-10-29 03:28",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306852.html",
+  "source": "2026-470호 법무부 대변인실 공무직 근로자(영상PD, 작가) 채용 공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "영상PD 1명, 작가 1명을 뽑아요.",
+    "columns": [
+     "영상PD",
+     "작가"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "평가점수(50~60점)+경력·자소서 심사, 가점(사회형평 3%) 합산",
+     "note": "5배수 이상 시 적극적 서류전형"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 16일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 19일(목)",
+     "desc": "정신자세·전문지식·표현력 등 5개 요소 평가",
+     "note": "면접대상 5명 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 25일(수)",
+     "desc": "결격사유 확인 후 임용 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306304": {
+  "at": "2026-10-29 03:28",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306304.html",
+  "source": "채용공고문(2026년 제5차 정규직-공영항로).pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "선박관리 1명, 안전관리 2명, 선장 2명, 기관장 2명, 실무원 5명 등 정규직 12명을 뽑아요.",
+    "columns": [
+     "선박관리",
+     "안전관리",
+     "선장",
+     "기관장",
+     "실무원"
+    ],
+    "rows": [
+     {
+      "label": "인원",
+      "values": [
+       1,
+       2,
+       2,
+       2,
+       5
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "고졸 이상",
+    "text": "실무직은 최종학력이 고등학교 졸업(예정) 이상이어야 해요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "직무 자격증(20점) + 자기소개서(80점)",
+     "note": "근무지별 50배수 또는 40배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 28일(토)",
+     "desc": "인성검사(적/부) + NCS직업공통능력(50문항)",
+     "note": "5순위 또는 9순위까지 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "12월 2일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "12월 7일~11일",
+     "desc": "직무능력(60%) + 인성(40%) 평가",
+     "note": "근무지별 2명 예비합격자 운영"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "임용예정일 1월 1일(금)"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사(적/부)와 NCS직업공통능력 50문항으로 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "228문항",
+      "scope": null,
+      "note": "적/부 판정",
+      "ncs": false
+     },
+     {
+      "name": "NCS직업공통능력",
+      "count": "50문항",
+      "scope": "의사소통, 문제해결, 디지털, 대인관계, 직업윤리",
+      "note": "가중치 100% 반영",
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "GJ-306840": {
+  "at": "2026-10-29 03:28",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306840.html",
+  "source": "공고문(2026년 제2회 하남시 공무직 채용시험 시행계획).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "청소년상담원 1명, 의료급여관리사 1명, 아동복지교사 2명, 한강지킴이 2명, 간호사 1명, 환경공무직 7명, 조정원 2명, 일반사무원 3명을 뽑아요.",
+    "columns": [
+     "청소년상담원",
+     "의료급여관리사",
+     "아동복지교사",
+     "한강지킴이",
+     "간호사",
+     "환경공무직",
+     "조정원",
+     "일반사무원"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       2,
+       2,
+       1,
+       7,
+       2,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 12일(목)",
+     "desc": "자격·경력 등 서면심사로 적격여부 판정",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 16일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실기시험",
+     "date": "11월 18일~25일",
+     "desc": "환경공무직: 모래주머니 달리기·윗몸일으키기 등 체력검정",
+     "note": "2배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "실기시험 합격자 발표",
+     "date": "11월 30일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "12월 9일~10일",
+     "desc": "구술면접, 5개 평정요소로 점수 합계 순 결정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 14일(월)",
+     "desc": "신원조사·신체검사 후 결격사유 없을 시 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
