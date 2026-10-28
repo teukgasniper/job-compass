@@ -31,6 +31,7 @@ MIN_DAYS_LEFT = 1      # [2026-10-15] 2 → 1 (D-1·D-2도 발행, D-0만 제외
 URGENT_DAYS = 2        # [2026-10-15] 마감 D-1~D-2 쓰레드 후보는 우선 발행
 URGENT_BONUS = 40
 NEW_WITHIN_DAYS = 2   # 접수 시작 2일 이내 = 새 공고
+BIG_TRIAL_MIN = 100   # [2026-10-28] 체험형 인턴이라도 이 인원 이상이면 본문 발행 대상 (남부발전 122·도로교통공단 116·IBK 390명 사례)
 JITTER = os.environ.get("PUBLISH_JITTER", "1") != "0"    # 랜덤 발행 (끄려면 0)
 START_WAIT_MAX = 30 * 60      # 시작 전 0~30분 랜덤 대기
 GAP_MIN, GAP_MAX = 60, 300    # 글 사이 1~5분 랜덤 간격
@@ -347,6 +348,35 @@ def thread_eligible(job, now=None):
         return False
     return True
 
+def is_big_trial_intern(job):
+    """[2026-10-28] 인원 BIG_TRIAL_MIN명 이상 대형 체험형 인턴 — thread_eligible(정규직·채용형만)에선 빠지지만
+    조회수가 높고 쓰레드 자동발행(2026-10-26~)은 이미 후보로 넣고 있어서 본문도 같이 발행 (본문 없이 쓰레드만 나가는 문제 방지)
+    보훈·장애인 전용, 의사직, 박사급, 나라일터(단기 일자리)는 기존 기준대로 제외"""
+    if is_gojobs(job):
+        return False
+    title = job.get("recrutPbancTtl") or ""
+    hire = job.get("hireTypeNmLst") or ""
+    if "체험형" not in hire and "체험형" not in title:
+        return False
+    if int(job.get("recrutNope") or 0) < BIG_TRIAL_MIN:
+        return False
+    if "신입" not in (job.get("recrutSeNm") or ""):
+        return False
+    if any(w in title for w in DOCTOR_WORDS):
+        return False
+    if PHD_ONLY_RE.search(title) and not PHD_MIXED_RE.search(title):
+        return False
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만|자립준비", title) \
+            and not MIXED_TRACK_RE.search(title):
+        return False
+    return True
+
+
+def post_eligible(job, now=None):
+    """[2026-10-28] 본문 발행 대상 = 쓰레드 글감 조건 + 대형 체험형 인턴"""
+    return thread_eligible(job, now) or is_big_trial_intern(job)
+
+
 def score(job, now=None):
     """트래픽이 몰릴 공고일수록 높은 점수 (지침서 4장 스코어링과 같은 기준)"""
     now = now or datetime.now(KST)
@@ -526,12 +556,14 @@ def queue_score(job, now):
 
 # ───────── 실행 ─────────
 def pick_queue(jobs, mapping, now):
-    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and thread_eligible(j, now)
+    # [2026-10-28] thread_eligible → post_eligible: 인원 100명 이상 대형 체험형 인턴도 대기열에 넣음
+    todo = [j for j in jobs if str(j["recrutPblntSn"]) not in mapping and days_left(j, now) >= MIN_DAYS_LEFT and post_eligible(j, now)
             and not is_manual(j)]   # [2026-10-08] 수동 공고는 수동 공고 발행 액션에서만
-    # 1순위 쓰레드 글감 후보(정규직·신입 등) → 그 안에서 점수순 (새 공고는 +15점 가산)
+    # 1순위 쓰레드 글감 후보(정규직·신입 등) + 대형 체험형 인턴 → 그 안에서 점수순 (새 공고는 +15점 가산)
     # [2026-10-12] 누구나 아는 대기업은 +40 (공공 대규모 공채와 비슷한 순위로 앞당김)
-    todo.sort(key=lambda j: (not thread_eligible(j, now), -queue_score(j, now)))
-    n_hot = sum(1 for j in todo if thread_eligible(j, now))
+    # [2026-10-28] 대형 체험형 인턴은 인원 점수(최대 100)로 자연히 앞쪽에 옴 — 별도 가산점 없음
+    todo.sort(key=lambda j: (not post_eligible(j, now), -queue_score(j, now)))
+    n_hot = sum(1 for j in todo if post_eligible(j, now))
     n_new = sum(1 for j in todo if is_new(j, now))
     return todo, n_hot, n_new
 
