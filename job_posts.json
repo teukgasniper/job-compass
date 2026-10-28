@@ -10601,5 +10601,35 @@
   "instNm": "한국청소년정책연구원",
   "slug": "job-306433",
   "published": "2026-10-28 13:46"
+ },
+ "MN-KOSPO-01": {
+  "postId": "6226213392534703524",
+  "url": "https://hiring03.ddolbestory.com/2026/10/kospo-mn01.html",
+  "title": "2026년 하반기 한국남부발전 체험형인턴 채용 | 청년인턴(체험형) 122명, 11월 11일 마감",
+  "instNm": "한국남부발전(주)",
+  "slug": "kospo-mn01",
+  "published": "2026-10-28 17:01",
+  "manual": "html",
+  "html_hash": "6f9088cbff55"
+ },
+ "MN-KOROAD-01": {
+  "postId": "8727261635354637708",
+  "url": "https://hiring03.ddolbestory.com/2026/10/koroad-mn01.html",
+  "title": "2026년도 하반기 한국도로교통공단 체험형 청년인턴 채용 | 청년인턴(체험형) 116명, 11월 9일 마감",
+  "instNm": "한국도로교통공단",
+  "slug": "koroad-mn01",
+  "published": "2026-10-28 17:01",
+  "manual": "html",
+  "html_hash": "8aa162490076"
+ },
+ "MN-IBK-01": {
+  "postId": "4888480762989136664",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ibk-mn01.html",
+  "title": "중소기업은행 2027년 동계 IBK기업은행 체험형 청년인턴 공개채용 | 청년인턴(체험형) 390명, 11월 16일 마감",
+  "instNm": "중소기업은행",
+  "slug": "ibk-mn01",
+  "published": "2026-10-28 17:01",
+  "manual": "html",
+  "html_hash": "3d5610b409b5"
  }
 }
