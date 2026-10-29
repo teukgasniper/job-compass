@@ -4578,6 +4578,23 @@
    "thread_id": "18380303131241128",
    "comment_id": "17904495378668656",
    "at": "2026-10-29 11:16"
+  },
+  {
+   "id": "MN-HYUNDAICARD-01",
+   "instNm": "현대카드",
+   "title": "[현대카드] 2026 계약직 채용 — 여의도 본사 5개 팀 (챗봇·소비자보호·Collection·Fraud)",
+   "combo_idx": 8,
+   "combo_v": 2,
+   "combo_cat": "sniper",
+   "hook": "📍사람 말 들어주는 거 좋아하면\n여의도 카드사 상담, 목요일 마감",
+   "closer": "민원 끝까지 들어주는 성격이면 카드사 상담 자리만한 데 없음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18120190531984330",
+   "comment_id": "18373682245245091",
+   "at": "2026-10-29 14:30"
   }
  ],
  "logo_tried": {
