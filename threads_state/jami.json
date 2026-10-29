@@ -4651,6 +4651,23 @@
    "comment_id": "18096270080168797",
    "at": "2026-10-29 23:46",
    "views": 1312
+  },
+  {
+   "id": "MN-CAMBODIA-01",
+   "instNm": "주캄보디아 대한민국 대사관",
+   "title": "주캄보디아 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️11월 5일 목요일 마감\n캄보디아 대사관 신입 행정직 채용",
+   "closer": "이번 주 넘기면 프놈펜행 행정직 자리는 다시 안 뜸",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18137585854647553",
+   "comment_id": "18133399954754231",
+   "at": "2026-10-30 05:10"
   }
  ],
  "logo_tried": {
