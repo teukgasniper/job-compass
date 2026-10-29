@@ -13919,5 +13919,199 @@
    },
    "written": null
   }
+ },
+ "306365": {
+  "at": "2026-10-29 22:39",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306365.html",
+  "source": "2026년 하반기 운영지원직 공개채용 공고.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설관리(기계/환경) 1명, 주차관리 4명, 환경관리 12명을 뽑아요.",
+    "columns": [
+     "시설관리(기계/환경)",
+     "주차관리",
+     "환경관리"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       1,
+       4,
+       12
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 11일~17일",
+     "desc": "직무적합성, 조직적합성 종합평가",
+     "note": "선발인원 2배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 19일(목)"
+    },
+    {
+     "type": "notice",
+     "label": "다면적 인성검사",
+     "date": "11월 23일~24일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 3일~9일",
+     "desc": "직업윤리·전문지식·의사표현 등 종합평가",
+     "note": "인성검사 결과 참고자료 활용"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 15일(화)",
+     "desc": "신체검사 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-182347": {
+  "at": "2026-10-29 22:39",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ls-wk182347.html",
+  "source": "기업 채용 페이지 이미지 4조각 (https://lsmnm.recruiter.co.kr/app/jobnotice/view?systemKindCode=MRS2&jobnoticeSn=269814&entrySn=1)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "신입 지원자격: 학사 이상",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (자금)",
+    "text": "TOEIC Speaking 또는 OPIc(영어) IM3 이상 성적 보유자예요(접수 마감일 기준 2년 내 성적).",
+    "highlight": "IM3 이상"
+   },
+   "written": null
+  }
+ },
+ "GJ-306864": {
+  "at": "2026-10-29 22:39",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306864.html",
+  "source": "해외홍보콘텐츠과 공무직 근로자(홍보원) 채용 공고.hwpx",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "국내외 4년제 대학 학사 학위 이상 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 11일(수)",
+     "desc": "자격요건 및 우대사항 서류심사",
+     "note": "응시인원별 3~6배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 13일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기 및 면접전형",
+     "date": "11월 17일(화)",
+     "desc": "시사상식 시험, 기사작성·번역시험, 면접 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 25일(수)",
+     "desc": "근로계약 체결 후 12월 1일 근무 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 시사상식 시험과 기사 작성·번역 시험으로 60분간 치러요.",
+    "highlight": "60분간",
+    "subjects": [
+     {
+      "name": "시사상식 시험",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "기사 작성 및 번역 시험",
+      "count": null,
+      "scope": "국문 기사 작성, SNS 콘텐츠(영문) 제작",
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
