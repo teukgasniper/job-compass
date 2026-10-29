@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-29 07:48",
+ "updated": "2026-10-29 15:23",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -186,13 +186,13 @@
    ],
    "20261028": [
     14612,
-    10334,
-    9812
+    10469,
+    9797
    ],
    "20261029": [
-    997,
-    659,
-    637
+    3680,
+    2592,
+    2435
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -464,14 +464,14 @@
     3983
    ],
    "20261028": [
-    10278,
-    5168,
-    5068
+    10436,
+    5325,
+    5070
    ],
    "20261029": [
-    894,
-    396,
-    391
+    2958,
+    1438,
+    1391
    ]
   },
   "ac.ddolbestory.com": {
@@ -616,14 +616,14 @@
     927
    ],
    "20261028": [
-    2318,
-    1628,
-    1521
+    2321,
+    1634,
+    1520
    ],
    "20261029": [
-    234,
-    142,
-    130
+    931,
+    606,
+    555
    ]
   }
  },
@@ -913,19 +913,21 @@
     "m.naver.com": 1
    },
    "20261028": {
-    "(direct)": 13897,
-    "(not set)": 358,
-    "l.threads.com": 344,
-    "google": 10,
+    "(direct)": 14228,
+    "l.threads.com": 360,
+    "google": 12,
+    "(not set)": 8,
     "m.naver.com": 3,
     "naver": 1
    },
    "20261029": {
-    "(direct)": 946,
-    "(not set)": 35,
-    "l.threads.com": 9,
+    "(direct)": 3499,
+    "l.threads.com": 81,
+    "(not set)": 78,
+    "google": 11,
     "chatgpt.com": 6,
-    "google": 1
+    "l.instagram.com": 4,
+    "facebook.com": 2
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1276,20 +1278,23 @@
     "l.instagram.com": 1
    },
    "20261028": {
-    "(direct)": 9513,
-    "(not set)": 650,
-    "l.threads.com": 239,
-    "google": 21,
+    "(direct)": 10106,
+    "l.threads.com": 258,
+    "google": 38,
+    "(not set)": 21,
     "l.instagram.com": 8,
     "naver.com": 2,
     "chatgpt.com": 1,
     "instagram.com": 1
    },
    "20261029": {
-    "(direct)": 847,
-    "(not set)": 42,
-    "l.threads.com": 4,
-    "google": 1
+    "(direct)": 2676,
+    "(not set)": 192,
+    "l.threads.com": 72,
+    "google": 31,
+    "ig_text_post_permalink": 2,
+    "facebook.com": 1,
+    "masterpeace01.blogspot.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1428,15 +1433,15 @@
     "(not set)": 2
    },
    "20261028": {
-    "(direct)": 2163,
-    "l.threads.com": 97,
-    "(not set)": 58,
-    "google": 3
+    "(direct)": 2212,
+    "l.threads.com": 104,
+    "google": 3,
+    "(not set)": 2
    },
    "20261029": {
-    "(direct)": 227,
-    "(not set)": 4,
-    "l.threads.com": 3
+    "(direct)": 859,
+    "l.threads.com": 49,
+    "(not set)": 23
    }
   }
  }
