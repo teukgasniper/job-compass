@@ -14113,5 +14113,171 @@
     "callout": null
    }
   }
+ },
+ "306487": {
+  "at": "2026-10-30 05:30",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306487.html",
+  "source": "업무지원직 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "전기 2명, 기계 2명, 시설과 미화관리 1명, 주차관리 1명, 이송업무 5명, 간호부 미화관리 10명을 뽑아요.",
+    "columns": [
+     "전기",
+     "기계",
+     "미화(시설과)",
+     "주차관리",
+     "이송업무",
+     "미화(간호부)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       2,
+       2,
+       1,
+       1,
+       5,
+       10
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "2026년 10월 29일~11월 4일(접수)",
+     "desc": "응시자격 충족 여부 심사, 충족자 전원 합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "개별안내"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": null,
+     "desc": "직무수행 능력, 인성 및 적격성 검정",
+     "note": "평점평균 40% 이상 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "개별안내",
+     "desc": "신체검사·범죄경력조회 후 최종합격"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-182872": {
+  "at": "2026-10-30 05:30",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyundai-wk182872.html",
+  "source": "기업 채용 페이지 이미지 4조각 (https://hyundai-transys.recruiter.co.kr/career/jobs/132021)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고등학교 졸업 이상의 학력 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인적성검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형",
+     "date": null,
+     "desc": "1차·2차 One-Day로 진행해요",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": "27년 1월말 예정",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-306129": {
+  "at": "2026-10-30 05:30",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306129.html",
+  "source": "(공고문)국립세종도서관 서비스이용과 공무직 근로자 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 5일(목)",
+     "desc": "자기소개서·직무수행계획서·경력·자격증 등 서면심사",
+     "note": "지원 인원에 따라 3~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "11월 9일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 12일(목)",
+     "desc": "5개 평정요소로 상·중·하 종합심사",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 16일(월)",
+     "desc": "국립세종도서관 홈페이지 게재",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
