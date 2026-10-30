@@ -4723,6 +4723,23 @@
    "comment_id": "18375699463208309",
    "at": "2026-10-30 14:22",
    "views": 328
+  },
+  {
+   "id": "MN-CAMEROON-01",
+   "instNm": "주카메룬 대한민국 대사관",
+   "title": "주카메룬 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 0,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍신입 지원 가능 + 해외 공관 행정직\n카메룬 야운데 대사관으로 출근",
+   "closer": "아프리카 외교 공관에서 커리어 시작하는 기회, 흔치 않음",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17989747100877553",
+   "comment_id": "17874700965601860",
+   "at": "2026-10-30 17:18"
   }
  ],
  "logo_tried": {
