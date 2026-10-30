@@ -14279,5 +14279,64 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-182728": {
+  "at": "2026-10-30 10:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-182728.html",
+  "source": "기업 채용 페이지 이미지 4조각 (https://ckd.recruiter.co.kr/career/jobs/132259)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 지원서 접수",
+     "date": "10월 26일~11월 4일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량검사",
+     "date": "11월 5일~11월 9일",
+     "desc": null,
+     "note": "사무보조 직무는 생략"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 1차면접/2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": "채용검진 결과 결격사유 없을 시 최종합격",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
