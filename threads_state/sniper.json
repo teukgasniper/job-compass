@@ -2544,6 +2544,23 @@
    "thread_id": "17909635284331617",
    "comment_id": "18132835681747397",
    "at": "2026-10-30 14:40"
+  },
+  {
+   "id": "MN-AUSTRALIA-01",
+   "instNm": "주호주 대한민국 대사관",
+   "title": "주호주 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 2,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍경력 없어도 지원 가능한\n호주 캔버라 대사관 공채",
+   "closer": "경력 없이도 호주 캔버라까지 이력서 보낼 수 있는 자리임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18421952482153157",
+   "comment_id": "17933201085409097",
+   "at": "2026-10-30 17:44"
   }
  ],
  "views_refreshed_at": "2026-10-30 14:33",
