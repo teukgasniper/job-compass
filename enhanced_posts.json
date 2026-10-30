@@ -14338,5 +14338,252 @@
    "language": null,
    "written": null
   }
+ },
+ "306513": {
+  "at": "2026-10-30 19:25",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306513.html",
+  "source": "(채용공고 제2026-3호)국립대구청소년디딤센터 직원 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반행정분야(4급) 1명, 상담교육분야(5급) 1명을 뽑아요.",
+    "columns": [
+     "일반행정분야(4급)",
+     "상담교육분야(5급)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 대학 졸업(또는 동등 학력) 이상, 관련 실무경력 1년 이상",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 20일(금)",
+     "desc": "정량평가(자격증·경력)+정성평가(경험·자기소개서)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 결과발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "12월 4일(금)",
+     "desc": "직무전문성+조직적합성+인성및태도 평가",
+     "note": "80점 이상 합격"
+    },
+    {
+     "type": "notice",
+     "label": "적격여부심사",
+     "date": "12월 7일~11일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "전력조회 등 적격여부 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-182680": {
+  "at": "2026-10-30 19:25",
+  "url": "https://hiring03.ddolbestory.com/2026/10/nongshim-wk182680.html",
+  "source": "기업 채용 페이지 이미지 5조각 (https://recruit.nongshim.com/recruit/notice/view?companyCd=01&useYear=2026&useSeq=26)",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "정규 2년제 대학졸업 이상 학력 소지자, 2027년 2월 졸업예정자",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 23일~11월 9일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": null,
+     "desc": "인성검사 및 직무지향성 검사",
+     "note": "PE 직무는 온라인 진행"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": null,
+     "desc": "면접전형(통합)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사와 직무지향성 검사로 진행돼요.",
+    "highlight": "인성검사와 직무지향성 검사",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     },
+     {
+      "name": "직무지향성 검사",
+      "count": null,
+      "scope": null,
+      "note": "PE 직무는 온라인 진행",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "306425": {
+  "at": "2026-10-30 19:25",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306425.html",
+  "source": "붙임1._2026_하반기_정기채용_공고문(정규직_및_무기사업직)_수정261023.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 연구직 9명, 정규직 기술직 1명, 무기사업직 기술직 1명을 뽑아요.",
+    "columns": [
+     "연구직(정규직)",
+     "기술직(정규직)",
+     "기술직(무기사업직)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       9,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "석사 이상",
+    "text": "연구직은 소요전공 석사 이상, 기술직은 고등학교 졸업 이상이에요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시자격요건 및 우대요건 충족여부 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 2주"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 14일(토)",
+     "desc": "NCS직업기초능력평가 4개 영역 80문항 + 인성검사",
+     "note": "3배수 선발(1명 채용 분야는 5배수)"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "11월 3주"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 4주",
+     "desc": "글쓰기 20점, 집단토론 20점, 발표·질의응답 60점",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 결과 발표",
+     "date": "12월 4주"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 신원조사 및 신체검사",
+     "date": "2026년 12월~2027년 1월",
+     "desc": "신원조사·신체검사 적격 판정 후 최종 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (연구직/관리직)",
+    "text": "토익 700점 등 공인어학성적이 필요하고, 외국 학사 이상 학위자·장애인은 면제돼요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 NCS직업기초능력평가 4개 영역 80문항과 인성검사로 봐요.",
+    "highlight": "80문항",
+    "subjects": [
+     {
+      "name": "NCS직업기초능력평가",
+      "count": "80문항",
+      "scope": "의사소통, 수리, 문제해결, 조직이해",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": "면접 참고자료로만 활용",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
