@@ -14760,5 +14760,69 @@
    },
    "written": null
   }
+ },
+ "306331": {
+  "at": "2026-10-31 07:38",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306331.html",
+  "source": "2026년 하반기 금융전문직 공고문_이미지.png (이미지 공고문 → 8조각)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "금융전문직 G1(특정직) 일반 5명, 장애 2명을 뽑아요.",
+    "columns": [
+     "일반",
+     "장애"
+    ],
+    "rows": [
+     {
+      "label": "금융전문직 G1(특정직)",
+      "values": [
+       5,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 전공, 성별, 연령 등 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 직무적합성 평가(서류전형)",
+     "date": null,
+     "desc": "기본자격, 직무경력, 직무능력소개서, 자기소개서 평가",
+     "note": "채용예정인원의 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "직무적합성 평가 결과 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형(경험면접)",
+     "date": "12월 9일(수)",
+     "desc": "공무원 채용 4대 평정요소(소통·공감 등) 보유여부 평가",
+     "note": "1배수(채용예정인원) 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 24일(목)",
+     "desc": "신체검사 개별 실시 후 임용 예정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
