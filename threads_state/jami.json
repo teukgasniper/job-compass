@@ -4776,6 +4776,23 @@
    "thread_id": "18576602080073010",
    "comment_id": "18645778468048103",
    "at": "2026-10-30 23:25"
+  },
+  {
+   "id": "MN-BGFLOGIS-01",
+   "instNm": "BGF로지스",
+   "title": "[BGF로지스] 2026년 4분기 채용연계형 인턴 — 물류관리 직군 (CU 물류센터 전국 권역)",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️전환율 80% 채용연계형 인턴\nCU 물류센터, 화요일 11/3 마감(D-3)",
+   "closer": "전환율 80%짜리 자리, 화요일 넘기면 다음 기수 기약해야 함",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18018212438894246",
+   "comment_id": "17890482738618986",
+   "at": "2026-10-31 02:25"
   }
  ],
  "logo_tried": {
