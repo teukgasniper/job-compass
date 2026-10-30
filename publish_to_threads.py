@@ -79,6 +79,9 @@
                   · 최근에 넣은 수동 공고(접수 시작일 최신순)부터 / manual_jobs.json 항목에 "threads": false 를 넣으면 쓰레드 제외
                   민간(공채속보·수동 공고) 훅·클로저·리스트에 학력·어학(토익 등) 조건 금지 — 진입장벽으로 보여 유입이 안 됨
                   (공공기관·공무직은 학력무관 등이 오히려 무기라 그대로 둠)
+[2026-10-30 수정] 수동 공고(MN-)는 공공 8 : 민간 2 비율 계산에서 제외 (일반 공고끼리만 8:2)
+                  · 수동 공고 연달아 발행 허용 — '직전 글이 수동이면 다음은 일반' 규칙 삭제, 계정마다 안 올린 수동 공고를 차례로 다 올림
+                  · 같은 수동 공고(같은 기관)는 계정끼리 MANUAL_GAP_DAYS(3)일 간격 그대로 (A → 3일 뒤 B → 3일 뒤 C)
 [2026-10-15 수정] 클린아이 공고는 학력 확인 때 실제 모집 직무·주력 고용형태도 같이 확인 (edu_lookup.py)
                   → 인원 가장 많은 직무가 요양보호·미화·경비·조리 등이거나 주력 분야가 계약직·시간제면 제외
                   (제목에 직무가 없고 고용형태가 '정규직'으로만 들어오는 공고 대응 — 인천광역시사회서비스원 요양보호사 계약직 사례)
@@ -546,8 +549,9 @@ def is_private_id(pid) -> bool:
 
 
 def want_private_now(history) -> bool:
-    """[2026-10-07] 최근 10건 중 민간이 목표 비율보다 적고, 직전 글이 민간이 아니면 이번엔 민간"""
-    recent = history[-10:]
+    """[2026-10-07] 최근 10건 중 민간이 목표 비율보다 적고, 직전 글이 민간이 아니면 이번엔 민간
+    [2026-10-30] 수동 공고(MN-)는 비율 계산에서 뺌 — 일반 공고끼리만 공공 8 : 민간 2"""
+    recent = [p for p in history if not is_manual_id(p["id"])][-10:]
     if recent and is_private_id(recent[-1]["id"]):
         return False
     priv = sum(1 for p in recent if is_private_id(p["id"]))
@@ -691,7 +695,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
             return None, 0, 0, None
 
     want_priv = want_private_now(history)
-    n_priv = sum(1 for p in history[-10:] if is_private_id(p["id"]))
+    n_priv = sum(1 for p in [p for p in history if not is_manual_id(p["id"])][-10:] if is_private_id(p["id"]))   # [2026-10-30] 수동 공고 제외
     pool = []
     def is_new(j):
         # [2026-10-20] 새 공고는 계정마다 한 번씩 다 올림 — '내 계정이 안 올린 공고'면 새 공고 (다른 계정이 올렸어도 OK)
@@ -765,10 +769,9 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         return j
 
     # [2026-10-16] 0순위 수동 공고 — 공공/민간 차례·다른 계정 발행 여부와 상관없이 각 계정에 최소 1번
-    #              (직전 글이 수동 공고면 이번 회차는 건너뛰어 수동 공고만 연달아 나가지 않게)
+    # [2026-10-30] 수동 공고는 연달아 올려도 됨 (번갈아 규칙 삭제) — 계정마다 안 올린 수동 공고가 있으면 매 회차 수동 공고부터
     manual_live = [j for j in live if is_manual_id(j["recrutPblntSn"]) and j.get("threads") is not False]   # "threads": false = 쓰레드 제외
     pool = [j for j in pool if j.get("threads") is not False]   # [2026-10-17] 토스 등 쓰레드 제외 공고는 일반 순위로도 안 나가게
-    last_manual = bool(history) and is_manual_id(history[-1]["id"])
     # [2026-10-22] 같은 기관 수동 공고는 한 묶음 — 계정마다 기관당 1번, 2일 간격·마감 글 1번도 기관 단위
     #              (연세대 미래캠퍼스 일반Ⅰ·일반Ⅱ처럼 카드가 나뉘어도 같은 기관이 너무 자주 안 나오게)
     def m_grp(name):
@@ -825,7 +828,7 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         print(f"수동 공고: 마감 임박 글이 이미 나간 {len(m_closed)}개는 더 안 올림 — " + ", ".join(str(j["recrutPblntSn"]) for j in m_closed))
     manual_live = [j for j in manual_live if j not in m_closed]
     pool = [j for j in pool if not (is_manual_id(j["recrutPblntSn"]) and m_is_urgent(j))]   # 마감 임박 수동 공고는 아래 0순위에서만
-    if manual_live and not last_manual:
+    if manual_live:                                # [2026-10-30] 직전 글이 수동 공고여도 계속 — 계정마다 수동 공고를 차례로 다 올림
         m_urgent = [j for j in manual_live if m_is_urgent(j)]
         m_new = [j for j in manual_live if str(j["recrutPblntSn"]) not in my_ids and job_key(j) not in my_keys
                  and j_grp(j) not in my_m_grps]    # [2026-10-22] 같은 기관 수동 공고를 이미 올렸으면 이 계정은 끝 (기관당 1번)
@@ -837,8 +840,6 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
                                       str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
             fresh_m = [j for j in m_new if group_key(j["instNm"]) not in recent_insts] or m_new
             return fresh_m[0], 0, len(m_new), None
-    elif manual_live:
-        print("수동 공고: 직전 글이 수동 공고라 이번 회차는 다른 공고")
 
     # [2026-10-22] 수동 공고는 0순위(위)에서만 — 일반 순위(신규·마감·각색·재발행)로는 안 나가게 (기관당 1번 유지)
     pool = [j for j in pool if not is_manual_id(j["recrutPblntSn"])]
