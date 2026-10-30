@@ -14585,5 +14585,180 @@
     "callout": null
    }
   }
+ },
+ "306146": {
+  "at": "2026-10-31 03:11",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306146.html",
+  "source": "[붙임1] 2026년 하반기 직원(일반직) 채용 공고문(최종).pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "건강증진사업일반 6명, 전산·개인정보보호 1명 등 총 7명을 뽑아요.",
+    "columns": [
+     "건강증진사업일반",
+     "전산‧개인정보보호"
+    ],
+    "rows": [
+     {
+      "label": "일반직 5급",
+      "values": [
+       6,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "관련분야 학사학위 또는 전문학사+2년 이상 경력 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자격·교육사항, 조직적합성, 직무적합성 평가",
+     "note": "10배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 16일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 21일(토)",
+     "desc": "인성검사+NCS직업공통능력검사+직업역량검사",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "11월 25일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "12월 2일~4일",
+     "desc": "NCS 기반 경험·상황·실무능력 평가",
+     "note": "1배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접심사 합격자 발표",
+     "date": "12월 9일(수)"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 결격여부 조회",
+     "date": "12월 10일~16일",
+     "desc": "비위면직자 조회 및 증빙서류 진위 확인",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "임용예정일은 12월 28일(월)이에요.",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 직업성격(인성)검사와 NCS직업공통능력검사+직업역량검사로 평가해요. 평균 40점 이상이면 합격이에요.",
+    "highlight": "40점 이상",
+    "subjects": [
+     {
+      "name": "직업성격(인성)검사",
+      "count": null,
+      "scope": "기본인성, 직무역량, 조직부적응성",
+      "note": "적격자에 한함",
+      "ncs": false
+     },
+     {
+      "name": "NCS직업공통능력검사",
+      "count": "비중 50%",
+      "scope": "의사소통능력, 문제해결능력, 자기관리능력, 대인관계능력, 직업윤리",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "직업역량검사",
+      "count": "비중 50%",
+      "scope": "기관 사업내용 및 분야별 전공과목",
+      "note": "분야별 시험과목 상이",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "306182": {
+  "at": "2026-10-31 03:11",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306182.html",
+  "source": "2026년 약무직 공개채용 수시모집 공고문.pdf",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·연령 제한 없이 지원 가능해요(만60세 이상은 지원 불가).",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "정량평가(교육사항·어학) + 정성평가(경력·자소서)",
+     "note": "2배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "인성검사 안내",
+     "date": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": "직무능력·인성·태도·표현력·장래성 종합평가",
+     "note": "1배수 이내(예비합격자 선정)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 입사지원서 기재사항 진위확인",
+     "date": null,
+     "desc": "자격증·면허·경력 등 기재사항과 증빙서류 일치여부 확인",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "임용희망자등록·채용신체검사 등 거쳐 임용자격 인정",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (서류전형 가산)",
+    "text": "공인어학성적은 영어만 인정하며 토익 기준 600점 이상만 가산돼요. 토플·텝스·오픽·토익스피킹·텝스스피킹은 토익 점수로 환산돼요.",
+    "highlight": "600점 이상"
+   },
+   "written": null
+  }
  }
 }
