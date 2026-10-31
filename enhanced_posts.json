@@ -15012,5 +15012,109 @@
     "callout": null
    }
   }
+ },
+ "WK-183085": {
+  "at": "2026-10-31 21:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-183085.html",
+  "source": "기업 채용 페이지 (https://aerok-recruiter.career.greetinghr.com/ko/o/241822)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": "입사 후 3개월 수습기간",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-307025": {
+  "at": "2026-10-31 21:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-307025.html",
+  "source": "조달청 공무직근로자(시설) 공개경쟁채용시험 공고문(제2026-540호).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설관리반장 1명, 시설관리책임자(기계) 1명, 시설관리책임자(전기) 1명을 뽑아요.",
+    "columns": [
+     "시설관리반장",
+     "시설관리책임자(기계)",
+     "시설관리책임자(전기)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "전기·가스·기계 관련 자격증 및 실무경력 보유자만 지원 가능해요",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 서면심사, 3배수 초과시 고득점순 선발",
+     "note": "적격자 모두 합격 원칙"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 19일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 20일~27일",
+     "desc": "5개 평가항목 대면평가, 상/중/하 평정",
+     "note": "서울조달청에서 진행"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 14일(월)",
+     "desc": "결격사유 조회 및 건강검진 결과 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
