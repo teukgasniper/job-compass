@@ -4939,6 +4939,23 @@
    "comment_id": "17911936917308163",
    "at": "2026-11-01 02:24",
    "views": 302
+  },
+  {
+   "id": "MN-UN-01",
+   "instNm": "주유엔 대한민국 대표부",
+   "title": "주유엔 대한민국 대표부 일반직 행정직원 채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "monologue",
+   "hook": "📍외교관만 가는 줄 알았던 자리인데\n정규직 행정직, 신입도 지원 가능임",
+   "closer": "뉴욕 집세를 대표부가 대신 내주는 정규직 자리임",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18090905348263937",
+   "comment_id": "18119398153768231",
+   "at": "2026-11-01 05:21"
   }
  ],
  "logo_tried": {
