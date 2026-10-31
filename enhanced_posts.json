@@ -14824,5 +14824,193 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-183086": {
+  "at": "2026-10-31 15:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-183086.html",
+  "source": "기업 채용 페이지 (https://aerok-recruiter.career.greetinghr.com/ko/o/240497)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 대학 졸업자(또는 졸업 예정자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류접수",
+     "date": "10월 15일~11월 3일",
+     "desc": "거주 지역 제한 없이 자격요건 충족 시 지원 가능",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차 면접",
+     "date": "11월 3일(화)",
+     "desc": "잡페어 내 운항객실기술팀 부스에서 선착순 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격",
+     "date": null,
+     "desc": "합격자에 한해 증빙서류 제출",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 800점 이상 또는 토익스피킹·OPIc IM2 이상의 공인어학성적이 필요해요.",
+    "highlight": "800점 이상"
+   },
+   "written": null
+  }
+ },
+ "306196": {
+  "at": "2026-10-31 15:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306196.html",
+  "source": "2026년 공무직(미화) 공개채용 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력, 전공, 성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 12일~16일",
+     "desc": "입사지원서(30점)+자기소개서(70점) 평가",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 23일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 2일(수)",
+     "desc": "전문성·협업·문제해결·태도 평가",
+     "note": "1배수(최종선발)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 8일(화)",
+     "desc": "건강검진·서류검증 후 입사"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306449": {
+  "at": "2026-10-31 15:12",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306449.html",
+  "source": "1. 2026년도 제9차 직원 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "전문직(국제협력) 1명, 행정직(일반행정) 3명을 뽑아요.",
+    "columns": [
+     "전문직(국제협력)",
+     "행정직(일반행정)"
+    ],
+    "rows": [
+     {
+      "label": "채용예정인원",
+      "values": [
+       1,
+       3
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 16일~20일",
+     "desc": "서류심사",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 전형 합격자 발표",
+     "date": "11월 24일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "12월 1일~4일",
+     "desc": "NCS기반 직업기초능력평가 + 논술",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 7일~11일",
+     "desc": "직무역량평가(면접)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "임용예정일 2027년 1월 1일",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS기반 직업기초능력평가(인성검사+적성검사)와 논술로 봐요.",
+    "highlight": "NCS기반 직업기초능력평가",
+    "subjects": [
+     {
+      "name": "NCS기반 직업기초능력평가",
+      "count": null,
+      "scope": "인성검사, 적성검사",
+      "note": "장애인·국가유공자는 적성검사 미실시",
+      "ncs": true
+     },
+     {
+      "name": "논술",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
