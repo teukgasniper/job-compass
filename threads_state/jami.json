@@ -4920,6 +4920,23 @@
    "thread_id": "18134191204744427",
    "comment_id": "17982827342935785",
    "at": "2026-10-31 23:23"
+  },
+  {
+   "id": "MN-SHILLASTAY-01",
+   "instNm": "신라스테이",
+   "title": "[신라스테이] 역삼 호텔 인재 채용(프론트)",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️정규직 프론트, 신입·경력 안 가림\n11/4 수요일 지나면 마감",
+   "closer": "신입도 서류 넣을 수 있는 자리, 수요일 넘기면 못 넣는 거임",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18221243410358115",
+   "comment_id": "17911936917308163",
+   "at": "2026-11-01 02:24"
   }
  ],
  "logo_tried": {
