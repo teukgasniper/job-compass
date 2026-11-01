@@ -15503,5 +15503,169 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-183254": {
+  "at": "2026-11-02 07:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/hyundai-wk183254.html",
+  "source": "기업 채용 페이지 이미지 3조각 (https://hyundai-steel.recruiter.co.kr/career/jobs/132004)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "국내/외 4년제 대학교(원) 기졸업자 또는 졸업예정이신 분",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — AI역량검사",
+     "date": "11월 9일~11일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류전형",
+     "date": "11월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — HMAT인성검사",
+     "date": "11월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 1차면접",
+     "date": "12월",
+     "desc": "직무면접·토의면접",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 2차면접",
+     "date": "12월",
+     "desc": "채용검진 포함",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "6단계 — 입사",
+     "date": "2027년 1월",
+     "desc": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "지원서 접수 시작일 2년 내 취득한 공인어학시험 성적이 필요해요. 토익스피킹 IH, OPIc IM3, SPA Lv.4, TEPS-Speaking 51점 이상 또는 JLPT N2, JPT 600, HSK 5급, TSC 7급, DELE B2, Celpe-Bras 2.76점, CAPLE B2 이상이면 돼요.",
+    "highlight": "토익스피킹 IH"
+   },
+   "written": null
+  }
+ },
+ "GJ-306853": {
+  "at": "2026-11-02 07:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306853.html",
+  "source": "국립야생동물질병관리원 전문연구원(공무직 근로자) 채용공고문.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "석사(2년 이상), 학사(5년 이상), 기사(2년 이상) 등 자격기준 중 택1",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 적격여부 확인, 3배수 초과시 직무적합도 평가",
+     "note": "장애인·저소득층·취업지원 가산점 최대 10점"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 24일(화)",
+     "desc": "정신자세·전문지식 등 5개 항목 상·중·하 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 26일(목)",
+     "desc": "결격사유 조회 후 근로계약 체결(12월 1일 예정)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-183143": {
+  "at": "2026-11-02 07:19",
+  "url": "https://hiring03.ddolbestory.com/2026/10/lotte-wk183143.html",
+  "source": "기업 채용 페이지 (https://www.lotteglogis.com/home/company/recruit/notice/view?key=2026A0069&page=1)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무진면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 신체검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
