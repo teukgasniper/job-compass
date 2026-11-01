@@ -15246,5 +15246,262 @@
    },
    "written": null
   }
+ },
+ "306458": {
+  "at": "2026-11-02 01:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306458.html",
+  "source": "1. 2026-3차 직원 채용 공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 3명(공통직 2, 학예직 1), 공무직 14명(연구직 2, 일반직 5, 기능직 7), 기간제(육아휴직대체) 1명(연구지원B)을 뽑아요.",
+    "columns": [
+     "공통직",
+     "학예직",
+     "연구직",
+     "일반직",
+     "기능직"
+    ],
+    "rows": [
+     {
+      "label": "정규직",
+      "values": [
+       2,
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "공무직",
+      "values": [
+       null,
+       null,
+       2,
+       5,
+       7
+      ]
+     },
+     {
+      "label": "기간제(육아휴직대체)",
+      "values": [
+       null,
+       null,
+       1,
+       null,
+       null
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "정규직 일부는 학력 또는 경력 중 택1, 공무직 대부분은 학력 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 17일~19일",
+     "desc": "경력·경험(20)+전문성(30)+자기소개서(20)+직업관/활용성(30)",
+     "note": "10배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 21일(토)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 25일~27일",
+     "desc": "인성(20)+직무능력(30)+표현력/논리성(20)+직업관/활용성(30)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "12월 2일(수)"
+    },
+    {
+     "type": "notice",
+     "label": "합격자 서류제출",
+     "date": "12월 3일~5일"
+    },
+    {
+     "type": "notice",
+     "label": "진위여부 확인",
+     "date": "12월 5일~19일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 23일(수)",
+     "desc": "수습 임용은 12월 29일(화)이에요."
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306340": {
+  "at": "2026-11-02 01:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306340.html",
+  "source": "채용 공고문_코레일유통.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설관리직 1명, 환경·보안직 1명, 육아휴직 대체 기간제 4명 등 총 6명을 뽑아요.",
+    "columns": [
+     "시설관리(경기)",
+     "보안(본사)",
+     "경영일반(부산경남A)",
+     "경영일반(부산경남B)",
+     "자판기관리(경기)",
+     "매장관리/CS코치(서울)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": "시설관리·보안은 무기계약직, 나머지 4개 분야는 육아휴직 대체 기간제예요."
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·성별·연령·어학 제한 없음(공통사항)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서 등 종합평가, 가점 포함 고득점 순 선발",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 18일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성시험",
+     "date": null,
+     "desc": "온라인 인성검사로 적격 여부 판단",
+     "note": "적격자 전원 통과"
+    },
+    {
+     "type": "notice",
+     "label": "인성시험 합격자 발표",
+     "date": "11월 25일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": null,
+     "desc": "직업기초능력·직무수행능력 종합평가",
+     "note": "합격1배+예비3배 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 23일(수)",
+     "desc": "신체검사·근로계약 후 12/30 임용 예정",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "어학 성적 제한이 없어요.",
+    "highlight": "어학 성적 제한"
+   },
+   "written": null
+  }
+ },
+ "GJ-306847": {
+  "at": "2026-11-02 01:17",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306847.html",
+  "source": "제2026-40호 충남대학교 대학회계직원(정규직) 공개채용 공고.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "대학상용직 평생교육사 1명, 대학공무직 경비(일직) 1명을 뽑아요.",
+    "columns": [
+     "평생교육사(상용직)",
+     "경비(일직)(공무직)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "평생교육사 직렬은 학사학위 이상 및 평생교육사 2급 이상 자격증이 필수예요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 12일(목) 예정",
+     "desc": "자기소개서·직무이해도·우대사항 평가",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 13일(금) 예정"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "11월 19일(목) 예정",
+     "desc": "대면 면접으로 직무수행능력 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금) 예정",
+     "desc": "신체검사·결격사유 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

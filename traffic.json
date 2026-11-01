@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-01 15:45",
+ "updated": "2026-11-02 01:17",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -205,9 +205,9 @@
     4281
    ],
    "20261101": [
-    2760,
-    1796,
-    1680
+    5146,
+    3396,
+    3126
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -499,9 +499,9 @@
     2292
    ],
    "20261101": [
-    2165,
-    936,
-    909
+    3962,
+    1774,
+    1697
    ]
   },
   "ac.ddolbestory.com": {
@@ -666,9 +666,9 @@
     342
    ],
    "20261101": [
-    68,
-    38,
-    32
+    88,
+    53,
+    42
    ]
   }
  },
@@ -994,12 +994,13 @@
     "l.instagram.com": 2
    },
    "20261101": {
-    "(direct)": 2550,
-    "(not set)": 121,
-    "l.threads.com": 82,
+    "(direct)": 4786,
+    "(not set)": 192,
+    "l.threads.com": 146,
+    "m.search.naver.com": 12,
+    "google": 4,
     "bing": 3,
-    "google": 3,
-    "m.search.naver.com": 1
+    "naver": 3
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1388,11 +1389,13 @@
     "l.instagram.com": 1
    },
    "20261101": {
-    "(direct)": 1896,
-    "(not set)": 201,
-    "l.threads.com": 62,
-    "google": 5,
-    "bing": 1
+    "(direct)": 3476,
+    "(not set)": 359,
+    "l.threads.com": 94,
+    "m.search.naver.com": 21,
+    "google": 10,
+    "bing": 1,
+    "naver": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1553,10 +1556,10 @@
     "google": 2
    },
    "20261101": {
-    "(direct)": 61,
+    "(direct)": 80,
+    "google": 3,
     "l.threads.com": 3,
-    "(not set)": 2,
-    "google": 2
+    "(not set)": 2
    }
   }
  }
