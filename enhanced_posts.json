@@ -15116,5 +15116,135 @@
    "language": null,
    "written": null
   }
+ },
+ "306515": {
+  "at": "2026-11-01 15:45",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306515.html",
+  "source": "[공고 제2026-30호] 한국의료분쟁조정중재원 2026년 제4차 직원채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반직 6급, 심사직 다급, 조사직 다급, 일반업무직 라급, 전문업무직 다급(기간제)을 각 1명씩 뽑아요.",
+    "columns": [
+     "일반직 6급",
+     "심사직 다급",
+     "조사직 다급",
+     "일반업무직 라급",
+     "전문업무직 다급(기간제)"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "지원동기·경력사항·전문성·직무수행계획 등 종합심사",
+     "note": "채용예정인원의 배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": null
+    },
+    {
+     "type": "final",
+     "title": "2단계 — 면접심사",
+     "date": null,
+     "desc": "직무수행능력·직업기초능력 등 종합심사, 정규직은 개별과제 수행",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-182990": {
+  "at": "2026-11-01 15:45",
+  "url": "https://hiring03.ddolbestory.com/2026/10/posco-wk182990.html",
+  "source": "기업 채용 페이지 이미지 9조각 (https://recruit.posco.com/h22a01-front/H22A1001.html?id=729000)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무면접",
+     "date": null,
+     "desc": "포트폴리오 평가 포함(가로형 PDF, 5페이지 이하)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "6단계 — 처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": null,
+     "desc": "이후 입사",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "영어 말하기 성적(토스 IM1, OPIc IL 이상) 보유자는 우대해요. 서류 마감일 기준 2년 이내 성적만 인정돼요.",
+    "highlight": "IM1, OPIc IL 이상"
+   },
+   "written": null
+  }
  }
 }
