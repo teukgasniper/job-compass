@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-02 15:44",
+ "updated": "2026-11-03 04:44",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -210,9 +210,14 @@
     3397
    ],
    "20261102": [
-    851,
-    578,
-    500
+    5226,
+    3653,
+    3282
+   ],
+   "20261103": [
+    40,
+    22,
+    20
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -509,9 +514,14 @@
     1847
    ],
    "20261102": [
-    684,
-    271,
-    253
+    3727,
+    1613,
+    1518
+   ],
+   "20261103": [
+    27,
+    14,
+    14
    ]
   },
   "ac.ddolbestory.com": {
@@ -681,9 +691,14 @@
     45
    ],
    "20261102": [
-    38,
-    20,
-    16
+    220,
+    138,
+    119
+   ],
+   "20261103": [
+    3,
+    1,
+    1
    ]
   }
  },
@@ -1017,13 +1032,18 @@
     "naver": 3
    },
    "20261102": {
-    "(direct)": 741,
-    "(not set)": 74,
-    "l.threads.com": 30,
-    "google": 2,
-    "m.search.naver.com": 2,
-    "l.instagram.com": 1,
-    "naver": 1
+    "(direct)": 4781,
+    "(not set)": 224,
+    "l.threads.com": 184,
+    "m.search.naver.com": 19,
+    "google": 8,
+    "naver": 7,
+    "l.instagram.com": 2,
+    "instagram.com": 1
+   },
+   "20261103": {
+    "(direct)": 38,
+    "l.threads.com": 2
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1420,12 +1440,16 @@
     "naver": 1
    },
    "20261102": {
-    "(direct)": 509,
-    "(not set)": 146,
-    "google": 14,
-    "l.threads.com": 10,
-    "m.search.naver.com": 4,
-    "naver": 1
+    "(direct)": 3069,
+    "(not set)": 499,
+    "l.threads.com": 96,
+    "m.search.naver.com": 32,
+    "google": 19,
+    "naver": 12
+   },
+   "20261103": {
+    "(direct)": 25,
+    "l.threads.com": 2
    }
   },
   "ac.ddolbestory.com": {
@@ -1591,9 +1615,15 @@
     "google": 3
    },
    "20261102": {
-    "(direct)": 31,
-    "(not set)": 5,
-    "google": 2
+    "(direct)": 189,
+    "(not set)": 20,
+    "m.search.naver.com": 4,
+    "google": 3,
+    "l.threads.com": 3,
+    "naver": 1
+   },
+   "20261103": {
+    "(direct)": 3
    }
   }
  }

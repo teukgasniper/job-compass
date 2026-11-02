@@ -15667,5 +15667,167 @@
    "language": null,
    "written": null
   }
+ },
+ "306346": {
+  "at": "2026-11-03 04:44",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306346.html",
+  "source": "1. (공고문)한국해양수산연수원 2026년 제3차 정규직 직원 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "교원직 2명, 교관직 3명, 선박직 5명, 조리직 5명, 미화직 2명, 시설직 1명, 승선직 9명을 뽑아요.",
+    "columns": [
+     "전임강사교원",
+     "교관직",
+     "선박직",
+     "조리직",
+     "미화직",
+     "시설직",
+     "승선직"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       2,
+       3,
+       5,
+       5,
+       2,
+       1,
+       9
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "교원직·선박직은 전문학사 이상 학위 소지자여야 해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "지원자격 적격여부 및 자기소개서 심사",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "11월 24일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 28일(토)",
+     "desc": "인성검사(200문항)+적성검사(50문항)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기 합격자 발표",
+     "date": "12월 2일(수)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 15일~16일",
+     "desc": "NCS기반 직무역량 및 인성 심층면접",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "서류등록 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사(200문항 내외)와 적성검사(50문항 내외)로 진행돼요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "200문항 내외",
+      "scope": null,
+      "note": "30분 내외",
+      "ncs": false
+     },
+     {
+      "name": "적성검사",
+      "count": "50문항 내외",
+      "scope": null,
+      "note": "60분 내외",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-183256": {
+  "at": "2026-11-03 04:44",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gs-wk183256.html",
+  "source": "기업 채용 페이지 이미지 3조각 (https://gsretail.recruiter.co.kr/career/jobs/131847)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "학력: 전문대학 졸업 이상",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 26일~11월 9일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차면접",
+     "date": "11월 25일",
+     "desc": null,
+     "note": "예정"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차면접",
+     "date": "12월 10일",
+     "desc": null,
+     "note": "예정"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": "12월 중",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 중",
+     "desc": "27년 1월 초부터 입사 및 교육이 진행돼요"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
