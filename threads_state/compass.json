@@ -3390,6 +3390,23 @@
    "comment_id": "18080123492724401",
    "at": "2026-11-02 19:14",
    "views": 487
+  },
+  {
+   "id": 306130,
+   "instNm": "한국잡월드",
+   "title": "2026년 한국잡월드 정규직 신입(5급) 직원 채용 공고",
+   "combo_idx": 7,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️모레 수요일 접수 마감\n경기 공공기관 정규직 신입",
+   "closer": "수요일 지나면 한국잡월드 신입 자리는 내년까지 없음",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18171734344461979",
+   "comment_id": null,
+   "at": "2026-11-02 22:03"
   }
  ],
  "views_refreshed_at": "2026-11-02 20:56",
