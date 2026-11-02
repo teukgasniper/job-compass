@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-02 07:19",
+ "updated": "2026-11-02 15:44",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -206,13 +206,13 @@
    ],
    "20261101": [
     5648,
-    3739,
-    3411
+    3692,
+    3397
    ],
    "20261102": [
-    264,
-    172,
-    159
+    851,
+    578,
+    500
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -505,13 +505,13 @@
    ],
    "20261101": [
     4301,
-    1941,
-    1850
+    1940,
+    1847
    ],
    "20261102": [
-    215,
-    84,
-    83
+    684,
+    271,
+    253
    ]
   },
   "ac.ddolbestory.com": {
@@ -677,13 +677,13 @@
    ],
    "20261101": [
     100,
-    60,
-    46
+    61,
+    45
    ],
    "20261102": [
-    8,
-    5,
-    4
+    38,
+    20,
+    16
    ]
   }
  },
@@ -1009,20 +1009,21 @@
     "l.instagram.com": 2
    },
    "20261101": {
-    "(direct)": 5231,
-    "(not set)": 229,
-    "l.threads.com": 163,
+    "(direct)": 5451,
+    "l.threads.com": 172,
     "m.search.naver.com": 13,
     "google": 6,
     "bing": 3,
     "naver": 3
    },
    "20261102": {
-    "(direct)": 219,
-    "(not set)": 33,
-    "l.threads.com": 9,
+    "(direct)": 741,
+    "(not set)": 74,
+    "l.threads.com": 30,
     "google": 2,
-    "l.instagram.com": 1
+    "m.search.naver.com": 2,
+    "l.instagram.com": 1,
+    "naver": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1411,19 +1412,20 @@
     "l.instagram.com": 1
    },
    "20261101": {
-    "(direct)": 3776,
-    "(not set)": 390,
-    "l.threads.com": 100,
+    "(direct)": 4155,
+    "l.threads.com": 111,
     "m.search.naver.com": 21,
     "google": 12,
     "bing": 1,
     "naver": 1
    },
    "20261102": {
-    "(direct)": 132,
-    "(not set)": 65,
-    "google": 12,
-    "l.threads.com": 6
+    "(direct)": 509,
+    "(not set)": 146,
+    "google": 14,
+    "l.threads.com": 10,
+    "m.search.naver.com": 4,
+    "naver": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1584,13 +1586,14 @@
     "google": 2
    },
    "20261101": {
-    "(direct)": 91,
+    "(direct)": 93,
     "l.threads.com": 4,
-    "google": 3,
-    "(not set)": 2
+    "google": 3
    },
    "20261102": {
-    "(direct)": 8
+    "(direct)": 31,
+    "(not set)": 5,
+    "google": 2
    }
   }
  }
