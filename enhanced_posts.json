@@ -16136,5 +16136,146 @@
    "language": null,
    "written": null
   }
+ },
+ "306622": {
+  "at": "2026-11-04 04:45",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306622.html",
+  "source": "2-1. 충남대학교병원 11월 공무직 채용공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "방사선사(반일제) 2명, 음식 조리 및 판매(부대사업장) 1명을 뽑아요.",
+    "columns": [
+     "방사선사(반일제)",
+     "음식조리및판매"
+    ],
+    "rows": [
+     {
+      "label": "공무직",
+      "values": [
+       2,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·성별 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 2일~16일",
+     "desc": "응시자격 충족 여부 및 서류 적부 심사",
+     "note": "적부 심사"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 중"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 중",
+     "desc": "종합평가(인성·조직적합·적응력·직무역량)",
+     "note": "모집인원 1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 말",
+     "desc": "결격사유 조회 후 12월 초 임용 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306374": {
+  "at": "2026-11-04 04:45",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306374.html",
+  "source": "공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "미화관리 3명, 시설관리(전기) 1명, 시설관리(기계) 2명을 공무직(무기계약직)으로 뽑아요.",
+    "columns": [
+     "미화관리",
+     "시설관리(전기)",
+     "시설관리(기계)"
+    ],
+    "rows": [
+     {
+      "label": "공무직(무기계약직)",
+      "values": [
+       3,
+       1,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 필기전형",
+     "date": "11월 28일(토)",
+     "desc": "직업성격검사(인성검사) 적합/부적합 평가",
+     "note": "적합자 전원 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류전형",
+     "date": "12월 9일(수)",
+     "desc": "지원서 서면평가(블라인드 위반사항 포함)",
+     "note": "5배수 이내 선발"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 17일(목)",
+     "desc": "개별 심층면접(多:1)",
+     "note": "1배수 이내 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2027년 1월 초",
+     "desc": "지원서 검증·결격사유 조회·신체검사 후 임용(1.4.자)",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 직업성격검사(인성검사)로 적합/부적합만 평가해요.",
+    "highlight": "적합/부적합",
+    "subjects": [
+     {
+      "name": "직업성격검사(인성검사)",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
