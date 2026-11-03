@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-03 04:44",
+ "updated": "2026-11-03 12:02",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -210,14 +210,14 @@
     3397
    ],
    "20261102": [
-    5226,
-    3653,
-    3282
+    5646,
+    3912,
+    3494
    ],
    "20261103": [
-    40,
-    22,
-    20
+    1506,
+    980,
+    919
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -514,14 +514,14 @@
     1847
    ],
    "20261102": [
-    3727,
-    1613,
-    1518
+    4033,
+    1731,
+    1630
    ],
    "20261103": [
-    27,
-    14,
-    14
+    1081,
+    451,
+    443
    ]
   },
   "ac.ddolbestory.com": {
@@ -691,14 +691,14 @@
     45
    ],
    "20261102": [
-    220,
-    138,
-    119
+    241,
+    149,
+    128
    ],
    "20261103": [
-    3,
-    1,
-    1
+    60,
+    33,
+    31
    ]
   }
  },
@@ -1032,18 +1032,21 @@
     "naver": 3
    },
    "20261102": {
-    "(direct)": 4781,
-    "(not set)": 224,
-    "l.threads.com": 184,
-    "m.search.naver.com": 19,
+    "(direct)": 5358,
+    "l.threads.com": 247,
+    "m.search.naver.com": 21,
     "google": 8,
     "naver": 7,
+    "(not set)": 2,
     "l.instagram.com": 2,
     "instagram.com": 1
    },
    "20261103": {
-    "(direct)": 38,
-    "l.threads.com": 2
+    "(direct)": 1381,
+    "l.threads.com": 85,
+    "(not set)": 16,
+    "m.search.naver.com": 15,
+    "naver": 9
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1440,16 +1443,19 @@
     "naver": 1
    },
    "20261102": {
-    "(direct)": 3069,
-    "(not set)": 499,
-    "l.threads.com": 96,
-    "m.search.naver.com": 32,
-    "google": 19,
-    "naver": 12
+    "(direct)": 3801,
+    "l.threads.com": 159,
+    "m.search.naver.com": 36,
+    "google": 20,
+    "naver": 13,
+    "(not set)": 4
    },
    "20261103": {
-    "(direct)": 25,
-    "l.threads.com": 2
+    "(direct)": 968,
+    "l.threads.com": 56,
+    "(not set)": 39,
+    "m.search.naver.com": 10,
+    "naver": 8
    }
   },
   "ac.ddolbestory.com": {
@@ -1615,15 +1621,14 @@
     "google": 3
    },
    "20261102": {
-    "(direct)": 189,
-    "(not set)": 20,
+    "(direct)": 229,
+    "google": 4,
     "m.search.naver.com": 4,
-    "google": 3,
     "l.threads.com": 3,
     "naver": 1
    },
    "20261103": {
-    "(direct)": 3
+    "(direct)": 60
    }
   }
  }
