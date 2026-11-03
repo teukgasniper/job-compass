@@ -514,6 +514,7 @@ GROUPS = {
 }
 NOT_GROUP = ("엔에이치엔", "엘에스이", "하나머티리얼즈", "하나마이크론")   # 이름만 비슷한 비계열사 [2026-10-22 하나금융 아님]
 PRIVATE_RATIO = float(os.environ.get("PRIVATE_RATIO", "0.2") or 0.2)   # 민간 비중 (기본 공공 8 : 민간 2)
+FORCE_PUBLIC = False   # [2026-11-03] 민간 차례에 민간 후보가 학력 확인 등으로 전부 빠지면 같은 회차에 공공으로 다시 고름
 
 
 # [2026-10-14] 나라일터 기관은 기록에 짧은 이름('진천우체국')으로 남아서 앞글자 일치가 안 됨 → 끝글자로도 묶음
@@ -695,6 +696,9 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
             return None, 0, 0, None
 
     want_priv = want_private_now(history)
+    if want_priv and FORCE_PUBLIC:                 # [2026-11-03] 민간 후보가 모두 빠진 회차 → 공공으로 (민간 차례에 갇혀 계속 건너뛰던 문제)
+        print("민간 후보가 모두 빠져서 이번 회차는 공공으로")
+        want_priv = False
     n_priv = sum(1 for p in [p for p in history if not is_manual_id(p["id"])][-10:] if is_private_id(p["id"]))   # [2026-10-30] 수동 공고 제외
     pool = []
     def is_new(j):
@@ -2535,9 +2539,13 @@ def main():
         print(f"이 계정 제외 공고 {len(skip_env)}개: " + ", ".join(sorted(skip_env)))
         excluded |= skip_env
     job, post, post_text, borrow = None, None, "", None
-    for _ in range(6):
+    global FORCE_PUBLIC
+    for _ in range(12):                              # [2026-11-03] 6 → 12 (민간 제외 뒤 공공으로 다시 고를 여유)
         job, tier, n_cands, borrow = pick_job(jobs, posts, state, today, excluded, others)
         if not job:
+            if not FORCE_PUBLIC:                     # [2026-11-03] 민간 차례에 후보가 다 빠졌으면 건너뛰지 말고 공공으로 한 번 더
+                FORCE_PUBLIC = True
+                continue
             break
         post = posts.get(str(job["recrutPblntSn"]))
         post_text = fetch_post_text(post) if post else ""
