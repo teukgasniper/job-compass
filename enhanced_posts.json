@@ -16068,5 +16068,73 @@
    },
    "written": null
   }
+ },
+ "WK-182767": {
+  "at": "2026-11-03 20:16",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-182767.html",
+  "source": "기업 채용 페이지 (https://fkc.recruiter.co.kr/career/jobs/131996)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "대학(4년제) 졸업예정자 및 기졸업자 대상(일부 직무는 2년제)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 22일~11월 8일",
+     "desc": "입사지원서 작성 및 대학 전 학년 성적증명서 첨부",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과 발표",
+     "date": "11월 12일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 온라인 AI 역량검사",
+     "date": "11월 16일~22일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무진 면접",
+     "date": "12월 1주차",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 임원 면접",
+     "date": "12월 3주차",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 신체검사",
+     "date": "12월 4주차",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": "1월 4일",
+     "desc": "최종합격 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
