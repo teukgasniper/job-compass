@@ -5371,6 +5371,23 @@
    "comment_id": "18037847351906336",
    "at": "2026-11-04 10:03",
    "views": 0
+  },
+  {
+   "id": "CE-80700",
+   "instNm": "서초문화재단",
+   "title": "2026-08차 서초문화재단 직원 채용 공고",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️필기 없이 서류·면접만 보는\n서울 공공기관 정규직, 모레 마감",
+   "closer": "금요일 자정 넘으면 이 전형 자체가 사라짐",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18604769170069843",
+   "comment_id": "18129551618489429",
+   "at": "2026-11-04 13:26"
   }
  ],
  "logo_tried": {
