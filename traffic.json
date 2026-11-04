@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04 04:45",
+ "updated": "2026-11-04 10:37",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -215,14 +215,14 @@
     3494
    ],
    "20261103": [
-    6685,
-    4458,
-    4038
+    6841,
+    4555,
+    4136
    ],
    "20261104": [
-    14,
-    8,
-    7
+    768,
+    467,
+    440
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -524,14 +524,14 @@
     1630
    ],
    "20261103": [
-    4724,
-    2234,
-    2129
+    4851,
+    2298,
+    2189
    ],
    "20261104": [
-    10,
-    6,
-    6
+    738,
+    269,
+    268
    ]
   },
   "ac.ddolbestory.com": {
@@ -706,14 +706,14 @@
     128
    ],
    "20261103": [
-    371,
-    228,
-    204
+    378,
+    234,
+    209
    ],
    "20261104": [
-    1,
-    1,
-    0
+    33,
+    21,
+    20
    ]
   }
  },
@@ -1057,9 +1057,9 @@
     "instagram.com": 1
    },
    "20261103": {
-    "(direct)": 6151,
-    "l.threads.com": 298,
-    "(not set)": 150,
+    "(direct)": 6303,
+    "l.threads.com": 301,
+    "(not set)": 151,
     "m.search.naver.com": 43,
     "naver": 25,
     "google": 11,
@@ -1067,7 +1067,10 @@
     "blogger.com": 2
    },
    "20261104": {
-    "(direct)": 14
+    "(direct)": 717,
+    "l.threads.com": 30,
+    "(not set)": 17,
+    "m.search.naver.com": 4
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1472,8 +1475,8 @@
     "(not set)": 4
    },
    "20261103": {
-    "(direct)": 4124,
-    "(not set)": 293,
+    "(direct)": 4243,
+    "(not set)": 301,
     "l.threads.com": 193,
     "m.search.naver.com": 50,
     "naver": 38,
@@ -1482,7 +1485,10 @@
     "m.naver.com": 2
    },
    "20261104": {
-    "(direct)": 10
+    "(direct)": 695,
+    "l.threads.com": 22,
+    "(not set)": 18,
+    "m.search.naver.com": 3
    }
   },
   "ac.ddolbestory.com": {
@@ -1655,13 +1661,14 @@
     "naver": 1
    },
    "20261103": {
-    "(direct)": 325,
+    "(direct)": 332,
     "l.threads.com": 22,
     "(not set)": 18,
     "naver": 4,
     "google": 2
    },
    "20261104": {
+    "(direct)": 32,
     "l.threads.com": 1
    }
   }

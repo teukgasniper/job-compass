@@ -16277,5 +16277,107 @@
     "callout": null
    }
   }
+ },
+ "WK-183755": {
+  "at": "2026-11-04 10:37",
+  "url": "https://hiring03.ddolbestory.com/2026/11/sk-wk183755.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262378)",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 학위 이상 소지자(안전공학 등 직무 관련 전공)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형(SKCT)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 건강검진",
+     "date": null,
+     "desc": "건강검진 후 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기전형은 SKCT로 진행돼요.",
+    "highlight": null,
+    "subjects": [],
+    "callout": null
+   }
+  }
+ },
+ "306621": {
+  "at": "2026-11-04 10:37",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306621.html",
+  "source": "지원직 채용공고.zip",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 제한 없음(공통 지원자격)",
+    "open": true
+   },
+   "restriction": "장애인복지법상 등록 장애인만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 2일~16일",
+     "desc": "경력·자격·교육사항, 자기소개서 평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 발표",
+     "date": "11월 17일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 19일(목)",
+     "desc": "직무수행능력(지식, 태도 등) 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 20일(금)",
+     "desc": "채용구비서류 제출 및 검증 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
