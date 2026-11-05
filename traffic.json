@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05 20:26",
+ "updated": "2026-11-06 05:14",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -225,9 +225,14 @@
     2228
    ],
    "20261105": [
-    1978,
-    1361,
-    1207
+    5200,
+    3677,
+    3348
+   ],
+   "20261106": [
+    418,
+    264,
+    249
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -539,9 +544,14 @@
     1251
    ],
    "20261105": [
-    1474,
-    663,
-    635
+    3785,
+    1762,
+    1680
+   ],
+   "20261106": [
+    308,
+    122,
+    120
    ]
   },
   "ac.ddolbestory.com": {
@@ -726,9 +736,14 @@
     65
    ],
    "20261105": [
-    65,
-    39,
-    31
+    201,
+    127,
+    106
+   ],
+   "20261106": [
+    9,
+    7,
+    6
    ]
   }
  },
@@ -1092,11 +1107,19 @@
     "blogger.com": 1
    },
    "20261105": {
-    "(direct)": 1800,
-    "l.threads.com": 91,
-    "(not set)": 75,
-    "m.search.naver.com": 7,
-    "naver": 5
+    "(direct)": 4832,
+    "l.threads.com": 197,
+    "(not set)": 143,
+    "m.search.naver.com": 13,
+    "naver": 9,
+    "l.instagram.com": 5,
+    "google": 1
+   },
+   "20261106": {
+    "(direct)": 398,
+    "l.threads.com": 13,
+    "m.search.naver.com": 4,
+    "(not set)": 3
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1521,12 +1544,19 @@
     "m.keep.naver.com": 1
    },
    "20261105": {
-    "(direct)": 1269,
-    "(not set)": 114,
-    "l.threads.com": 57,
-    "naver": 17,
-    "google": 12,
-    "m.search.naver.com": 5
+    "(direct)": 3345,
+    "(not set)": 228,
+    "l.threads.com": 126,
+    "google": 46,
+    "naver": 26,
+    "m.search.naver.com": 12,
+    "l.instagram.com": 2
+   },
+   "20261106": {
+    "(direct)": 285,
+    "l.threads.com": 15,
+    "(not set)": 7,
+    "m.search.naver.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1710,9 +1740,14 @@
     "google": 5
    },
    "20261105": {
-    "(direct)": 52,
-    "(not set)": 7,
-    "google": 5,
+    "(direct)": 172,
+    "google": 13,
+    "(not set)": 8,
+    "l.threads.com": 6,
+    "m.search.naver.com": 2
+   },
+   "20261106": {
+    "(direct)": 8,
     "m.search.naver.com": 1
    }
   }

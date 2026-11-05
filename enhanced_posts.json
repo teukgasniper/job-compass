@@ -16444,5 +16444,196 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-183654": {
+  "at": "2026-11-06 05:14",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-183654.html",
+  "source": "기업 채용 페이지 (https://careers.smcultureandcontents.com/ko/o/135351)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상 학위를 소지하신 분",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "공고 마감일로부터 최대 4주 소요될 수 있어요",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 건강검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306599": {
+  "at": "2026-11-06 05:14",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kibo-306599.html",
+  "source": "사무지원 공고.pdf",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "최종학력이 고등학교 졸업(예정)자만 지원 가능해요.",
+    "open": false
+   },
+   "restriction": "고등학교 졸업자(또는 동등 학력 인정자)만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서(60점), 자격사항(40점), 가점 포함",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 1일(예정)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": "직업윤리·대인관계·의사소통·문제해결 평가(100점)",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "12월 24일(예정)"
+    },
+    {
+     "type": "final",
+     "title": "3단계 — 신체검사 및 신원조사",
+     "date": "2027년 1월 중순(예정)",
+     "desc": "통과 후 채용 확정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-183075": {
+  "at": "2026-11-06 05:14",
+  "url": "https://hiring03.ddolbestory.com/2026/10/wk-183075.html",
+  "source": "기업 채용 페이지 이미지 3조각 (https://modetour.ninehire.site/job_posting/chWfPknL)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "상품부문·항공부문·영업부문은 모집인원 OO명으로 안내돼 있고, 지원부문은 0명이에요.",
+    "columns": [
+     "상품부문",
+     "항공부문",
+     "영업부문",
+     "지원부문"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       null,
+       null,
+       null,
+       null
+      ]
+     }
+    ],
+    "note": "상품·항공·영업부문은 'OO명', 지원부문은 '0명'으로 구체적 숫자가 공고문에 명시되지 않았어요."
+   },
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "초대졸 이상(전공무관), 기졸업자 및 2027년 2월 졸업예정자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월 26일~11월 8일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차면접",
+     "date": "11월 14일(토)",
+     "desc": null,
+     "note": "예정"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 인턴십",
+     "date": "11월 30일~1월 22일",
+     "desc": null,
+     "note": "예정"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 정규직전환심사",
+     "date": "1월 15일(금)",
+     "desc": null,
+     "note": "예정"
+    },
+    {
+     "type": "final",
+     "title": "최종 — 정규직 채용",
+     "date": "1월 25일(월)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
