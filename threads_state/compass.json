@@ -3785,6 +3785,23 @@
    "thread_id": "18652715233034851",
    "comment_id": "18115544936464732",
    "at": "2026-11-05 22:07"
+  },
+  {
+   "id": "MN-GSN-01",
+   "instNm": "GS네트웍스",
+   "title": "[GS네트웍스] '27년 상반기 신입사원 채용 (물류센터 운영지원담당)",
+   "combo_idx": 7,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️모레 밤 11시59분 닫힘\nGS 계열 물류센터 신입 공채",
+   "closer": "오늘 안 넣으면 모레 밤 접수창부터 사라짐",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18038921642894993",
+   "comment_id": "18133505761818197",
+   "at": "2026-11-06 01:02"
   }
  ],
  "views_refreshed_at": "2026-11-05 21:56",
