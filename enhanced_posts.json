@@ -16379,5 +16379,70 @@
    "language": null,
    "written": null
   }
+ },
+ "306441": {
+  "at": "2026-11-05 20:26",
+  "url": "https://hiring03.ddolbestory.com/2026/10/ncc-306441.html",
+  "source": "국립암센터 업무직 채용공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "간호조무사 4명, 병동지원 12명, 외래지원 1명, 행정지원 1명, 이송 1명, 시설관리(기계) 3명, 일반미화 8명을 뽑아요.",
+    "columns": [
+     "간호조무사",
+     "병동지원",
+     "외래지원",
+     "행정지원",
+     "이송",
+     "시설관리(기계)",
+     "일반미화"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       4,
+       12,
+       1,
+       1,
+       1,
+       3,
+       8
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 13일~26일",
+     "desc": "입사지원서 내용 심사, 평가점수 평균 60점 이상",
+     "note": "10배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 27일~12월 9일",
+     "desc": "인성, 조직적합성 등 종합평가, 평균 60점 이상",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 10일~18일",
+     "desc": "채용점검위원회 심의 후 이메일로 통보해요",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

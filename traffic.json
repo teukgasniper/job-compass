@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05 10:44",
+ "updated": "2026-11-05 20:26",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -225,9 +225,9 @@
     2228
    ],
    "20261105": [
-    463,
-    299,
-    275
+    1978,
+    1361,
+    1207
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -539,9 +539,9 @@
     1251
    ],
    "20261105": [
-    414,
-    153,
-    150
+    1474,
+    663,
+    635
    ]
   },
   "ac.ddolbestory.com": {
@@ -726,9 +726,9 @@
     65
    ],
    "20261105": [
-    24,
-    8,
-    8
+    65,
+    39,
+    31
    ]
   }
  },
@@ -1092,9 +1092,11 @@
     "blogger.com": 1
    },
    "20261105": {
-    "(direct)": 433,
-    "(not set)": 22,
-    "l.threads.com": 8
+    "(direct)": 1800,
+    "l.threads.com": 91,
+    "(not set)": 75,
+    "m.search.naver.com": 7,
+    "naver": 5
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1519,9 +1521,12 @@
     "m.keep.naver.com": 1
    },
    "20261105": {
-    "(direct)": 375,
-    "(not set)": 35,
-    "l.threads.com": 4
+    "(direct)": 1269,
+    "(not set)": 114,
+    "l.threads.com": 57,
+    "naver": 17,
+    "google": 12,
+    "m.search.naver.com": 5
    }
   },
   "ac.ddolbestory.com": {
@@ -1705,7 +1710,10 @@
     "google": 5
    },
    "20261105": {
-    "(direct)": 24
+    "(direct)": 52,
+    "(not set)": 7,
+    "google": 5,
+    "m.search.naver.com": 1
    }
   }
  }
