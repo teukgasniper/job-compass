@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05 04:59",
+ "updated": "2026-11-05 10:44",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -220,14 +220,14 @@
     4127
    ],
    "20261104": [
-    3598,
-    2391,
-    2132
+    3784,
+    2511,
+    2228
    ],
    "20261105": [
-    10,
-    6,
-    5
+    463,
+    299,
+    275
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -534,14 +534,14 @@
     2182
    ],
    "20261104": [
-    2953,
-    1263,
-    1193
+    3134,
+    1335,
+    1251
    ],
    "20261105": [
-    3,
-    2,
-    2
+    414,
+    153,
+    150
    ]
   },
   "ac.ddolbestory.com": {
@@ -721,9 +721,14 @@
     206
    ],
    "20261104": [
-    108,
-    73,
-    64
+    109,
+    74,
+    65
+   ],
+   "20261105": [
+    24,
+    8,
+    8
    ]
   }
  },
@@ -1077,17 +1082,19 @@
     "(not set)": 1
    },
    "20261104": {
-    "(direct)": 3244,
-    "l.threads.com": 180,
-    "(not set)": 139,
+    "(direct)": 3554,
+    "l.threads.com": 193,
     "m.search.naver.com": 17,
     "google": 6,
     "naver": 6,
     "l.instagram.com": 4,
+    "(not set)": 2,
     "blogger.com": 1
    },
    "20261105": {
-    "(direct)": 10
+    "(direct)": 433,
+    "(not set)": 22,
+    "l.threads.com": 8
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1502,17 +1509,19 @@
     "(not set)": 1
    },
    "20261104": {
-    "(direct)": 2478,
-    "(not set)": 258,
-    "l.threads.com": 132,
+    "(direct)": 2899,
+    "l.threads.com": 142,
     "m.search.naver.com": 30,
+    "google": 28,
     "naver": 26,
-    "google": 23,
     "l.instagram.com": 4,
+    "(not set)": 3,
     "m.keep.naver.com": 1
    },
    "20261105": {
-    "(direct)": 3
+    "(direct)": 375,
+    "(not set)": 35,
+    "l.threads.com": 4
    }
   },
   "ac.ddolbestory.com": {
@@ -1691,10 +1700,12 @@
     "google": 2
    },
    "20261104": {
-    "(direct)": 96,
+    "(direct)": 97,
     "l.threads.com": 7,
-    "google": 4,
-    "(not set)": 1
+    "google": 5
+   },
+   "20261105": {
+    "(direct)": 24
    }
   }
  }
