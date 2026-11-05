@@ -5569,6 +5569,23 @@
    "comment_id": "18187457119418712",
    "at": "2026-11-05 21:16",
    "views": 144
+  },
+  {
+   "id": "MN-CAMEROON-01",
+   "instNm": "주카메룬 대한민국 대사관",
+   "title": "주카메룬 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 7,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️모레 월요일이면 접수 끝\n아프리카 공관 행정직, 신입 가능",
+   "closer": "국내 사무직 리스트에 야운데 한 줄 추가할 마지막 기회",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "17933235522166918",
+   "comment_id": "18127861663967910",
+   "at": "2026-11-06 00:23"
   }
  ],
  "logo_tried": {
