@@ -3714,6 +3714,23 @@
    "comment_id": "18114615569123905",
    "at": "2026-11-05 06:13",
    "views": 199
+  },
+  {
+   "id": "MN-AUSTRALIA-01",
+   "instNm": "주호주 대한민국 대사관",
+   "title": "주호주 대한민국 대사관 일반직 행정직원 채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍호주 캔버라 정부기관 행정직\n신입도 서류만 내면 되는 자리임",
+   "closer": "서울도 아니고 캔버라로 출근하는 행정직, 흔한 기회 아님",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "17892391596684848",
+   "comment_id": "18138110033504609",
+   "at": "2026-11-05 13:01"
   }
  ],
  "views_refreshed_at": "2026-11-05 09:56",
