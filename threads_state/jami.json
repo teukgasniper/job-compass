@@ -5514,6 +5514,23 @@
    "thread_id": "18007369329005973",
    "comment_id": "18121202470752174",
    "at": "2026-11-05 12:19"
+  },
+  {
+   "id": "MN-SEATTLE-01",
+   "instNm": "주시애틀 대한민국 총영사관",
+   "title": "주시애틀 대한민국 총영사관 일반직 행정직원 채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "monologue",
+   "hook": "📍출근길이 태평양 건너인 자리\n시애틀 총영사관, 신입도 가능",
+   "closer": "국내만 보던 사무직 리스트에 시애틀 한 줄 추가됨",
+   "hook_type": "plain",
+   "tier": 0,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18015791381979493",
+   "comment_id": "18154826584557208",
+   "at": "2026-11-05 15:22"
   }
  ],
  "logo_tried": {
