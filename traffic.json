@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06 05:14",
+ "updated": "2026-11-06 10:46",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -225,14 +225,14 @@
     2228
    ],
    "20261105": [
-    5200,
-    3677,
-    3348
+    5227,
+    3685,
+    3361
    ],
    "20261106": [
-    418,
-    264,
-    249
+    1403,
+    936,
+    883
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -544,14 +544,14 @@
     1251
    ],
    "20261105": [
-    3785,
-    1762,
-    1680
+    3807,
+    1768,
+    1686
    ],
    "20261106": [
-    308,
-    122,
-    120
+    1003,
+    442,
+    434
    ]
   },
   "ac.ddolbestory.com": {
@@ -741,9 +741,9 @@
     106
    ],
    "20261106": [
-    9,
-    7,
-    6
+    48,
+    33,
+    27
    ]
   }
  },
@@ -1107,19 +1107,19 @@
     "blogger.com": 1
    },
    "20261105": {
-    "(direct)": 4832,
+    "(direct)": 4856,
     "l.threads.com": 197,
-    "(not set)": 143,
+    "(not set)": 146,
     "m.search.naver.com": 13,
     "naver": 9,
     "l.instagram.com": 5,
     "google": 1
    },
    "20261106": {
-    "(direct)": 398,
-    "l.threads.com": 13,
-    "m.search.naver.com": 4,
-    "(not set)": 3
+    "(direct)": 1315,
+    "l.threads.com": 53,
+    "(not set)": 29,
+    "m.search.naver.com": 6
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1544,8 +1544,8 @@
     "m.keep.naver.com": 1
    },
    "20261105": {
-    "(direct)": 3345,
-    "(not set)": 228,
+    "(direct)": 3360,
+    "(not set)": 235,
     "l.threads.com": 126,
     "google": 46,
     "naver": 26,
@@ -1553,10 +1553,10 @@
     "l.instagram.com": 2
    },
    "20261106": {
-    "(direct)": 285,
-    "l.threads.com": 15,
-    "(not set)": 7,
-    "m.search.naver.com": 1
+    "(direct)": 895,
+    "(not set)": 67,
+    "l.threads.com": 37,
+    "m.search.naver.com": 4
    }
   },
   "ac.ddolbestory.com": {
@@ -1747,7 +1747,9 @@
     "m.search.naver.com": 2
    },
    "20261106": {
-    "(direct)": 8,
+    "(direct)": 39,
+    "(not set)": 6,
+    "l.threads.com": 2,
     "m.search.naver.com": 1
    }
   }
