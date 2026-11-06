@@ -47,6 +47,7 @@ jobs:
           CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
           JITTER_MAX_MIN: ${{ github.event_name != 'workflow_dispatch' && '15' || '0' }}
           MIN_GAP_MIN: ${{ github.event_name != 'workflow_dispatch' && '160' || '60' }}   # [2026-10-22] 자동 실행은 160분 → 매시간 깨우므로 실제 약 3시간 간격 (2시간 → 3시간)
+          QUIET_HOURS: ${{ github.event_name != 'workflow_dispatch' && '2-6' || '' }}   # [2026-11-06] 자동 실행은 새벽 2시~6시(KST) 발행 안 함
         run: python publish_to_threads.py
 
       - name: 사용 기록 저장
