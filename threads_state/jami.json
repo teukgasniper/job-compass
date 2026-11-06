@@ -5713,6 +5713,23 @@
    "comment_id": "18169709644479055",
    "at": "2026-11-07 00:28",
    "views": 152
+  },
+  {
+   "id": "MN-RICEALL-01",
+   "instNm": "농협양곡",
+   "title": "2026년 농협양곡 일반직 6급 신규채용 (경영지원·마케팅, 서울 양재 본사)",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️농협 계열사, 일반직 공채\n서울 양재 본사, 월요일 마감",
+   "closer": "농협 계열사 일반직 공채는 내년까지 또 없을 수도 있음",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "17922461892244780",
+   "comment_id": "18100564667551788",
+   "at": "2026-11-07 06:21"
   }
  ],
  "logo_tried": {
