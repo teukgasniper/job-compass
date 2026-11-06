@@ -16789,5 +16789,114 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-307524": {
+  "at": "2026-11-06 20:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307524.html",
+  "source": "호남지방데이터청 공무직근로자(통계조사관) 채용공고.pdf (글자 없는 PDF → 이미지 8조각)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "지방청본부 3명, 전주사무소 2명, 제주사무소 3명, 그 외 6개 사무소에서 각 1명씩 통계조사관을 모집해요.",
+    "columns": [
+     "지방청본부",
+     "전주사무소",
+     "제주사무소",
+     "기타 사무소"
+    ],
+    "rows": [
+     {
+      "label": "통계조사관",
+      "values": [
+       3,
+       2,
+       3,
+       6
+      ]
+     }
+    ],
+    "note": "기타 사무소는 목포·순천·강진·정읍·군산·남원 각 1명씩이에요."
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 17일(화)",
+     "desc": "경력·자기소개서(90점)+자격증(5점)+기타가점(5점)",
+     "note": "채용인원에 따라 2~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 18일(수) 17:00"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 23일~12월 10일",
+     "desc": "통계분야 지식, 공무수행 소양 및 의욕적 자세 등 종합평가",
+     "note": "부서별 세부일정 추후 공고"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 16일(수) 10:00",
+     "desc": "수습기간(3개월) 평가 후 정규 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-307465": {
+  "at": "2026-11-06 20:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307465.html",
+  "source": "(붙임) 강원대학교 무기계약직 채용 공고문.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "IT관련 학과(전산·컴퓨터공학 등) 학사학위 이상 소지자",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 4일~11일",
+     "desc": "자기소개서, 직무성과기술서 등 정성·정량 평가",
+     "note": "선발인원 5배수까지 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 16일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 19일(목)",
+     "desc": "패널면접, 5개 평정요소 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 24일(화)",
+     "desc": "임용예정일 12월 1일(화)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
