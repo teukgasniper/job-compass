@@ -106,6 +106,7 @@ CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "").strip() or "claude-sonnet-5"
 FALLBACK_MODEL = "claude-sonnet-4-6"
 JITTER_MAX_MIN = int(os.environ.get("JITTER_MAX_MIN", "0") or 0)
 MIN_GAP_MIN = int(os.environ.get("MIN_GAP_MIN", "60") or 60)   # 계정 발행 최소 간격(분) — 수동·자동 겹침 방지
+QUIET_HOURS = os.environ.get("QUIET_HOURS", "").strip()         # [2026-11-06] 발행 쉬는 시간(KST) "2-6" = 02:00~05:59 — 자동 실행만 (워크플로우에서 지정)
 NEW_DAYS = int(os.environ.get("NEW_DAYS", "3") or 3)            # [2026-10-15] 접수 시작 N일 이내 = 1순위 신규
 MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-2 ~ D-3 ([2026-10-21] D-1 제외), 전체 계정 통틀어 ⚠️ 글 1번
 MANUAL_GAP_DAYS = int(os.environ.get("MANUAL_GAP_DAYS", "3") or 3)   # [2026-10-21] 같은 수동 공고는 계정끼리 간격 ([2026-10-22] 2→3일)
@@ -2509,6 +2510,23 @@ def too_soon(state: dict, where: str) -> bool:
     return False
 
 
+def in_quiet_hours(where: str) -> bool:
+    """[2026-11-06] QUIET_HOURS("2-6") 안이면 발행하지 않음 — 새벽 2시~6시(KST) 쉬기"""
+    if not QUIET_HOURS:
+        return False
+    try:
+        start, end = (int(x) for x in QUIET_HOURS.split("-"))
+    except ValueError:
+        print(f"[warn] QUIET_HOURS 형식 오류: {QUIET_HOURS!r} — 무시")
+        return False
+    hour = dt.datetime.now(KST).hour
+    quiet = start <= hour < end if start < end else (hour >= start or hour < end)
+    if quiet:
+        print(f"[건너뜀] 지금 {hour}시 — 발행 쉬는 시간 {start}시~{end}시 ({where})")
+        summary(f"### 🌙 건너뜀\n발행 쉬는 시간 {start}시~{end}시 (KST)")
+    return quiet
+
+
 # ─────────────────────────── main ───────────────────────────
 def main():
     today = dt.datetime.now(KST).date()
@@ -2522,7 +2540,7 @@ def main():
         print("다른 계정 기록: " + ", ".join(f"{a} {len(ps)}건" for a, ps in others.items()))
     if refresh_my_views(state) and not DRY_RUN:
         save_state(state)                            # 건너뛰는 회차에도 조회수는 저장
-    if not DRY_RUN and too_soon(state, "시작 전"):   # 생성 비용도 아끼려고 먼저 확인
+    if not DRY_RUN and (in_quiet_hours("시작 전") or too_soon(state, "시작 전")):   # 생성 비용도 아끼려고 먼저 확인
         return
 
     # [2026-10-06] 민간 공고는 본문 '지원 자격 상세'로 학력을 확인 — 확인 안 되면 다음 후보로
@@ -2676,7 +2694,7 @@ def main():
         wait = random.randint(0, JITTER_MAX_MIN * 60)
         print(f"랜덤 대기 {wait // 60}분 {wait % 60}초")
         time.sleep(wait)
-    if too_soon(state, "발행 직전"):               # 대기하는 사이 수동 발행이 끼어든 경우
+    if too_soon(state, "발행 직전") or in_quiet_hours("발행 직전"):   # 대기하는 사이 수동 발행이 끼어들었거나 2시를 넘긴 경우
         return
 
     try:
