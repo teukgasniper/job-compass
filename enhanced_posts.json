@@ -16898,5 +16898,184 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-307483": {
+  "at": "2026-11-07 04:39",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307483.html",
+  "source": "2026년도 제1회 광주보호관찰소 순천지소 공무직(사무원) 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력·경력 제한 없음(병역필 또는 면제자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 20일(금)",
+     "desc": "자격요건 적격자 전원 통과(5배수 초과 시 선발)",
+     "note": "5배수 이하 전원 통과"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 24일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 27일(금)",
+     "desc": "근로자 정신자세 등 5개 요소 상·중·하 평정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 7일(월)",
+     "desc": "증빙자료 확인 후 최종합격자 발표",
+     "note": "예비합격자 3명(3개월간 유효)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-183939": {
+  "at": "2026-11-07 04:39",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-183939.html",
+  "source": "기업 채용 페이지 (https://career.wconcept.co.kr/ko/o/242288)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 학위 이상, 27년 2월 졸업 예정자 또는 기 졸업자",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 과제전형",
+     "date": null,
+     "desc": "사전과제 + 현장과제",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 인터뷰",
+     "date": null,
+     "desc": "실무 적합성 평가",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차 인터뷰",
+     "date": null,
+     "desc": "조직 적합성 평가",
+     "note": "1차 인터뷰 대상자에 한함"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "W컨셉 합류(1월 초), 신입사원 입문교육 입과",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306653": {
+  "at": "2026-11-07 04:39",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306653.html",
+  "source": "(재)우체국시설관리단 현장직원 2026년도 12차 통합 채용 공고문(변경).hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기술 8명, 경비 6명, 미화 7명, 기타 1명 등 현장직원을 모집해요.",
+    "columns": [
+     "기술",
+     "경비",
+     "미화",
+     "기타"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       8,
+       6,
+       7,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 10일~18일",
+     "desc": "자기소개서·관련경력·자격증·가산점 심사",
+     "note": "최종합격인원의 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 19일~20일(오후 5시 이후)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "11월 21일~25일",
+     "desc": "온라인 인성검사 173문항, 30분간 진행",
+     "note": "면접 참고자료로 활용"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "11월 30일~12월 7일",
+     "desc": "면접심사표 60점 이상 고득점자 순 선정",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "12월 10일~11일(오후 5시 이후)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2027년 1월 3일(임용예정일)",
+     "desc": "임용서류 제출 및 결격사유 조회 후 최종 임용",
+     "note": "개별 유선 통보"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
