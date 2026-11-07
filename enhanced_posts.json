@@ -17380,5 +17380,81 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-183882": {
+  "at": "2026-11-08 07:14",
+  "url": "https://hiring03.ddolbestory.com/2026/11/sk-wk183882.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262352)",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상('27년도 2월 졸업예정자 및 취업계 사용 인원 지원 가능)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — SKCT검사",
+     "date": null,
+     "desc": "심층·인지역량 검사",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 SKCT(심층·인지역량) 검사로 봐요.",
+    "highlight": "SKCT",
+    "subjects": [
+     {
+      "name": "SKCT(심층·인지역량)",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
