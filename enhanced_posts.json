@@ -17320,5 +17320,65 @@
    },
    "written": null
   }
+ },
+ "306561": {
+  "at": "2026-11-08 02:50",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306561.html",
+  "source": "한국방송통신전파진흥원 신입 직원 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설관리(기계) 1명(고양), 경비(보훈) 1명(전남광주)을 뽑아요.",
+    "columns": [
+     "시설관리(기계)",
+     "경비(보훈)"
+    ],
+    "rows": [
+     {
+      "label": "무기계약직",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 23일~24일",
+     "desc": "평가항목별 평균점수에 가점 적용, 70점 이상 평가",
+     "note": "채용예정인원 10배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 4일~8일",
+     "desc": "정신자세·의사발표력·예의품행·창의력·전문지식 평가",
+     "note": "70점 이상자 중 고득점자 순 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 11일(금)",
+     "desc": "채용 구비서류 제출 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
