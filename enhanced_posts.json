@@ -17174,5 +17174,151 @@
    "language": null,
    "written": null
   }
+ },
+ "306744": {
+  "at": "2026-11-07 19:38",
+  "url": "https://hiring03.ddolbestory.com/2026/11/redcross-306744.html",
+  "source": "1. 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "심리학 학사 이상, 간호사 면허, 사회복지사 2급 이상, 심리상담 자격 중 1개 이상",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 25일(수)",
+     "desc": "자기개발실적 점수 고득점자 순 선발",
+     "note": "7배수(7명) 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "11월 26일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 1일(화)",
+     "desc": "적십자 이해·직무수행능력 등 평정",
+     "note": "1배수(1명) 선발"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 채용검증",
+     "date": "12월 7일(월)",
+     "desc": "채용검증위원회 구성, 공정채용 점검",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접시험(최종) 결과발표",
+     "date": "12월 8일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종 — 신체검사 및 임용서류 등록",
+     "date": "12월 11일(금)",
+     "desc": "신체검사·신원조회 후 임용 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306715": {
+  "at": "2026-11-07 19:38",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306715.html",
+  "source": "채용공고(2027년 상반기 정규직_일반직).pdf (글자 없는 PDF → 이미지 6조각)",
+  "parts": [
+   "crew",
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반직 간호직(수술장 2명, 병동 1명)과 보건직 치과위생사 4명, 총 7명을 뽑아요.",
+    "columns": [
+     "간호직(수술장)",
+     "간호직(병동)",
+     "보건직(치과위생사)"
+    ],
+    "rows": [
+     {
+      "label": "일반직",
+      "values": [
+       2,
+       1,
+       4
+      ]
+     }
+    ],
+    "note": "원무직(간호원무직)·운영지원직(미화·시설·보안)은 별도 지원 링크로 모집해요."
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "간호사 면허 또는 치과위생사 면허 소지자만 지원 가능해요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "교육·한국사·국어·IT자격·외국어 등 자격요건 평가(100점)",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": "11월 30일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접전형",
+     "date": "12월 3일(목)",
+     "desc": "채용예정 직무수행능력 및 적격성 심사",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "실무면접전형 결과발표",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "notice",
+     "label": "온라인 인적성검사",
+     "date": "12월 10일~13일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종면접전형",
+     "date": "12월 15일(화) 예정",
+     "desc": "직무수행능력 및 적격성 심사, 인성검사 참고",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "신체검사 후 2027.1.1자 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (일반직)",
+    "text": "TOEIC, TEPS, OPIc 등 외국어 성적에 따라 최대 20점의 가산점을 받아요.",
+    "highlight": "최대 20점"
+   },
+   "written": null
+  }
  }
 }
