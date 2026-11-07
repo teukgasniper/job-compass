@@ -85,6 +85,12 @@
 [2026-10-15 수정] 클린아이 공고는 학력 확인 때 실제 모집 직무·주력 고용형태도 같이 확인 (edu_lookup.py)
                   → 인원 가장 많은 직무가 요양보호·미화·경비·조리 등이거나 주력 분야가 계약직·시간제면 제외
                   (제목에 직무가 없고 고용형태가 '정규직'으로만 들어오는 공고 대응 — 인천광역시사회서비스원 요양보호사 계약직 사례)
+[2026-11-06 수정] 새벽 2시~6시(KST) 자동 발행 쉼 — QUIET_HOURS(워크플로우에서 "2-6")
+[2026-11-07 수정] ⚠️ 마감 글 쏠림 방지 (11/6~7 jami ⚠️ 4개 연속 사례)
+                  · 수동 공고 마감 글(0순위)도 일반 마감 글과 같은 관문: 최근 3건에 ⚠️ 있으면 보류 / 하루 상한 / 계정 순환
+                  · 계정당 하루 ⚠️ 마감 글 URGENT_DAILY_MAX(1)개까지 (수동·일반 합산)
+                  · 마감 글 차례 URGENT_EVERY 3 → 5 (최근 4건에 마감 글이 없을 때만)
+                  · 마감 글(2순위)이 아니면 마감형 조합을 안 쓰고, 훅이 ⚠️로 오면 📍로 바꿈
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -112,7 +118,8 @@ MANUAL_URGENT_DAYS = 3   # [2026-10-17] 수동 공고 마감 임박 = D-2 ~ D-3 
 MANUAL_GAP_DAYS = int(os.environ.get("MANUAL_GAP_DAYS", "3") or 3)   # [2026-10-21] 같은 수동 공고는 계정끼리 간격 ([2026-10-22] 2→3일)
 LAST_DDAY = 2            # [2026-10-21] 쓰레드는 마감 D-2까지만 — D-1이면 수동·일반 공고 모두 건너뜀 (다음 순위로)
 URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "3") or 3)      # [2026-10-21] 마감 D-2 ~ D-N(3) = 2순위 마감 임박, 전체 계정 통틀어 공고당 1번
-URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "3") or 3)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저
+URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "5") or 5)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저 ([2026-11-07] 3→5)
+URGENT_DAILY_MAX = int(os.environ.get("URGENT_DAILY_MAX", "1") or 1)   # [2026-11-07] 계정당 하루(KST) ⚠️ 마감 글 최대 개수 (수동·일반 공고 합산)
 # [2026-10-19] 긴급형(⚠️) 쏠림 방지 — 최근 URGENT_WINDOW건 안에 긴급형이 URGENT_MAX개 이상이면 이번엔 긴급형 금지
 #              (10/17~19 세 계정 글의 절반 이상이 ⚠️ 마감 글 → 같은 톤 반복으로 조회수 급락)
 URGENT_WINDOW = int(os.environ.get("URGENT_WINDOW", "3") or 3)
@@ -644,6 +651,23 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
     recent_ids = {str(p["id"]) for p in history[-12:]}
     recent_ids_list = [str(p["id"]) for p in history[-12:]]
     exclude = exclude or set()
+
+    # [2026-11-07] ⚠️ 마감 글 공통 관문 — 수동 공고 마감 글(0순위)도 일반 마감 글과 같은 규칙
+    #   ① 최근 URGENT_WINDOW건 안에 ⚠️가 있으면 쉼 ② 계정당 하루 URGENT_DAILY_MAX개까지
+    #   ③ 전체 계정 중 직전 ⚠️ 마감 글을 이 계정이 올렸으면 다른 계정 차례
+    #   (11/6~7 jami가 수동 공고 마감 글 4개를 연달아 올린 사례 — 0순위가 이 확인 없이 바로 뽑혔음)
+    today_s = today.isoformat()
+    n_urgent_today = sum(1 for p in history if is_urgent_post(p) and (p.get("at") or "").startswith(today_s))
+    last_u_any = max(([(p.get("at") or "", "me") for p in history if p.get("urgent")]
+                      + [(p.get("at") or "", "other") for p in other_posts if p.get("urgent")]), default=None)
+    def urgent_gate_reason():
+        if urgent_blocked(history):
+            return f"최근 {URGENT_WINDOW}건에 ⚠️ 글이 있음"
+        if n_urgent_today >= URGENT_DAILY_MAX:
+            return f"오늘 이미 ⚠️ 마감 글 {n_urgent_today}개 (하루 최대 {URGENT_DAILY_MAX}개)"
+        if others and last_u_any and last_u_any[1] == "me":
+            return "직전 ⚠️ 마감 글을 이 계정이 올려서 다른 계정 차례"
+        return ""
     live = [j for j in jobs if eligible(j, today) and str(j["recrutPblntSn"]) not in exclude]
     # [2026-10-21] 마감 D-1 공고는 쓰레드에서 건너뜀 (수동·일반 모두) — 다음 우선순위로
     n_live = len(live)
@@ -839,7 +863,11 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
                  and j_grp(j) not in my_m_grps]    # [2026-10-22] 같은 기관 수동 공고를 이미 올렸으면 이 계정은 끝 (기관당 1번)
         print(f"수동 공고: 진행 중 {len(manual_live)} / 내 계정 미발행 {len(m_new)} / 마감 임박 알림 대기 {len(m_urgent)}")
         if m_urgent:
-            return choose_urgent(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
+            why = urgent_gate_reason()             # [2026-11-07] 수동 공고 마감 글도 연속·하루 상한·계정 순환 규칙 적용
+            if why:
+                print(f"수동 공고 마감 글 보류: {why} — 다른 공고 먼저")
+            else:
+                return choose_urgent(m_urgent), 2, len(m_urgent), None      # 마감 임박 → ⚠️ 마감 글 (tier 2 처리 그대로)
         if m_new:                                  # 최근에 넣은 수동 공고부터 (접수 시작일 최신순 → 본문 있는 것 → 점수)
             m_new.sort(key=lambda j: (-m_count.get(j_grp(j), 0), j.get("pbancBgngYmd") or "",
                                       str(j["recrutPblntSn"]) in posts, hot_score(j, today)), reverse=True)
@@ -892,6 +920,10 @@ def pick_job(jobs, posts, state, today, exclude=None, others=None):
         print("마감 글 순환: 직전 마감 글을 이 계정이 올려서 이번엔 다른 공고 먼저")
         urgent_due = False
     u_block = urgent_blocked(history)              # [2026-10-19] 최근 긴급형이 많으면 마감 글은 맨 마지막 수단으로
+    if n_urgent_today >= URGENT_DAILY_MAX:         # [2026-11-07] 계정당 하루 ⚠️ 마감 글 상한
+        if tier2:
+            print(f"오늘 ⚠️ 마감 글 {n_urgent_today}개 — 하루 최대 {URGENT_DAILY_MAX}개라 마감 글은 내일로")
+        tier2 = []
     print(f"순위별 후보: 신규 {len(tier1)} / 마감 임박 {len(tier2)} (안 올린 {len(urgent_new)}·알림 {len(urgent_mine)}) "
           f"/ 나머지 {len(tier3)} / 다른 계정 글(3일 지남) {len(tier3b)}" + (" — 마감 임박 차례" if tier2 and tier1 and urgent_due and not u_block else "")
           + (f" — 최근 {URGENT_WINDOW}건에 긴급형 {URGENT_MAX}개 이상이라 마감 글은 뒤로" if u_block and tier2 else ""))
@@ -1112,7 +1144,7 @@ def pick_combo(state, d_left: int, open_fact: bool = True, job: dict = None, pos
             continue
         if force_nonperson and c["cat"] == "person":
             continue
-        if no_urgent and c["cat"] == "urgent":
+        if c["cat"] == "urgent":                  # [2026-11-07] 마감형 조합은 마감 글(2순위)에서만 — 일반 글에 ⚠️ 마감 톤 금지
             continue
         if d_left > 7 and c["cat"] == "urgent":   # [2026-10-22] 마감형은 요일 마감이 핵심 → 일주일 안쪽일 때만
             continue
@@ -1125,8 +1157,7 @@ def pick_combo(state, d_left: int, open_fact: bool = True, job: dict = None, pos
                 and not (d_left > 7 and COMBOS[i]["cat"] == "urgent")]
         if force_nonperson:
             pool = [i for i in pool if COMBOS[i]["cat"] != "person"] or pool
-        if no_urgent:
-            pool = [i for i in pool if COMBOS[i]["cat"] != "urgent"] or pool
+        pool = [i for i in pool if COMBOS[i]["cat"] != "urgent"] or pool   # [2026-11-07] 일반 글은 마감형 조합 안 씀
 
     pool = [i for i in pool if CAT_WEIGHTS.get(COMBOS[i]["cat"], 10) > 0] or [0]
     # 가중 랜덤 — 유형별 비중 반영
@@ -1643,9 +1674,11 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
         hook = "⚠️" + re.sub(r"^(📍|⚠️|⚠)\s*", "", hook)
+    if not urgent and hook.startswith("⚠"):       # [2026-11-07] 마감 글이 아니면 ⚠️ 금지 → 📍로 바꿔 끼움 (SK바이오팜 사례)
+        hook = "📍" + re.sub(r"^(⚠️|⚠)\s*", "", hook)
     if hook and not (hook.startswith("📍") or hook.startswith("⚠")):
         emo = (d.get("emoji") or "").strip()
-        hook = (emo if emo in ("📍", "⚠️", "⚠") else "📍") + hook   # 이모지를 따로 준 경우 훅 앞에 붙임
+        hook = ((emo if emo in ("📍", "⚠️", "⚠") else "📍") if urgent else "📍") + hook   # 이모지를 따로 준 경우 훅 앞에 붙임 (마감 글만 ⚠️)
     items = [re.sub(r"^\s*\d+[\.\)]\s*", "", str(x)).strip() for x in (d.get("items") or [])]
     closer = (d.get("closer") or "").strip()
 
