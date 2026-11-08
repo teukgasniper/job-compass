@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08 07:14",
+ "updated": "2026-11-08 15:38",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -236,13 +236,13 @@
    ],
    "20261107": [
     4035,
-    2653,
-    2382
+    2657,
+    2367
    ],
    "20261108": [
-    227,
-    149,
-    136
+    621,
+    385,
+    339
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -565,13 +565,13 @@
    ],
    "20261107": [
     2887,
-    1326,
-    1274
+    1328,
+    1268
    ],
    "20261108": [
-    209,
-    81,
-    77
+    552,
+    198,
+    188
    ]
   },
   "ac.ddolbestory.com": {
@@ -768,12 +768,12 @@
    "20261107": [
     71,
     42,
-    35
+    36
    ],
    "20261108": [
-    4,
-    5,
-    4
+    19,
+    13,
+    8
    ]
   }
  },
@@ -1154,17 +1154,17 @@
     "(not set)": 2
    },
    "20261107": {
-    "(direct)": 3434,
-    "(not set)": 437,
-    "l.threads.com": 151,
+    "(direct)": 3856,
+    "l.threads.com": 166,
     "l.instagram.com": 11,
     "google": 2
    },
    "20261108": {
-    "(direct)": 213,
-    "l.threads.com": 7,
+    "(direct)": 551,
+    "l.threads.com": 32,
+    "(not set)": 27,
     "m.search.naver.com": 6,
-    "(not set)": 1
+    "google": 5
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1605,17 +1605,18 @@
     "(not set)": 2
    },
    "20261107": {
-    "(direct)": 1986,
-    "(not set)": 821,
-    "l.threads.com": 76,
+    "(direct)": 2782,
+    "l.threads.com": 100,
     "google": 2,
+    "(not set)": 1,
     "l.instagram.com": 1,
     "naver": 1
    },
    "20261108": {
-    "(direct)": 188,
-    "(not set)": 8,
-    "l.threads.com": 7,
+    "(direct)": 459,
+    "(not set)": 50,
+    "l.threads.com": 23,
+    "google": 14,
     "m.search.naver.com": 6
    }
   },
@@ -1813,15 +1814,16 @@
     "naver": 4
    },
    "20261107": {
-    "(direct)": 51,
-    "(not set)": 14,
-    "l.threads.com": 3,
+    "(direct)": 63,
+    "l.threads.com": 5,
     "naver": 2,
     "m.search.naver.com": 1
    },
    "20261108": {
-    "(direct)": 3,
-    "(not set)": 1
+    "(direct)": 14,
+    "google": 3,
+    "(not set)": 1,
+    "l.threads.com": 1
    }
   }
  }

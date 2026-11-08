@@ -17456,5 +17456,74 @@
     "callout": null
    }
   }
+ },
+ "306717": {
+  "at": "2026-11-08 15:38",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306717.html",
+  "source": "채용공고(2027년 상반기 정규직_원무직).pdf (글자 없는 PDF → 이미지 6조각)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고등학교 성적평점 또는 검정고시 평균점수로 서류전형을 평가해요",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "교육(고교성적 50점)+자격(한국사·국어·IT·외국어 50점)",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": "11월 30일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접전형",
+     "date": "12월 3일(목)",
+     "desc": "채용예정 직무수행능력 및 적격성 심사",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "실무면접전형 결과발표",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "notice",
+     "label": "온라인 인적성검사",
+     "date": "12월 10일~13일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종면접전형",
+     "date": "12월 15일(화)",
+     "desc": "실무면접 40%+최종면접 60% 반영, 인적성검사 참고",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "신체검사(12/23) 후 2027.1.1자 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (원무직)",
+    "text": "TOEIC, TEPS, OPIc, J.P.T, 新HSK 등 외국어 성적을 최대 20점까지 반영해요.",
+    "highlight": "20점"
+   },
+   "written": null
+  }
  }
 }
