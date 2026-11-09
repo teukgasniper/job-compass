@@ -91,6 +91,11 @@
                   · 계정당 하루 ⚠️ 마감 글 URGENT_DAILY_MAX(1)개까지 (수동·일반 합산)
                   · 마감 글 차례 URGENT_EVERY 3 → 5 (최근 4건에 마감 글이 없을 때만)
                   · 마감 글(2순위)이 아니면 마감형 조합을 안 쓰고, 훅이 ⚠️로 오면 📍로 바꿈
+[2026-11-09 수정] 마감까지 5일 넘게 남은 공고는 훅·클로저에 마감 언급 금지 (HOOK_DEADLINE_DAYS)
+                  · "📍11월 19일 목요일 접수 마감"(D-10) 같은 훅이 조회 86 — 마감이 멀면 마감은 후킹 소재가 아님
+                  · 리스트 5번 마감일은 그대로, 훅·클로저에서만 날짜·요일·D-day·'열흘 안에' 등 차단 (코드 검사 + 프롬프트)
+                  · 훅 팩트 종류 '마감 요일'은 D-5 이내일 때만 인정
+                  · '(체험형-장애)'처럼 괄호 속 '장애'로 표시된 장애인 전형도 제외 (부산보훈병원 청년인턴 사례)
 """
 import os, re, io, json, time, base64, random, subprocess, datetime as dt
 from urllib.parse import urljoin, urlparse, quote
@@ -120,6 +125,7 @@ LAST_DDAY = 2            # [2026-10-21] 쓰레드는 마감 D-2까지만 — D-1
 URGENT_DAYS = int(os.environ.get("URGENT_DAYS", "3") or 3)      # [2026-10-21] 마감 D-2 ~ D-N(3) = 2순위 마감 임박, 전체 계정 통틀어 공고당 1번
 URGENT_EVERY = int(os.environ.get("URGENT_EVERY", "5") or 5)    # [2026-10-15] 최근 N건 안에 마감 임박 글이 없으면 1순위보다 먼저 ([2026-11-07] 3→5)
 URGENT_DAILY_MAX = int(os.environ.get("URGENT_DAILY_MAX", "1") or 1)   # [2026-11-07] 계정당 하루(KST) ⚠️ 마감 글 최대 개수 (수동·일반 공고 합산)
+HOOK_DEADLINE_DAYS = int(os.environ.get("HOOK_DEADLINE_DAYS", "5") or 5)   # [2026-11-09] 마감 D-N 이내일 때만 훅·클로저에 마감 언급 허용
 # [2026-10-19] 긴급형(⚠️) 쏠림 방지 — 최근 URGENT_WINDOW건 안에 긴급형이 URGENT_MAX개 이상이면 이번엔 긴급형 금지
 #              (10/17~19 세 계정 글의 절반 이상이 ⚠️ 마감 글 → 같은 톤 반복으로 조회수 급락)
 URGENT_WINDOW = int(os.environ.get("URGENT_WINDOW", "3") or 3)
@@ -357,7 +363,7 @@ def eligible(job: dict, today: dt.date) -> bool:
     # [2026-10-02] 지원 대상이 제한된 공고(보훈·장애인 전형)는 일반 취준생 수요가 적어 제외
     # '보훈병원·보훈요양원·한국보훈복지의료공단' 같은 기관 이름은 제한 공고가 아니므로 제외 대상에서 뺌
     # [2026-10-19] 단, 일반 전형이 섞인 혼합 공고('실무직(보훈제한경쟁 포함)', '일반정규직' 등)는 통과 — 한국수산자원공단 79명 사례
-    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title) \
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애(인)?\s*(전형|전용|제한|직원\s*채용|채용)|장애인만|[-(·/\[]\s*장애(인)?\s*[)\]]", title) \
             and not MIXED_TRACK_RE.search(title):
         return False
     # [2026-10-14] 요양보호사(요양보호직)는 자격증 필수 + 실제 지원층이 40~60대라 20~30대 취준생 대상이 아님 → 제외
@@ -1092,7 +1098,7 @@ COMBOS = [
     # 취향·지역 저격 15%
     {"cat": "sniper", "person": "—", "structure": "취향 저격", "emoji": "📍",
      "desc": "하는 일과 진짜 연결되는 취향 하나로 저격 (예: 배달직이면 '오토바이 타는 거 좋아하면', 바다 근무면 '바다 보면서 일하고 싶으면', "
-             "전시·해설이면 '전시 보는 거 좋아하면'). 2줄에 지역·기관 종류·고용형태·마감 요일 중 2개 이상. 억지 연결 금지. "
+             "전시·해설이면 '전시 보는 거 좋아하면'). 2줄에 지역·기관 종류·고용형태(마감 5일 이내면 마감 요일도) 중 2개 이상. 억지 연결 금지. "
              "베스트: '⚠️오토바이 타는 거 좋아하면 / 이번 주 금요일까지 대구 우체국 봐'(3.2만)"},
     {"cat": "sniper", "person": "—", "structure": "지역 저격", "emoji": "📍",
      "desc": "그 지역 사는 사람을 바로 부르기 + 구체 조건 (예: '대구·경북 사는 사람이면 / 정규직 111명 공채 이번 주에 닫힘'). "
@@ -1172,6 +1178,8 @@ SYSTEM_PROMPT = """너는 한국 채용정보 쓰레드 계정의 후킹글 작�
 [최상위 원칙 — 2026-10-22 실측]
 - 훅 2줄만 읽어도 "뭔 자리인지" 보여야 한다. 고용형태(정규직·무기계약·공무직·정년) / 열린 조건(학력무관·나이무관·필기 없음·신입만) /
   인원 / 연봉 / 지역·출근 장면 / 기관 종류(공기업·공단·공공기관·정부기관·청사·국가 기념관·우체국) / 마감 요일 중 **3가지 이상**을 훅에 넣는다.
+- [2026-11-09] 마감 요일·날짜는 마감까지 5일 이내일 때만 훅 소재. 마감이 멀면(D-6 이상) 훅·클로저에 마감 얘기를 아예 하지 않는다
+  ("📍11월 19일 목요일 접수 마감 / 부산 보훈병원 청년인턴 공고"(D-10) 조회 86). 마감일은 리스트 5번에만.
 - 감정만 있는 훅은 같은 공고에서 수십 배 진다: "이 공고만 안 보고 넘어갈 뻔했음"(4.6천) vs 수동 "정부청사 + 공무직 + 학력무관 + 정년까지"(3.7만),
   "올해는 지원서 하나만 끝까지 붙잡기로 했음"(462) vs "충남 공기업 정규직 6명 / 신입만 뽑는 공고임"(6.1만),
   "⚠️접수 마감이 코앞으로 다가옴"(511) vs "성별·학력·경력·나이 다 안 보는 / 공공기관 공무직 12명"(10.1만),
@@ -1533,6 +1541,10 @@ def build_user_prompt(job, inst, d_left, combo, post_text, recent_hooks, urgent=
                      + " / ".join(angles))
         lines.append("- 정년 문장은 매번 새로 쓸 것: '포기하려던 자리가 정년 보장 무기계약직이었던 거임' 같은 예시 문장·문장 틀을 그대로 가져오지 말고, "
                      "최근 발행한 훅·클로저에 나온 정년 표현과 단어 배치·구조가 겹치지 않게. 4개 후보끼리도 정년 표현을 서로 다르게")
+    if not urgent and (job.get("always") or d_left > HOOK_DEADLINE_DAYS):   # [2026-11-09] 마감이 멀면 마감은 후킹 소재 아님
+        lines.append(f"- [2026-11-09] 마감까지 {'정해진 기한 없음' if job.get('always') else f'{d_left}일'} 남음 → 훅·클로저에 마감일·요일·D-day·"
+                     "'열흘 안에'·'이번 주'·'접수 닫힘'·'마감' 같은 마감 언급 금지 (멀리 있는 마감은 조회수를 떨어뜨림). "
+                     "마감일은 리스트 5번에만 쓰고, 훅은 고용형태·열린 조건·인원·연봉·지역·기관 종류·하는 일로 만들 것")
     if urgent:                                    # [2026-10-15] 2순위 마감 임박 — 후보 4개 전부 ⚠️ + 마감 강조
         when = {1: "내일 마감", 2: "모레 마감"}.get(d_left, f"D-{d_left}")
         lines.append(f"- [마감 임박 글] 이 공고는 {when}(D-{d_left}, {end.month}월 {end.day}일)임. 후보 4개 전부 훅 맨 앞 이모지는 ⚠️ "
@@ -1659,9 +1671,16 @@ HOOK_FACT_CATS = {
 HOOK_FACT_MIN = int(os.environ.get("HOOK_FACT_MIN", "3") or 3)
 
 
-def hook_fact_cats(hook: str) -> list:
+def hook_fact_cats(hook: str, deadline_ok: bool = True) -> list:
     h = re.sub(r"^(📍|⚠️|⚠)", "", hook or "")
-    return [k for k, rx in HOOK_FACT_CATS.items() if re.search(rx, h)]
+    return [k for k, rx in HOOK_FACT_CATS.items() if re.search(rx, h) and (deadline_ok or k != "마감 요일")]
+
+
+# [2026-11-09] 훅·클로저의 마감 언급 — 마감까지 HOOK_DEADLINE_DAYS일 넘게 남았으면 탈락
+DEADLINE_TALK_RE = re.compile(
+    r"마감|접수\s*(닫|끝|종료|마무리)|닫힘|닫혀|닫힌다|문\s*닫|[월화수목금토일]요일\s*(까지|마감|이면|되면|밤|오후|자정|에\s*(접수|마감|닫|끝))|\d{1,2}\s*월\s*\d{1,2}\s*일|"
+    r"(?<![\d.])\d{1,2}/\d{1,2}(?![\d/])|D\s*-\s*\d|디데이|막차|열흘|보름|일주일\s*(안|남|뒤|후|이내)|\d+\s*일\s*(남|안에|뒤|후|이내|만에)|"
+    r"이번\s*주|다음\s*주|며칠\s*(남|안)|나흘|사흘|이틀|모레|내일까지|오늘까지|시간\s*없|서두르|놓치면")
 
 
 URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막차|닫힘|닫혀|끝남|끝나|이번\s*주|며칠|이틀|하루")
@@ -1669,8 +1688,10 @@ URGENT_HOOK_RE = re.compile(r"마감|D-?\s*\d|디데이|내일|모레|오늘|막
 
 def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kind: bool = False, gongmu: bool = False,
                        urgent: bool = False, private: bool = False, contract: bool = False, few: bool = False,
-                       hide_contract: bool = False, tenure: bool = False, recent_frames: set = None):
-    """후보 1개 규격 검사 → (결과, 오류)"""
+                       hide_contract: bool = False, tenure: bool = False, recent_frames: set = None,
+                       deadline_ok: bool = True):
+    """후보 1개 규격 검사 → (결과, 오류)
+    deadline_ok=False: 마감까지 HOOK_DEADLINE_DAYS일 넘게 남음 → 훅·클로저 마감 언급 금지 [2026-11-09]"""
     hook = (d.get("hook") or "").replace("\\n", "\n").strip()
     if urgent and hook:                           # [2026-10-15] 마감 임박 글은 ⚠️ 강제 (📍로 왔으면 바꿔 끼움)
         hook = "⚠️" + re.sub(r"^(📍|⚠️|⚠)\s*", "", hook)
@@ -1695,9 +1716,13 @@ def validate_candidate(d: dict, inst: str = "", no_edu: bool = False, public_kin
         return None, "마감 임박 글인데 훅에 마감 강조 없음"
     if hook.startswith("⚠") and not URGENT_SUBSTANCE_RE.search(re.sub(r"^(⚠️|⚠)", "", hook)):   # [2026-10-19]
         return None, "긴급형 훅에 알맹이 없음 (마감만 말함)"
+    if not urgent and not deadline_ok:            # [2026-11-09] 마감이 먼 공고 — 훅·클로저에 마감 언급 금지
+        m = DEADLINE_TALK_RE.search(hook) or DEADLINE_TALK_RE.search(closer)
+        if m:
+            return None, f"마감이 멀어서 훅·클로저 마감 언급 금지 ('{m.group(0)}')"
     # [2026-10-22] 훅에 '뭔 자리인지' — 팩트 종류 3가지 이상 (민간·계약직은 학력·고용형태를 못 써서 2가지)
     need = HOOK_FACT_MIN - (1 if (private or hide_contract and contract) else 0)
-    got = hook_fact_cats(hook)
+    got = hook_fact_cats(hook, deadline_ok or urgent)
     if len(got) < need:
         return None, f"훅에 팩트 부족 ({len(got)}종: {'·'.join(got) or '없음'} — {need}종 이상 필요)"
     dup = frames_in([hook + "\n" + closer]) & (recent_frames or set())   # [2026-10-19] 최근 글과 같은 문장 틀
@@ -1834,7 +1859,8 @@ def generate(job, inst, d_left, combo, post_text, recent_hooks, urgent=False):
                                         urgent, is_private(job),
                                         contract_only(job), few_heads(job) or (bool(hire_parts(job)[0]) and hire_parts(job)[1]),   # [2026-10-22] 정규직·계약직 섞인 공고도 인원 언급 금지
                                         hire_parts(job)[1], tenure_job(job),
-                                        recent_frames)
+                                        recent_frames,
+                                        deadline_ok=(not job.get("always") and d_left <= HOOK_DEADLINE_DAYS))   # [2026-11-09]
             if r:
                 valid.append(r)
             else:
