@@ -17628,5 +17628,48 @@
     "callout": null
    }
   }
+ },
+ "GJ-307812": {
+  "at": "2026-11-09 16:06",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307812.html",
+  "source": "2026년도 제6회 공무직근로자(보호계호요원) 채용 공고.hwpx",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": "이 채용은 남성만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "소양 60점, 경력 20점, 무도·응급구조사 자격증 각 10점",
+     "note": "10배수 이하 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 25일(수)",
+     "desc": "정신자세·전문지식·의사표현·예의·발전가능성 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 27일(금)",
+     "desc": "신원조사 후 채용후보자 등록"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
