@@ -17671,5 +17671,111 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-306970": {
+  "at": "2026-11-10 04:59",
+  "url": "https://hiring03.ddolbestory.com/2026/10/gj-306970.html",
+  "source": "[국가청렴권익교육원 공고 제2026-6호] 국가청렴권익교육원 공무직 근로자(일반경비) 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 23일(월)",
+     "desc": "이력서·자기소개서·직무수행계획서 등 적격성 심사(100점)",
+     "note": "4배수 이상 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 25일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 8일(화)",
+     "desc": "5개 평정요소를 상-중-하로 심사",
+     "note": "상 개수 많은 순 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 15일(화)",
+     "desc": "결격사유조회·신체검사 결과 확인 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-183681": {
+  "at": "2026-11-10 04:59",
+  "url": "https://hiring03.ddolbestory.com/2026/11/hyundai-wk183681.html",
+  "source": "기업 채용 페이지 이미지 9조각 (https://recruit.ehyundai.com/recruit-info/announcement/view.nhd?hireId=2026624&regCoCd=HDEHR)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 학사 이상 학위 소지자, 전 직무 전공무관",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "10월~11월",
+     "desc": "자기소개서 전형",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI 역량면접",
+     "date": "12월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 실무면접",
+     "date": "12월",
+     "desc": null,
+     "note": "글로벌인재는 별도 외국어면접 추가"
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 인턴실습",
+     "date": "12월~1월",
+     "desc": "5주간 인턴실습 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 2차 임원면접",
+     "date": "2월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 — 교육 및 입사",
+     "date": "2월",
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

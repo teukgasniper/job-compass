@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09 16:06",
+ "updated": "2026-11-10 04:59",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -245,9 +245,14 @@
     724
    ],
    "20261109": [
-    1579,
-    1002,
-    907
+    5440,
+    3620,
+    3343
+   ],
+   "20261110": [
+    112,
+    71,
+    67
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -335,6 +340,11 @@
     1,
     1,
     0
+   ],
+   "20261109": [
+    1,
+    1,
+    1
    ]
   },
   "hiring03.ddolbestory.com": {
@@ -579,9 +589,14 @@
     423
    ],
    "20261109": [
-    1180,
-    558,
-    526
+    4130,
+    1944,
+    1861
+   ],
+   "20261110": [
+    125,
+    45,
+    45
    ]
   },
   "ac.ddolbestory.com": {
@@ -786,9 +801,14 @@
     19
    ],
    "20261109": [
-    23,
-    18,
-    14
+    194,
+    119,
+    104
+   ],
+   "20261110": [
+    1,
+    1,
+    1
    ]
   }
  },
@@ -1183,12 +1203,19 @@
     "(not set)": 1
    },
    "20261109": {
-    "(direct)": 1365,
-    "(not set)": 134,
-    "l.threads.com": 72,
-    "m.search.naver.com": 3,
-    "naver": 3,
-    "google": 2
+    "(direct)": 4854,
+    "(not set)": 306,
+    "l.threads.com": 235,
+    "m.search.naver.com": 22,
+    "naver": 11,
+    "google": 9,
+    "l.instagram.com": 2,
+    "m.facebook.com": 1
+   },
+   "20261110": {
+    "(direct)": 99,
+    "(not set)": 12,
+    "l.threads.com": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1264,6 +1291,9 @@
     "(direct)": 1
    },
    "20261026": {
+    "(direct)": 1
+   },
+   "20261109": {
     "(direct)": 1
    }
   },
@@ -1644,12 +1674,17 @@
     "naver": 3
    },
    "20261109": {
-    "(direct)": 941,
-    "(not set)": 174,
-    "l.threads.com": 48,
-    "m.search.naver.com": 8,
-    "google": 7,
-    "naver": 2
+    "(direct)": 3387,
+    "(not set)": 493,
+    "l.threads.com": 161,
+    "google": 32,
+    "m.search.naver.com": 31,
+    "naver": 26
+   },
+   "20261110": {
+    "(direct)": 113,
+    "(not set)": 11,
+    "l.threads.com": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -1857,11 +1892,14 @@
     "l.threads.com": 1
    },
    "20261109": {
-    "(direct)": 17,
-    "google": 2,
-    "m.search.naver.com": 2,
-    "(not set)": 1,
-    "naver": 1
+    "(direct)": 154,
+    "(not set)": 16,
+    "m.search.naver.com": 11,
+    "google": 7,
+    "naver": 6
+   },
+   "20261110": {
+    "(direct)": 1
    }
   }
  }
