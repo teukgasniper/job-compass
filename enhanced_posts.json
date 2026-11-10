@@ -18070,5 +18070,121 @@
    "language": null,
    "written": null
   }
+ },
+ "306662": {
+  "at": "2026-11-11 06:24",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kirams-306662.html",
+  "source": "2027년도 신규간호사 공개채용 공고.pdf",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "간호사 면허소지자 또는 2027년 간호(학)과 졸업예정자만 지원 가능해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자기소개서(20점)+어학성적(10점) 평가",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "12월 5일(토)",
+     "desc": "간호학 50문항(50분), 원점수 60점 미만 과락",
+     "note": "3배수 선발, 1·2차 합산"
+    },
+    {
+     "type": "notice",
+     "label": "인성검사 실시",
+     "date": "12월말"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종면접",
+     "date": "12월말",
+     "desc": "면접 원점수 60점 미만 과락",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2027년 1월 초",
+     "desc": "1·2·3차전형 합산점수 고득점자 순 선발",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (간호직)",
+    "text": "토익 600점 이상 제출이 필요하며, 점수에 따라 7~10점을 배점해요.",
+    "highlight": "600점 이상"
+   },
+   "written": {
+    "summary": "필기시험은 간호학 50문항을 50분간 봐요.",
+    "highlight": "50문항",
+    "subjects": [
+     {
+      "name": "간호학",
+      "count": "50문항",
+      "scope": null,
+      "note": "원점수 60점 미만 과락",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "GJ-307972": {
+  "at": "2026-11-11 06:24",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307972.html",
+  "source": "261106 2026년 공무직 근로자 채용 공고문.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 19일(목)",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "11월 24일(화)",
+     "desc": "직무수행 능력 및 적격성 검증",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "11월 26일(목)",
+     "desc": "개별 통보",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
