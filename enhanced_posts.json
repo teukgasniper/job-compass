@@ -17777,5 +17777,68 @@
    "language": null,
    "written": null
   }
+ },
+ "306433": {
+  "at": "2026-11-10 12:50",
+  "url": "https://hiring03.ddolbestory.com/2026/10/job-306433.html",
+  "source": "1. [채용공고 2026-15호] 공고문.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "청년정책연구 부연구위원 1명, 청소년정책연구 부연구위원 1명을 뽑아요.",
+    "columns": [
+     "청년정책연구",
+     "청소년정책연구"
+    ],
+    "rows": [
+     {
+      "label": "부연구위원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "박사",
+    "text": "관련분야 박사학위 소지자 또는 경력 5년 이상(연구실적 300% 이상)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 넷째 주",
+     "desc": "교육이수경력·전공적합성·경력/경험·연구실적·자기소개서(100점)",
+     "note": "평균 80점 이상, 4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "12월 1일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 논문발표 및 면접심사",
+     "date": "12월 둘째 주",
+     "desc": "논문발표심사(50점)+면접심사(50점)",
+     "note": "평균 80점 이상 합격"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 21일(월)",
+     "desc": "신원조회 결과 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
