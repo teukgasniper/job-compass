@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11 06:24",
+ "updated": "2026-11-11 10:27",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -250,14 +250,14 @@
     3363
    ],
    "20261110": [
-    6609,
-    4425,
-    4051
+    6745,
+    4445,
+    4081
    ],
    "20261111": [
-    428,
-    349,
-    326
+    1079,
+    722,
+    688
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -599,14 +599,14 @@
     1875
    ],
    "20261110": [
-    4677,
-    2182,
-    2087
+    4759,
+    2186,
+    2090
    ],
    "20261111": [
-    320,
-    183,
-    181
+    890,
+    385,
+    376
    ]
   },
   "ac.ddolbestory.com": {
@@ -821,9 +821,9 @@
     52
    ],
    "20261111": [
-    1,
-    1,
-    1
+    5,
+    6,
+    4
    ]
   }
  },
@@ -1228,9 +1228,9 @@
     "m.facebook.com": 1
    },
    "20261110": {
-    "(direct)": 5853,
-    "(not set)": 444,
-    "l.threads.com": 278,
+    "(direct)": 5949,
+    "(not set)": 481,
+    "l.threads.com": 281,
     "naver": 16,
     "google": 8,
     "m.search.naver.com": 7,
@@ -1238,10 +1238,14 @@
     "m.keep.naver.com": 1
    },
    "20261111": {
-    "(direct)": 337,
-    "(not set)": 68,
-    "l.threads.com": 22,
-    "m.search.naver.com": 1
+    "(direct)": 912,
+    "(not set)": 114,
+    "l.threads.com": 47,
+    "m.search.naver.com": 2,
+    "facebook.com": 1,
+    "m.facebook.com": 1,
+    "m.naver.com": 1,
+    "naver": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1708,8 +1712,8 @@
     "(not set)": 4
    },
    "20261110": {
-    "(direct)": 3685,
-    "(not set)": 715,
+    "(direct)": 3708,
+    "(not set)": 774,
     "l.threads.com": 174,
     "naver": 57,
     "google": 31,
@@ -1717,9 +1721,10 @@
     "keep.google.com": 1
    },
    "20261111": {
-    "(direct)": 172,
-    "(not set)": 124,
-    "l.threads.com": 24
+    "(direct)": 590,
+    "(not set)": 254,
+    "l.threads.com": 44,
+    "naver": 2
    }
   },
   "ac.ddolbestory.com": {
@@ -1940,6 +1945,8 @@
     "m.search.naver.com": 7
    },
    "20261111": {
+    "(direct)": 3,
+    "(not set)": 1,
     "m.search.naver.com": 1
    }
   }
