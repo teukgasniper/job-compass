@@ -18186,5 +18186,207 @@
    "language": null,
    "written": null
   }
+ },
+ "306876": {
+  "at": "2026-11-11 20:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306876.html",
+  "source": "[공고] 2027년 한국사회적기업진흥원 기능직(총무·비서) 및 기간제근로자 채용공고.png (이미지 공고문 → 20조각)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 기능직(총무·비서) 1명, 사업전문직(영문에디터) 1명, 기간제근로자 7명을 더해 총 9명을 뽑아요.",
+    "columns": [
+     "총무·비서",
+     "영문에디터",
+     "공공행정지원(경기)",
+     "공공행정지원(광주)",
+     "공공행정지원(대구)",
+     "공공행정지원(부산)",
+     "창업성장매니저",
+     "도시재생"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       2,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "경험·경력기술서, 자기소개서 등 블라인드 서류심사",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 4일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 11일~12일",
+     "desc": "상황면접·경험면접 등, 인성검사 결과 참고자료 활용",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "임용 후보자 등록 후 2027.1.1. 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184161": {
+  "at": "2026-11-11 20:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-184161.html",
+  "source": "기업 채용 페이지 이미지 3조각 (https://recruit.cuckoo.co.kr/recruit/BASE/RecruitPost/view.do?hmCode=HM010&seq=240)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 및 경력 무관",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 지원서접수",
+     "date": "11월 2일~22일",
+     "desc": "홈페이지 접수(recruit.cuckoo.co.kr)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": null,
+     "desc": "서류 전형 합격자에 한해 개별 통지",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-307267": {
+  "at": "2026-11-11 20:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307267.html",
+  "source": "대학회계직원 공무직(사무원) 공개경쟁채용시험 공고문.hwp",
+  "parts": [
+   "language",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사(4년제) 학위 이상 취득자 또는 2027년 2월 졸업예정자",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "필수 응시자격, 자기소개서·직무수행계획서, 우대요건 서면심사",
+     "note": "8배수 초과 시 8배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기시험",
+     "date": "11월 26일(목)",
+     "desc": "서술형 답안으로 문제분석·해결력·기획력 평가",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기시험 합격자 발표",
+     "date": "12월 3일(목)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접시험",
+     "date": "12월 10일(목)",
+     "desc": "정신자세·전문지식·의사표현·예의품행·창의력 등 종합평가",
+     "note": "'상' 개수 많은 순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "면접시험 합격자 발표",
+     "date": "12월 14일(월)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 21일(월)",
+     "desc": "2027년 1월 1일자 임용 예정",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 600점, 토플(IBT) 68점, 텝스 228점, 토익스피킹 110점, OPIc IM1, 지텔프 Level2 50점 중 하나 이상이면 돼요.",
+    "highlight": "토익 600점"
+   },
+   "written": {
+    "summary": "필기는 제시된 주제에 대해 서술형 답안을 작성해 문제분석·해결력·기획력을 평가해요.",
+    "highlight": "서술형 답안",
+    "subjects": [],
+    "callout": null
+   }
+  }
  }
 }
