@@ -18388,5 +18388,234 @@
     "callout": null
    }
   }
+ },
+ "GJ-307601": {
+  "at": "2026-11-12 04:50",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307601.html",
+  "source": "[국립부경대학교] 대학공무직(국립대학육성사업) 채용공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "사무원 5명(기획전략과 1명, 지속가능성과관리센터 1명, 자유전공길라잡이센터 2명, 국제교류본부 1명)과 전임연구원 1명을 뽑아요.",
+    "columns": [
+     "기획전략과",
+     "지속가능성과관리센터",
+     "자유전공길라잡이센터",
+     "국제교류본부",
+     "교육역량혁신센터"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1,
+       2,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "채용인원 최다 분야(자유전공길라잡이센터) 기준 학사학위 소지자 요구",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 25일(수)",
+     "desc": "자기소개서·직무수행계획서 및 우대사항 심사",
+     "note": "선발예정인원 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 30일(월)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 3일(목)",
+     "desc": "인성·직무수행능력 등 5개 요소 종합평가",
+     "note": "외부위원 1/2 이상 참여"
+    },
+    {
+     "type": "notice",
+     "label": "채용점검위원회",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "면접 성적 상위자 중 점검위 확인 후 결정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184696": {
+  "at": "2026-11-12 04:50",
+  "url": "https://hiring03.ddolbestory.com/2026/11/amore-wk184696.html",
+  "source": "기업 채용 페이지 (https://careers.apgroup.com/job/%EC%98%A4%EC%82%B0-%EC%8B%A0%EC%9E%85-26%EB%85%84%EB%8F%84-%ED%95%98%EB%B0%98%EA%B8%B0-AMOREPACIFIC-%EC%A0%84%EC%9E%84%EC%A7%81-%EC%8B%A0%EC%9E%85%EC%B1%84%EC%9A%A9_%EB%B7%B0%ED%8B%B0%EC%A0%9C%EC%A1%B0%ED%8C%80_%EC%A0%9C%EC%A1%B0%28%EC%98%A4%EC%82%B0/1368061066/)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "자격요건: 학력 전문학사",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": null,
+     "desc": "온라인 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 인턴실습",
+     "date": null,
+     "desc": "최대 3개월 실습",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 2차면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306875": {
+  "at": "2026-11-12 04:50",
+  "url": "https://hiring03.ddolbestory.com/2026/11/snubh-306875.html",
+  "source": "채용공고(게시용)_업무지원직.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "업무지원직(신입) 총 66명을 외래, 병동, 린넨·세척, 주차·보안 등 7개 직무로 나눠 뽑아요.",
+    "columns": [
+     "외래",
+     "병동",
+     "린넨·멸균·세척·수선",
+     "주차·보안·환자이송 등",
+     "시설유지보수(목공)",
+     "시설유지보수(기계)",
+     "시설유지보수(환경처리)"
+    ],
+    "rows": [
+     {
+      "label": "업무지원직(신입)",
+      "values": [
+       3,
+       50,
+       5,
+       2,
+       1,
+       4,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 11일~11월 20일",
+     "desc": "온라인 지원서 접수 및 서류전형(응시 지원서로 전형)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 30일(월) 예정"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 직무적성검사",
+     "date": "11월 30일~12월 1일",
+     "desc": "온라인으로 실시, 총점 50점 이상 합격(미화는 30점 이상)",
+     "note": "합격자 배수 이내 고득점순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "직무적성검사 합격자 발표",
+     "date": "12월 7일(월) 예정"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 14일(월) 예정",
+     "desc": "필요시 필기·실기 등 실무평가 병행",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접전형 합격자 발표",
+     "date": "12월 중 예정"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 신체검사",
+     "date": "12월 중 예정",
+     "desc": "면접전형 합격자에 한해 실시"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 온라인 직무적성검사로 봐요. 총점 50점 이상이면 합격 기준을 충족해요(미화 직무는 30점 이상).",
+    "highlight": "50점 이상",
+    "subjects": [],
+    "callout": null
+   }
+  }
  }
 }
