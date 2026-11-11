@@ -6144,6 +6144,23 @@
    "thread_id": "18134407456823025",
    "comment_id": "17877667752586328",
    "at": "2026-11-11 06:19"
+  },
+  {
+   "id": "MN-HYUNDAICARD-01",
+   "instNm": "현대카드",
+   "title": "[현대카드] 2026 계약직 채용 — 여의도 본사 5개 팀 (챗봇·소비자보호·Collection·Fraud)",
+   "combo_idx": 7,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️14일 토요일 접수 마감\n연봉 3,500만원대 여의도 카드사",
+   "closer": "여의도 본사 책상 하나, 이번 주 안 넣으면 자리 닫힘",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18425273989152784",
+   "comment_id": "17990355201084265",
+   "at": "2026-11-11 09:28"
   }
  ],
  "logo_tried": {
