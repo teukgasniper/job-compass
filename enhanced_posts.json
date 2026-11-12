@@ -18990,5 +18990,181 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-308145": {
+  "at": "2026-11-13 05:22",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308145.html",
+  "source": "국립경주박물관 공무직(소장품관리 및 보존처리) 채용 공고문.hwpx",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "소장품관리 1명, 보존처리 1명을 뽑아요.",
+    "columns": [
+     "소장품관리",
+     "보존처리"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "관련분야 학사학위 이상 또는 전문학사+1년 등 관련 경력자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 25일~27일",
+     "desc": "자소서·직무수행계획서, 경력·학위·자격증 평가",
+     "note": "지원인원에 따라 3~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 합격자 발표",
+     "date": "12월 1일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "12월 9일(수) 예정",
+     "desc": "정신자세·전문지식·의사표현 등 5개 항목 평정",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "결격사유 조회 및 구비서류 제출 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184382": {
+  "at": "2026-11-13 05:22",
+  "url": "https://hiring03.ddolbestory.com/2026/11/sk-wk184382.html",
+  "source": "기업 채용 페이지 (https://www.skcareers.com/Recruit/Detail/R262432)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "자격요건(필수)에 고졸 이상 명시돼 있어요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — SKCT",
+     "date": null,
+     "desc": "SKCT 필기시험 진행",
+     "note": "응시일로부터 유효기간 4개월"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접(1차/2차)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 검진",
+     "date": null,
+     "desc": "채용검진 진행",
+     "note": "면접과 동시 진행 가능"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": "처우협의 후 입사일 협의 및 입사",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184489": {
+  "at": "2026-11-13 05:22",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-184489.html",
+  "source": "기업 채용 페이지 이미지 13조각 (https://kumhotire.recruiter.co.kr/career/jobs/133534)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "대부분 직무가 학사 이상 학력을 요구해요",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형(1·2차)",
+     "date": null,
+     "desc": "경력직은 PT면접 포함해서 진행돼요",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 평판조회·채용검진",
+     "date": null,
+     "desc": "경력직은 최종 합격후보자 대상 평판조회 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
