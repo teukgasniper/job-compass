@@ -18792,5 +18792,203 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-184690": {
+  "at": "2026-11-12 20:45",
+  "url": "https://hiring03.ddolbestory.com/2026/11/hanwha-wk184690.html",
+  "source": "기업 채용 페이지 이미지 12조각 (https://www.hanwhain.com/portal/apply/recruit/detail?rtSeq=20020)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 무관(단, 관련 전공자 및 경력 보유자 우대)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인적성 검사",
+     "date": null,
+     "desc": null,
+     "note": "6개월 이상 재직 계약직은 면제"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 실무 면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차 임원면접/신원조회",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "입사",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184647": {
+  "at": "2026-11-12 20:45",
+  "url": "https://hiring03.ddolbestory.com/2026/11/hyundai-wk184647.html",
+  "source": "기업 채용 페이지 (https://recruit.ehyundai.com/recruit-info/announcement/view.nhd?hireId=2026640&regCoCd=HDEHR)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 학사 학위 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI 역량면접",
+     "date": "11월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무면접",
+     "date": "12월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 인턴실습",
+     "date": "12월~1월",
+     "desc": "5주간 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 임원면접",
+     "date": "2월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종입사",
+     "date": "2월 4주차",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306568": {
+  "at": "2026-11-12 20:45",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306568.html",
+  "source": "제2026-3호 국립청소년인터넷드림마을 직원 모집.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "청소년상담복지(일반직 4급) 1명, 사업운영(일반직 5급) 1명을 뽑아요.",
+    "columns": [
+     "청소년상담복지(4급)",
+     "사업운영(5급)"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "상담분야 석사 또는 학사+경력 2년 이상(동등 자격 인정)",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "11월 23일(월)",
+     "desc": "정량(자격증·경력 등 60점)+정성(기술서·자소서 40점)",
+     "note": "5배수, 평균 60점 이상"
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 결과발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "12월 3일(목)",
+     "desc": "직무전문성·조직적합성·인성 및 태도 평가",
+     "note": "평균 80점 이상 합격"
+    },
+    {
+     "type": "notice",
+     "label": "적격여부심사(전력조회)",
+     "date": "12월 7일~10일"
+    },
+    {
+     "type": "notice",
+     "label": "채용점검위원회",
+     "date": "12월 11일(금)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "입사지원 홈페이지 확인(문자 안내)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
