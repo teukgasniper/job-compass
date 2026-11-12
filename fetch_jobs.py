@@ -44,6 +44,8 @@
                   수동 공고(MN-)가 있으면 같은 공고의 API 카드는 빼고 수동 카드만 남김 (원문 기준이라 더 정확)
                   병합 순서: 잡알리오 → 클린아이 → 공채속보 공공 → 나라일터(정보 부실이라 공공 중 마지막) → 공채속보 민간
                   다른 출처에 같은 기관(이름 느슨 비교)의 같은 마감일 또는 비슷한 제목 공고가 있으면 중복으로 버림
+[2026-11-12 수정] 수동 공고 ↔ API 카드 중복 판정 보강 — 원문 링크(srcUrl)가 같으면 같은 공고로 보고 API 카드 제거,
+                  기관명 느슨 비교에 '에스케이'→'SK' 추가 (MN-SKHYNIX-01 ↔ 공채속보 '에스케이하이닉스' WK-184921 중복 카드)
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -958,7 +960,7 @@ def remember(x, seen_items):
 
 
 # [2026-10-22] 공채속보 공공 공고 중복 판별용 — 출처마다 다른 기관명 표기를 맞춤
-INST_SPELL = {"케이피에스": "KPS", "엘에이치": "LH", "에스에이치": "SH", "케이티": "KT", "에이치디": "HD",
+INST_SPELL = {"에스케이": "SK", "케이피에스": "KPS", "엘에이치": "LH", "에스에이치": "SH", "케이티": "KT", "에이치디": "HD",
               "코레일": "한국철도공사", "케이알": "KR"}
 
 def _loose_inst(name):
@@ -1083,6 +1085,10 @@ merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_item
 def manual_same(x, y):
     """[2026-10-22] 수동 공고 x와 API 카드 y가 같은 공고인지 — 기관명 느슨 비교 + (같은 마감일 또는 제목 60% 이상)"""
     import difflib
+    # [2026-11-12] 원문 링크가 같으면 같은 공고 (SK하이닉스 MN-SKHYNIX-01 ↔ 공채속보 '에스케이하이닉스' WK-184921 중복 카드)
+    xs, ys = (x.get("srcUrl") or "").strip().rstrip("/"), (y.get("srcUrl") or "").strip().rstrip("/")
+    if xs and xs == ys:
+        return True
     xi, yi = _loose_inst(x.get("instNm")), _loose_inst(y.get("instNm"))
     if not xi or not yi or not (xi == yi or (min(len(xi), len(yi)) >= 4 and (xi in yi or yi in xi))):
         return False
