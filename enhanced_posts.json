@@ -19166,5 +19166,61 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-183888": {
+  "at": "2026-11-13 11:05",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kb-wk183888.html",
+  "source": "기업 채용 페이지 이미지 5조각 (https://kbsonsa.recruiter.co.kr/app/jobnotice/view?systemKindCode=MRS2&jobnoticeSn=270986)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "전문학사 학위 졸업 이상 (2027년 2월 졸업예정자 포함)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 현장평가",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

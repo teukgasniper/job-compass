@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13 05:22",
+ "updated": "2026-11-13 11:05",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -260,9 +260,14 @@
     5246
    ],
    "20261112": [
-    5475,
-    3859,
-    3513
+    5847,
+    4093,
+    3714
+   ],
+   "20261113": [
+    451,
+    297,
+    277
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -614,9 +619,14 @@
     2794
    ],
    "20261112": [
-    4014,
-    1920,
-    1840
+    4321,
+    2043,
+    1950
+   ],
+   "20261113": [
+    342,
+    162,
+    157
    ]
   },
   "ac.ddolbestory.com": {
@@ -836,9 +846,14 @@
     330
    ],
    "20261112": [
-    350,
-    219,
-    196
+    360,
+    228,
+    205
+   ],
+   "20261113": [
+    17,
+    10,
+    10
    ]
   }
  },
@@ -1263,14 +1278,21 @@
     "facebook.com": 1
    },
    "20261112": {
-    "(direct)": 5118,
-    "l.threads.com": 165,
-    "(not set)": 149,
-    "google": 19,
+    "(direct)": 5464,
+    "l.threads.com": 184,
+    "(not set)": 153,
+    "google": 22,
     "m.search.naver.com": 14,
     "naver": 8,
     "blogger.com": 1,
     "m.keep.naver.com": 1
+   },
+   "20261113": {
+    "(direct)": 416,
+    "l.threads.com": 20,
+    "(not set)": 13,
+    "google": 1,
+    "m.search.naver.com": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1754,14 +1776,20 @@
     "(not set)": 6
    },
    "20261112": {
-    "(direct)": 3527,
-    "(not set)": 305,
-    "l.threads.com": 101,
-    "google": 35,
+    "(direct)": 3792,
+    "(not set)": 326,
+    "l.threads.com": 116,
+    "google": 41,
     "m.search.naver.com": 22,
     "naver": 20,
     "blogger.com": 2,
     "l.instagram.com": 1
+   },
+   "20261113": {
+    "(direct)": 306,
+    "(not set)": 18,
+    "l.threads.com": 15,
+    "google": 3
    }
   },
   "ac.ddolbestory.com": {
@@ -1989,11 +2017,14 @@
     "blogger.com": 1
    },
    "20261112": {
-    "(direct)": 285,
+    "(direct)": 295,
     "(not set)": 36,
     "l.threads.com": 12,
     "naver": 9,
     "m.search.naver.com": 8
+   },
+   "20261113": {
+    "(direct)": 17
    }
   }
  }
