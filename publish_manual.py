@@ -30,6 +30,7 @@ GitHub Actions '수동 공고 발행' 버튼 전용. 예약 자동발행(publish
 [2026-10-16 추가] 3시간마다 예약 실행(manual_posts.yml) — MANUAL_HTML_ONLY=true면 HTML 파일 있는 공고만 발행
   (한도에 걸려 못 올린 글을 버튼 없이 이어서 올림. Claude 자동 작성은 버튼으로 눌렀을 때만)
   → 예약 실행에서 새로 올린 글이 없으면 저장·배포 단계를 건너뜀 (GITHUB_OUTPUT changed=false)
+[2026-11-13 수정] 묶음 수동 카드의 absorbSrcUrls(원문 링크 목록)와 같은 API 카드는 카드 반영 때 바로 뺌 (삼성그룹 4/5급 MN-SAMSUNG-01)
 
 실행
   python publish_manual.py                    # 새 공고 전부
@@ -51,7 +52,7 @@ CHANGED_FILE = ".manual_changed.json"   # 이번에 바꾼 공고번호 → save
 WEB_SEARCH = os.environ.get("MANUAL_WEB_SEARCH", "1") != "0"   # 재료 없을 때 Claude 웹 검색 사용
 UA = {"User-Agent": "Mozilla/5.0 (job-compass manual)"}
 GENERIC_SRC = ("toss.im/career/jobs",)                          # 목록 페이지 = 재료로 못 씀
-CARD_SKIP = ("detail", "post_url", "post_id", "manual_post")      # 카드(jobs.json)에 안 싣는 입력 칸
+CARD_SKIP = ("detail", "post_url", "post_id", "manual_post", "absorbSrcUrls")      # 카드(jobs.json)에 안 싣는 입력 칸
 MANUAL_HTML_DIR = "manual_posts"                                  # [2026-10-16] 직접 쓴 강화 본문 HTML 폴더 (공고번호.html)
 MANUAL_MARK = '<span data-manual-enhanced="1" style="display:none"></span>'   # 본문강화 건너뛰기 표시 (enhance_posts.py와 같은 값)
 MANUAL_LABEL = "수동보강"
@@ -96,6 +97,12 @@ def live_manual(today_str):
 def sync_cards(data, manual):
     """jobs.json의 수동 공고를 manual_jobs.json 기준으로 교체 (API 공고와 겹치면 API 쪽 유지)"""
     api_jobs = [j for j in data["result"] if not j.get("_manual") and not str(j.get("recrutPblntSn", "")).startswith("MN-")]
+    # [2026-11-13] 묶음 수동 카드(absorbSrcUrls)가 흡수하는 API 카드는 바로 뺌 — fetch_jobs.py add_manual과 같은 기준
+    absorb = {(u or "").strip().rstrip("/") for m in manual for u in (m.get("absorbSrcUrls") or [])}
+    if absorb:
+        before = len(api_jobs)
+        api_jobs = [j for j in api_jobs if (j.get("srcUrl") or "").strip().rstrip("/") not in absorb]
+        print(f"[카드] 묶음 수동 카드가 흡수한 API 카드 {before - len(api_jobs)}건 제외")
     keys = {dedup_key(j.get("instNm"), j.get("recrutPbancTtl")) for j in api_jobs}
     add = [m for m in manual if dedup_key(m.get("instNm"), m.get("recrutPbancTtl")) not in keys]
     data["result"] = api_jobs + [{k: v for k, v in m.items() if k not in CARD_SKIP} for m in add]

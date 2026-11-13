@@ -46,6 +46,8 @@
                   다른 출처에 같은 기관(이름 느슨 비교)의 같은 마감일 또는 비슷한 제목 공고가 있으면 중복으로 버림
 [2026-11-12 수정] 수동 공고 ↔ API 카드 중복 판정 보강 — 원문 링크(srcUrl)가 같으면 같은 공고로 보고 API 카드 제거,
                   기관명 느슨 비교에 '에스케이'→'SK' 추가 (MN-SKHYNIX-01 ↔ 공채속보 '에스케이하이닉스' WK-184921 중복 카드)
+[2026-11-13 수정] 수동 카드에 absorbSrcUrls(원문 링크 목록)를 적으면 그 링크의 API 카드도 함께 빼서 묶음 카드 하나만 남김
+                  (삼성그룹 4/5급 신입 — 호텔신라·웰스토리·바이오로직스·에스원 공채속보 카드 → MN-SAMSUNG-01 하나로)
 """
 import json, os, sys, time, socket, urllib.request, urllib.parse, re
 import xml.etree.ElementTree as ET
@@ -1119,12 +1121,16 @@ def add_manual(merged, path="manual_jobs.json"):
         # [2026-10-22] 수동 공고가 우선 — 같은 공고의 API 카드(같은 기관 + 같은 마감일 또는 비슷한 제목)는 빼고 수동 카드만 남김
         #   (수동 카드는 원문 기준 강화 본문이 붙고 인원·고용형태가 정확함. 예: 서울교통공사 482명 — 공채속보 카드는 인원 0)
         key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
+        # [2026-11-13] 여러 공고를 하나로 묶은 수동 카드(예: 삼성그룹 4/5급 — 계열사별 공채속보 카드)는
+        #              absorbSrcUrls에 적은 원문 링크와 같은 API 카드도 함께 빼서 카드가 하나만 남게 함
+        absorb = {(u or "").strip().rstrip("/") for u in (x.get("absorbSrcUrls") or [])}
         same = [y for y in merged if not y.get("_manual")
-                and (dedup_key(y.get("instNm", ""), y.get("recrutPbancTtl", "")) == key or manual_same(x, y))]
+                and (dedup_key(y.get("instNm", ""), y.get("recrutPbancTtl", "")) == key or manual_same(x, y)
+                     or (y.get("srcUrl") or "").strip().rstrip("/") in absorb)]
         for y in same:
             merged.remove(y)
             replaced.append(f"{y.get('recrutPblntSn')} {y.get('instNm', '')} → {x.get('recrutPblntSn')}")
-        x = {k: v for k, v in x.items() if k not in ("detail", "post_url", "post_id", "manual_post")}   # 본문용 입력 칸은 카드에서 뺌
+        x = {k: v for k, v in x.items() if k not in ("detail", "post_url", "post_id", "manual_post", "absorbSrcUrls")}   # 본문용 입력 칸은 카드에서 뺌
         x["_manual"] = True; x["ongoingYn"] = "Y"
         merged.append(x); added += 1
     print(f"[수동 공고] {added}건 추가 (마감 지남 {expired}건 · 중복 {dup}건 제외 · 같은 공고 API 카드 {len(replaced)}건 대체)")
