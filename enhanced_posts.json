@@ -19222,5 +19222,188 @@
    "language": null,
    "written": null
   }
+ },
+ "306780": {
+  "at": "2026-11-14 04:59",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306780.html",
+  "source": "2026-48 일반직(체외순환사) 채용공고.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "간호사 면허, 체외순환사 자격증 모두 소지해야 지원 가능해요",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "지원요건 충족 여부 확인(적부평가), 배수 없음",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 27일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기전형",
+     "date": "11월 27일~12월 2일",
+     "desc": "간호사 면허시험(국가고시) 성적 제출로 대체",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "필기전형 합격자 발표",
+     "date": "12월 8일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 3주 중",
+     "desc": "인성·경험행동면접으로 조직적합성 등 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 21일(월)",
+     "desc": "임용후보자 등록 후 2027.01.01. 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184733": {
+  "at": "2026-11-14 04:59",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kt-wk184733.html",
+  "source": "기업 채용 페이지 이미지 4조각 (https://kt.recruiter.co.kr/career/jobs/131741)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "IT/정보보안, 사업기획/운영, 재무회계 분야에서 신입사원을 모집해요.",
+    "columns": null,
+    "rows": null,
+    "note": null
+   },
+   "edu": {
+    "label": "대졸 이상",
+    "text": "4년제 대졸 이상인 자(2027년 2월 졸업예정자 포함)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 결과발표",
+     "date": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — AI활용 및 역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306820": {
+  "at": "2026-11-14 04:59",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306820.html",
+  "source": "(공고문) 2026년 3차 공무직(안내) 채용 계획(안).pdf",
+  "parts": [
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 및 전공 제한 없음",
+    "open": true
+   },
+   "restriction": "국가유공자 등 예우 및 지원에 관한 법률에 따른 취업지원대상자(보훈)만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 1일(화)",
+     "desc": "자기소개서(60)+경험·경력(20)+자격시험(20)+우대가점(10%)",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 4일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 15일(화)",
+     "desc": "직무·인성·경험 면접",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류검증",
+     "date": "12월 16일~17일"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 28일(월)",
+     "desc": "임용등록 후 2027년 1월 11일 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
