@@ -19405,5 +19405,94 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-307905": {
+  "at": "2026-11-14 10:42",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307905.html",
+  "source": "2026년 제4회 서울세관 공무직 등 근로자(시험연구원) 채용 공고.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "잠재역량(40)+직무수행능력(60)+가산점(5) 서면심사",
+     "note": "7배수 초과 시 7배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 1일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 7일~11일",
+     "desc": "정신자세·전문지식·의사표현 등 5개 요소 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 17일",
+     "desc": "증빙자료 확인 후 최종합격자 발표",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-307857": {
+  "at": "2026-11-14 10:42",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-307857.html",
+  "source": "(공고 2026-116호)국민권익위원회 공무직 근로자(안건검토) 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "석사 이상",
+    "text": "법학 석사 학위 이상 소지자(필수)",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 19일(목)",
+     "desc": "자기소개서·직무수행계획서·직무연관성 등 100점 평가",
+     "note": "4배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 20일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 24일(화)",
+     "desc": "소통·헌신·창의·윤리·전문지식 5개 요소 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 25일(수)",
+     "desc": "근로계약 체결 및 근무개시(12월 7일 예정)"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }

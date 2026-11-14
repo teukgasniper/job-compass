@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14 04:59",
+ "updated": "2026-11-14 10:42",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -265,9 +265,14 @@
     3714
    ],
    "20261113": [
-    4292,
-    2942,
-    2631
+    4658,
+    3168,
+    2860
+   ],
+   "20261114": [
+    599,
+    345,
+    327
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -624,9 +629,14 @@
     1950
    ],
    "20261113": [
-    2836,
-    1409,
-    1341
+    3085,
+    1521,
+    1445
+   ],
+   "20261114": [
+    471,
+    185,
+    183
    ]
   },
   "ac.ddolbestory.com": {
@@ -851,9 +861,14 @@
     205
    ],
    "20261113": [
-    74,
-    50,
-    43
+    77,
+    52,
+    45
+   ],
+   "20261114": [
+    3,
+    3,
+    3
    ]
   }
  },
@@ -1288,13 +1303,19 @@
     "m.keep.naver.com": 1
    },
    "20261113": {
-    "(direct)": 3928,
-    "l.threads.com": 191,
-    "(not set)": 143,
+    "(direct)": 4275,
+    "l.threads.com": 198,
+    "(not set)": 154,
     "google": 10,
     "m.search.naver.com": 10,
-    "naver": 9,
+    "naver": 10,
     "l.instagram.com": 1
+   },
+   "20261114": {
+    "(direct)": 519,
+    "(not set)": 54,
+    "l.threads.com": 24,
+    "google": 2
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1788,13 +1809,21 @@
     "l.instagram.com": 1
    },
    "20261113": {
-    "(direct)": 2473,
-    "(not set)": 182,
-    "l.threads.com": 112,
+    "(direct)": 2698,
+    "(not set)": 203,
+    "l.threads.com": 115,
     "google": 27,
     "naver": 27,
     "m.search.naver.com": 12,
     "facebook.com": 1,
+    "l.instagram.com": 1
+   },
+   "20261114": {
+    "(direct)": 365,
+    "(not set)": 87,
+    "l.threads.com": 16,
+    "facebook.com": 1,
+    "instagram.com": 1,
     "l.instagram.com": 1
    }
   },
@@ -2030,10 +2059,13 @@
     "m.search.naver.com": 8
    },
    "20261113": {
-    "(direct)": 60,
+    "(direct)": 63,
     "l.threads.com": 6,
     "naver": 6,
     "m.search.naver.com": 2
+   },
+   "20261114": {
+    "(direct)": 3
    }
   }
  }
