@@ -19494,5 +19494,69 @@
    "language": null,
    "written": null
   }
+ },
+ "306660": {
+  "at": "2026-11-15 07:42",
+  "url": "https://hiring03.ddolbestory.com/2026/11/bohun-306660.html",
+  "source": "2. 2026년 제7차 요양보호직 공개채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "요양보호사 정규직 3명, 정규직 전환 조건 계약직 9명을 뽑아요.",
+    "columns": [
+     "정규직",
+     "정규직 전환 조건 계약직"
+    ],
+    "rows": [
+     {
+      "label": "요양보호사",
+      "values": [
+       3,
+       9
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "요양보호사 자격증(또는 합격증) 소지자만 지원 가능해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 3일~18일",
+     "desc": "필수서류 제출, 자격요건 충족 시 전원합격",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 발표",
+     "date": "11월 19일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "11월 20일(금)",
+     "desc": "블라인드 면접(직무·능력·인성면접)",
+     "note": "면접점수 60점 미만 과락"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 24일(화)",
+     "desc": "신체검사 서류등록 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
