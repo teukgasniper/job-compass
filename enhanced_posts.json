@@ -19777,5 +19777,97 @@
    },
    "written": null
   }
+ },
+ "WK-183947": {
+  "at": "2026-11-16 08:07",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kt-wk183947.html",
+  "source": "기업 채용 페이지 이미지 15조각 (https://recruit.kt.com/careers/270968)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": "합격자에게만 메일 안내"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접",
+     "date": null,
+     "desc": "면접 후 온라인 인성검사 진행",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "합격자 발표",
+     "date": null,
+     "desc": "필요 시 포트폴리오·과제·레퍼런스체크·코딩테스트 실시",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "WK-184917": {
+  "at": "2026-11-16 08:07",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kia-wk184917.html",
+  "source": "기업 채용 페이지 (https://career.kia.com/apply/applyView.kc?recuYy=2026&recuType=N4&recuCls=17)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고등학교 졸업 이상의 학력을 보유하신 분",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형/역량검사",
+     "date": "11월 5일~18일",
+     "desc": "지원서 접수 후 전체 지원자 대상 역량검사 진행",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "역량검사 응시기간",
+     "date": "11월 18일~23일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형/신체검사/기술지식테스트",
+     "date": null,
+     "desc": "면접과 함께 신체검사, 기술지식테스트 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "합격자 발표",
+     "date": null,
+     "desc": "전형 결과는 홈페이지로 안내돼요",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
