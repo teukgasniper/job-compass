@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15 16:05",
+ "updated": "2026-11-16 01:33",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -266,8 +266,8 @@
    ],
    "20261113": [
     4658,
-    3168,
-    2860
+    3123,
+    2839
    ],
    "20261114": [
     2905,
@@ -275,9 +275,9 @@
     1601
    ],
    "20261115": [
-    844,
-    479,
-    415
+    6160,
+    3716,
+    3368
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -635,8 +635,8 @@
    ],
    "20261113": [
     3085,
-    1521,
-    1445
+    1523,
+    1444
    ],
    "20261114": [
     2117,
@@ -644,9 +644,9 @@
     881
    ],
    "20261115": [
-    634,
-    259,
-    250
+    3952,
+    1728,
+    1666
    ]
   },
   "ac.ddolbestory.com": {
@@ -873,7 +873,7 @@
    "20261113": [
     77,
     52,
-    45
+    44
    ],
    "20261114": [
     45,
@@ -881,9 +881,9 @@
     21
    ],
    "20261115": [
-    18,
-    12,
-    10
+    44,
+    24,
+    20
    ]
   }
  },
@@ -1317,12 +1317,12 @@
     "m.keep.naver.com": 1
    },
    "20261113": {
-    "(direct)": 4275,
-    "l.threads.com": 198,
-    "(not set)": 154,
+    "(direct)": 4410,
+    "l.threads.com": 211,
+    "m.search.naver.com": 12,
     "google": 10,
-    "m.search.naver.com": 10,
     "naver": 10,
+    "(not set)": 4,
     "l.instagram.com": 1
    },
    "20261114": {
@@ -1333,11 +1333,14 @@
     "naver": 5
    },
    "20261115": {
-    "(direct)": 733,
-    "l.threads.com": 56,
-    "(not set)": 52,
-    "m.naver.com": 2,
-    "google": 1
+    "(direct)": 5495,
+    "(not set)": 398,
+    "l.threads.com": 224,
+    "google": 24,
+    "m.search.naver.com": 7,
+    "chatgpt.com": 4,
+    "l.instagram.com": 3,
+    "m.naver.com": 2
    }
   },
   "hiring01.ddolbestory.com": {
@@ -1831,11 +1834,11 @@
     "l.instagram.com": 1
    },
    "20261113": {
-    "(direct)": 2698,
-    "(not set)": 203,
-    "l.threads.com": 115,
+    "(direct)": 2871,
+    "l.threads.com": 129,
     "google": 27,
     "naver": 27,
+    "(not set)": 16,
     "m.search.naver.com": 12,
     "facebook.com": 1,
     "l.instagram.com": 1
@@ -1851,9 +1854,13 @@
     "l.instagram.com": 1
    },
    "20261115": {
-    "(direct)": 529,
-    "(not set)": 52,
-    "l.threads.com": 51,
+    "(direct)": 3250,
+    "(not set)": 520,
+    "l.threads.com": 126,
+    "google": 28,
+    "naver": 12,
+    "m.search.naver.com": 9,
+    "chatgpt.com": 5,
     "m.naver.com": 2
    }
   },
@@ -2103,8 +2110,11 @@
     "l.threads.com": 1
    },
    "20261115": {
-    "(direct)": 17,
-    "(not set)": 1
+    "(direct)": 27,
+    "(not set)": 8,
+    "m.search.naver.com": 4,
+    "google": 3,
+    "naver": 2
    }
   }
  }

@@ -19558,5 +19558,224 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-308476": {
+  "at": "2026-11-16 01:33",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308476.html",
+  "source": "2026년 경복궁관리소 공무직 등 근로자 채용(6차) 공고.hwp",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "시설물관리원 다급 2명, 매수표원 2명, 시설물청소원 3명, 안전관리원 주간 3명을 뽑아요.",
+    "columns": [
+     "시설물관리원 다급",
+     "매수표원",
+     "시설물청소원",
+     "안전관리원 주간"
+    ],
+    "rows": [
+     {
+      "label": "공무직",
+      "values": [
+       2,
+       1,
+       2,
+       2
+      ]
+     },
+     {
+      "label": "기간제",
+      "values": [
+       null,
+       1,
+       null,
+       1
+      ]
+     },
+     {
+      "label": "촉탁직",
+      "values": [
+       null,
+       null,
+       1,
+       null
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자격사항 적합 여부 서면 심사",
+     "note": "3배수 초과 시 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "12월 1일(화)",
+     "desc": "직무수행 능력 및 적격성 5개 항목 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 11일(수)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-308489": {
+  "at": "2026-11-16 01:33",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308489.html",
+  "source": "영사안전콜센터  공무직 일반, 통역 상담관 채용 공고문.hwpx",
+  "parts": [
+   "crew",
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "일반상담관 1명, 통역상담관(베트남어) 2명을 뽑아요.",
+    "columns": [
+     "일반상담관",
+     "통역상담관(베트남어)"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       1,
+       2
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "고졸 이상",
+    "text": "고등학교 졸업 이상 학력 소지자로서 워드·엑셀 전산업무 가능한 자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "지원동기·적합성·발전가능성·우대요건 서면 심사",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "11월 26일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 1일(화)",
+     "desc": "개별·단체면접(통역상담관은 구술시험 병행)",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 10일(목)",
+     "desc": "신원조사 후 결격사유 없으면 최종 채용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (통역상담관)",
+    "text": "통역 업무에 지장 없는 외국어 능력이 필요해요. 베트남어 플렉스 750점 이상 또는 Opic IH 이상 보유자는 서류전형에서 우대돼요.",
+    "highlight": "플렉스 750점 이상"
+   },
+   "written": null
+  }
+ },
+ "GJ-308080": {
+  "at": "2026-11-16 01:33",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308080.html",
+  "source": "공고문 및 응시원서(사무,안내).hwpx",
+  "parts": [
+   "crew",
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "고객지원(안내원) 1명과 기간제·사업지원(사무원) 1명을 뽑아요.",
+    "columns": [
+     "안내원",
+     "사무원"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "전문 학사학위 이상 소지자(공고일 기준 학위증 취득자)",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 25일(수)",
+     "desc": "자격·경력 적합여부 정량평가, 위원 2인 합산",
+     "note": "동점자 전원 합격 가능"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "11월 26일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": null,
+     "desc": "업무수행 적격성 종합평가, 개별·단체면접",
+     "note": "위원 3인 점수 합산"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 8일(화)",
+     "desc": "근로계약서 작성 및 근무 개시",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 우대 기준",
+    "text": "외국어 능력 보유자는 우대받아요. TOEIC 800점, TOEIC SPEAKING 6, OPIc IM2 등이 인정돼요.",
+    "highlight": "TOEIC 800점"
+   },
+   "written": null
+  }
  }
 }
