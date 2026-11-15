@@ -4489,6 +4489,23 @@
    "comment_id": "17914055103603568",
    "at": "2026-11-15 16:38",
    "views": 85
+  },
+  {
+   "id": "WK-185046",
+   "instNm": "에스케이에코플랜트",
+   "title": "[SK레조낙] 기능직 (충전Operator) 사원 채용",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "monologue",
+   "hook": "📍SK 계열사 공채는 어렵겠지 싶었는데\n경북 공장 품질직, 신입도 정규직 전환",
+   "closer": "반도체 가스 다루는 품질 직무, SK 계열사에서 신입으로 시작할 수 있는 자리임",
+   "hook_type": "plain",
+   "tier": 3,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "17934956343423317",
+   "comment_id": "17953192602056451",
+   "at": "2026-11-15 19:45"
   }
  ],
  "views_refreshed_at": "2026-11-15 17:33",
