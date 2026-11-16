@@ -4578,6 +4578,23 @@
    "thread_id": "18060385298572352",
    "comment_id": "18652932124060235",
    "at": "2026-11-16 13:42"
+  },
+  {
+   "id": "WK-185251",
+   "instNm": "엘지생활건강",
+   "title": "HR 신입사원 채용",
+   "combo_idx": 1,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍평균 연봉 8,757만원\nLG그룹 계열사 HR 신입 뽑음",
+   "closer": "평균연봉 8,757만원 찍힌 공채가 HR 신입으로 열린 건 흔한 기회 아님",
+   "hook_type": "plain",
+   "tier": 3,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18247320547315063",
+   "comment_id": "17953363407056816",
+   "at": "2026-11-16 16:43"
   }
  ],
  "views_refreshed_at": "2026-11-16 11:33",
