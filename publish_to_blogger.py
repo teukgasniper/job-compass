@@ -5,6 +5,8 @@ jobs.json → 아직 글이 없는 공고를 골라 → 템플릿으로 글 생�
 - 랜덤 발행: 시작 전 0~30분 대기 + 글 사이 1~5분 간격 (몰아치기 방지)
 - 우선순위: ① 쓰레드 글감 후보(정규직·무기계약직·채용형인턴 + 신입 + 의사직 제외)
             ② 점수순: 모집인원 + 브랜드 + 마감임박 + 학력무관 + 전국 + 새 공고 가산
+  [2026-11-16] 경력직(경력만 뽑는 공고)도 본문 발행 — 순서는 신입 > 신입+경력 > 경력, 같은 단계 안에서 점수순
+               (쓰레드 자동발행은 기존대로 신입만)
 - 마감 당일(D-0) 공고만 건너뜀 / 마감된 글은 삭제하지 않음(축적)
   [2026-10-15] D-1·D-2도 발행 (쓰레드 2순위 '마감 임박' 글이 본문으로 연결되게) + 쓰레드 후보인 D-1~2는 큐 맨 앞(+40)
 - 퍼머링크: 영문 제목으로 먼저 발행해 주소 고정 → 한글 제목으로 수정
@@ -372,9 +374,55 @@ def is_big_trial_intern(job):
     return True
 
 
+# [2026-11-16] 경력직도 카드 + 본문 발행 (쓰레드 자동발행은 기존대로 신입만 — publish_to_threads.py 별도 기준)
+#   본문 우선순위: 신입 > 신입+경력 > 경력 (career_tier) → 같은 단계 안에서만 점수순
+CAREER_NOT_NEWBIE_RE = re.compile(r"(?<!무기)계약직")   # 경력직 허용 시 SOFT 규칙 중 계약직만 남김
+
+
+def career_eligible(job, now=None):
+    """[2026-11-16] 경력만 뽑는 공고의 본문 발행 조건 — 신입 조건만 빼고 나머지(고용형태·의사직·임원·박사급·보훈 전용 등)는 쓰레드 글감과 같음"""
+    if is_gojobs(job):
+        return False                              # 나라일터는 기존 기준(공무직·무기계약) 그대로 — thread_eligible에서 처리
+    se = job.get("recrutSeNm") or ""
+    if "경력" not in se or "신입" in se:
+        return False
+    hl = hire_list(job)
+    if not any(h in ("정규직", "무기계약직", "청년인턴(채용형)", "정규직전환형") for h in hl):
+        return False
+    title = job.get("recrutPbancTtl") or ""
+    if any(w in title for w in DOCTOR_WORDS):
+        return False
+    # 경력경쟁·경력직 표현은 허용, 임원·교수·개방형·시험 안내 공지 등은 그대로 제외
+    if NOT_NEWBIE_RE.search(title.replace("경력경쟁", "")):
+        return False
+    if CAREER_NOT_NEWBIE_RE.search(title) and not re.search(r"정규직|채용형|무기", title):
+        return False
+    if PHD_ONLY_RE.search(title) and not PHD_MIXED_RE.search(title):
+        return False
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title) \
+            and not MIXED_TRACK_RE.search(title):
+        return False
+    if re.search(r"강사|프로그램\s*운영자|아르바이트|단기\s*근로|공모\s*직위|(과|국|부|팀)장급", title):
+        return False
+    return True
+
+
+def career_tier(job):
+    """[2026-11-16] 본문 발행 순서: 0 신입 → 1 신입+경력(경력무관) → 2 경력"""
+    se = job.get("recrutSeNm") or ""
+    if "경력" in se and "신입" not in se and "무관" not in se:
+        return 2
+    if "경력" in se or "무관" in se:
+        return 1
+    if not se and "경력" in (job.get("recrutPbancTtl") or ""):   # 나라일터 등 구분 칸이 빈 공고는 제목으로
+        return 1
+    return 0
+
+
 def post_eligible(job, now=None):
-    """[2026-10-28] 본문 발행 대상 = 쓰레드 글감 조건 + 대형 체험형 인턴"""
-    return thread_eligible(job, now) or is_big_trial_intern(job)
+    """[2026-10-28] 본문 발행 대상 = 쓰레드 글감 조건 + 대형 체험형 인턴
+    [2026-11-16] + 경력만 뽑는 공고(career_eligible)"""
+    return thread_eligible(job, now) or is_big_trial_intern(job) or career_eligible(job, now)
 
 
 def score(job, now=None):
@@ -562,8 +610,9 @@ def pick_queue(jobs, mapping, now):
     # 1순위 쓰레드 글감 후보(정규직·신입 등) + 대형 체험형 인턴 → 그 안에서 점수순 (새 공고는 +15점 가산)
     # [2026-10-12] 누구나 아는 대기업은 +40 (공공 대규모 공채와 비슷한 순위로 앞당김)
     # [2026-10-28] 대형 체험형 인턴은 인원 점수(최대 100)로 자연히 앞쪽에 옴 — 별도 가산점 없음
-    todo.sort(key=lambda j: (not post_eligible(j, now), -queue_score(j, now)))
-    n_hot = sum(1 for j in todo if post_eligible(j, now))
+    # [2026-11-16] 신입 > 신입+경력 > 경력 순서로 먼저 나누고, 같은 단계 안에서 점수순
+    todo.sort(key=lambda j: (career_tier(j), -queue_score(j, now)))
+    n_hot = sum(1 for j in todo if thread_eligible(j, now))   # 쓰레드 글감(신입) 후보 수
     n_new = sum(1 for j in todo if is_new(j, now))
     return todo, n_hot, n_new
 
