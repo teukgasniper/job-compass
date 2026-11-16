@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-16 08:07",
+ "updated": "2026-11-16 16:11",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -280,9 +280,9 @@
     4112
    ],
    "20261116": [
-    1524,
-    911,
-    864
+    2958,
+    1868,
+    1743
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -654,9 +654,9 @@
     2055
    ],
    "20261116": [
-    1010,
-    439,
-    432
+    1935,
+    888,
+    855
    ]
   },
   "ac.ddolbestory.com": {
@@ -896,9 +896,9 @@
     21
    ],
    "20261116": [
-    12,
-    10,
-    9
+    23,
+    20,
+    17
    ]
   }
  },
@@ -1357,12 +1357,13 @@
     "l.instagram.com": 3
    },
    "20261116": {
-    "(direct)": 1406,
-    "(not set)": 65,
-    "l.threads.com": 44,
+    "(direct)": 2702,
+    "(not set)": 146,
+    "l.threads.com": 98,
+    "m.search.naver.com": 5,
     "google": 3,
-    "m.search.naver.com": 3,
     "naver": 2,
+    "chatgpt.com": 1,
     "l.instagram.com": 1
    }
   },
@@ -1886,9 +1887,9 @@
     "chatgpt.com": 5
    },
    "20261116": {
-    "(direct)": 881,
-    "(not set)": 92,
-    "l.threads.com": 21,
+    "(direct)": 1661,
+    "(not set)": 208,
+    "l.threads.com": 50,
     "google": 8,
     "naver": 7,
     "m.search.naver.com": 1
@@ -2146,8 +2147,8 @@
     "naver": 2
    },
    "20261116": {
-    "(direct)": 9,
-    "m.search.naver.com": 2,
+    "(direct)": 16,
+    "m.search.naver.com": 6,
     "naver": 1
    }
   }
