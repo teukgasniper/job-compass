@@ -20032,5 +20032,307 @@
    "language": null,
    "written": null
   }
+ },
+ "306913": {
+  "at": "2026-11-18 01:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306913.html",
+  "source": "1. 한국해양과학기술원 2027년 1차 직원 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "정규직 연구직 6명, 정규직 연구지원직 3명, 무기계약직 연구직·기능직 2명, 무기계약직 연구지원직 2명, 무기계약직 갑판부원 2명, 공무직 8명을 뽑아요.",
+    "columns": [
+     "정규직 연구직",
+     "정규직 연구지원직",
+     "무기 연구·기능직",
+     "무기 연구지원직",
+     "무기 갑판부원",
+     "무기 공무직"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       6,
+       3,
+       2,
+       2,
+       2,
+       8
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "12월 7일~11일",
+     "desc": "입사지원서 적격심사, 연구직은 연구실적평가 추가",
+     "note": "적격자 전원·연구직 5배수"
+    },
+    {
+     "type": "notice",
+     "label": "1차 전형 합격자 발표",
+     "date": "12월 17일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 직무능력심사",
+     "date": "12월 19일~24일",
+     "desc": "연구직 발표심사 또는 연구지원직 필기심사",
+     "note": "발표 3배수·필기 5배수"
+    },
+    {
+     "type": "notice",
+     "label": "2차 전형 합격자 발표",
+     "date": "12월 31일"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접심사",
+     "date": "1월 6일~8일",
+     "desc": "태도인성(60%)+전문지식(40%) 면접",
+     "note": "1배수(예비 2배수)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2월 18일",
+     "desc": "신체검사·서류검증 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS 직업기초능력평가(40%)와 직무수행능력평가(60%)로 봐요. 각 교시 50문항씩 총 100문항이에요.",
+    "highlight": "100문항",
+    "subjects": [
+     {
+      "name": "NCS 직업기초능력평가",
+      "count": "50문항",
+      "scope": "의사소통능력, 자원관리능력, 문제해결능력, 조직이해능력",
+      "note": "1교시 60분",
+      "ncs": true
+     },
+     {
+      "name": "직무수행능력평가",
+      "count": "50문항",
+      "scope": "직종별 전문지식(항해·기관 등)",
+      "note": "2교시 60분",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "307024": {
+  "at": "2026-11-18 01:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-307024.html",
+  "source": "2026년도 하반기 한국광해광업공단 무기계약직 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "실무직 2명, 공무직(공개경쟁) 17명, 공무직(장애인제한경쟁) 2명, 공무직(자격제한경쟁) 2명을 뽑아요.",
+    "columns": [
+     "실무직(공개)",
+     "공무직(공개)",
+     "공무직(장애인제한)",
+     "공무직(자격제한)"
+    ],
+    "rows": [
+     {
+      "label": "사무보조",
+      "values": [
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "지질도 작성",
+      "values": [
+       1,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "미화",
+      "values": [
+       null,
+       11,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "경비",
+      "values": [
+       null,
+       4,
+       1,
+       null
+      ]
+     },
+     {
+      "label": "시설관리(기사)",
+      "values": [
+       null,
+       2,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "시설관리(기계)",
+      "values": [
+       null,
+       null,
+       null,
+       1
+      ]
+     },
+     {
+      "label": "시설관리(전기)",
+      "values": [
+       null,
+       null,
+       null,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·전공 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자기소개서(65점)+자격증 가점(35점)+우대가점",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 8일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "12월 14일~15일",
+     "desc": "온라인 인성검사, 적부 심사",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 최종면접",
+     "date": null,
+     "desc": "직업기초능력·직무수행능력·인적성 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 29일",
+     "desc": "신원조회 등 결격사유 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "306989": {
+  "at": "2026-11-18 01:25",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306989.html",
+  "source": "2026년도 제10차 직원 채용 공고문.pdf",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "박사",
+    "text": "교육학(교과교육 제외) 또는 정책학 전공 박사학위 소지자",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 4일~8일",
+     "desc": "연구실적 양·질평정, 연구기획, 직무역량 평가(계100점)",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 전형 합격자 발표",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기(NCS/인성검사)",
+     "date": "12월 17일(목)",
+     "desc": "NCS 직업기초능력평가 및 인성검사(온라인)",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접(직무역량평가)",
+     "date": "12월 22일~24일",
+     "desc": "발표 및 개별면접, 본원(진천)에서 진행",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2027년 1월 15일(금)",
+     "desc": "개별 메일·SMS 통보, 임용예정일 2027년 2월 1일"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 NCS 기반 직업기초능력평가와 인성검사로 봐요.",
+    "highlight": "NCS 기반 직업기초능력평가",
+    "subjects": [
+     {
+      "name": "직업기초능력평가(NCS)",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "인성검사",
+      "count": null,
+      "scope": null,
+      "note": null,
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
