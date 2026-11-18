@@ -6991,6 +6991,23 @@
    "comment_id": "18132846628880983",
    "at": "2026-11-18 15:20",
    "views": 513
+  },
+  {
+   "id": "WK-185046",
+   "instNm": "에스케이에코플랜트",
+   "title": "[SK레조낙] 기능직 (충전Operator) 사원 채용",
+   "combo_idx": 0,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍SK 계열사가 정규직 뽑는데\n하는 일은 반도체 가스 검사임",
+   "closer": "복잡한 설명 필요 없이, 가스 다루는 품질 일을 SK 간판으로 시작하는 자리임",
+   "hook_type": "plain",
+   "tier": 3,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18080918720421099",
+   "comment_id": "18214028011371332",
+   "at": "2026-11-18 18:26"
   }
  ],
  "logo_tried": {
