@@ -20529,5 +20529,199 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-308764": {
+  "at": "2026-11-18 21:10",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308764.html",
+  "source": "2027년 상반기 국립산림품종관리센터 공무직근로자 채용 공고.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "행정실무원 3명, 시설관리원 1명, 임업기계장비 운전원 1명을 뽑아요.",
+    "columns": [
+     "행정실무원",
+     "시설관리원",
+     "임업기계장비 운전원"
+    ],
+    "rows": [
+     {
+      "label": "채용인원",
+      "values": [
+       3,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 7일~9일",
+     "desc": "경력·자격증·자기소개서 등 평가",
+     "note": "3배수 초과 시 고득점순 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "12월 15일(화)",
+     "desc": "직무수행능력 및 적격성 종합평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 18일(금)",
+     "desc": "신원조사 후 즉시 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "307159": {
+  "at": "2026-11-18 21:10",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-307159.html",
+  "source": "채용공고문.hwp",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력 제한없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 2일~4일",
+     "desc": "직무자격증10+경력10+자기소개서80 평가",
+     "note": "3배수 이내 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "12월 4일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인성검사",
+     "date": "12월 11일~15일",
+     "desc": "대인관계·조직적합도 등 200문항 객관식",
+     "note": "면접 참고자료로만 활용"
+    },
+    {
+     "type": "notice",
+     "label": "면접 안내",
+     "date": "12월 14일(월)"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 17일(목)",
+     "desc": "다대일 구조화 면접, 직무적합도·인성 등 평가",
+     "note": "1배수 이내 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 28일(월)",
+     "desc": "신체검사 등 결격사유 확인 후 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사만 봐요. 총 200문항이며 점수에는 반영되지 않고 면접 참고자료로 활용돼요.",
+    "highlight": "200문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "200문항",
+      "scope": "대인관계, 조직적합도 등",
+      "note": "미응시 시 면접 응시 불가",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "WK-185251": {
+  "at": "2026-11-18 21:10",
+  "url": "https://hiring03.ddolbestory.com/2026/11/lg-wk185251.html",
+  "source": "기업 채용 페이지 (https://careers.lg.com/apply/detail?id=1002389)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사 이상 학위 소지자('27년 2월 졸업예정자 혹은 기졸업자)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류 전형",
+     "date": "11월 11일~23일",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 인적성 검사",
+     "date": "12월 중",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 1차 면접 전형",
+     "date": "12월~1월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 2차 면접 전형",
+     "date": "12월~1월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 인턴십 전형",
+     "date": "1월~2월",
+     "desc": "채용검진·영어인터뷰·과제발표 등 진행",
+     "note": "불합격 가능"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
