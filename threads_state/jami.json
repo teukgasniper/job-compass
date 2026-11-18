@@ -7027,6 +7027,23 @@
    "comment_id": "18148007116606837",
    "at": "2026-11-18 21:29",
    "views": 1008
+  },
+  {
+   "id": "CE-81193",
+   "instNm": "전북특별자치도 군산의료원",
+   "title": "군산의료원 간호조무사 채용 재공고",
+   "combo_idx": 6,
+   "combo_v": 2,
+   "combo_cat": "urgent",
+   "hook": "⚠️정규직 6명 뽑는 전북 공공병원\n일요일이면 접수 닫힘",
+   "closer": "일요일 지나면 이 6명 모집은 그대로 끝남",
+   "hook_type": "plain",
+   "tier": 2,
+   "logo": false,
+   "urgent": true,
+   "thread_id": "18437212357145373",
+   "comment_id": "18132684629308030",
+   "at": "2026-11-19 00:24"
   }
  ],
  "logo_tried": {
