@@ -21164,5 +21164,136 @@
     "callout": null
    }
   }
+ },
+ "306950": {
+  "at": "2026-11-20 05:56",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306950.html",
+  "source": "2026년 제4차 국립중앙청소년디딤센터 직원채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "공무직 10명과 기간제(휴직대체 포함) 4명 등 총 14명을 뽑아요.",
+    "columns": [
+     "공무직",
+     "기간제"
+    ],
+    "rows": [
+     {
+      "label": "치료재활",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "프로그램운영",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "주간생활지도(남)",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "프로그램운영(여)",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "식당조리",
+      "values": [
+       2,
+       null
+      ]
+     },
+     {
+      "label": "경비",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "미화",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "시설관리",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "운전",
+      "values": [
+       1,
+       null
+      ]
+     },
+     {
+      "label": "기간제(주간생활지도·프로그램운영·야간생활지도·일반행정)",
+      "values": [
+       null,
+       4
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "전문대졸 이상",
+    "text": "상담학 등 관련학과 전문대졸 이상 및 관련 분야 실무경력 2년 이상",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "12월 3일(목)",
+     "desc": "정량평가(자격증·경력)와 정성평가(경험기술서·자기소개서)",
+     "note": "총점 60점 이상, 채용인원 10배수 합격"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "12월 8일(화) 이내"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "12월 15일(화)",
+     "desc": "직무전문성, 조직적합성, 인성 및 태도 평가",
+     "note": "총점 80점 이상, 1배수 선발(예비 3배수)"
+    },
+    {
+     "type": "notice",
+     "label": "채용점검위원회",
+     "date": "12월 22일(화)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 및 예비합격자 발표",
+     "date": "12월 30일(화) 이내",
+     "desc": "이의제기 접수 후 2027.1.19 임용 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
