@@ -7206,6 +7206,25 @@
    "thread_id": "18433853113151925",
    "comment_id": "18079531622744733",
    "at": "2026-11-20 13:20"
+  },
+  {
+   "id": "WK-185251",
+   "instNm": "엘지생활건강",
+   "title": "HR 신입사원 채용",
+   "combo_idx": 9,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍평균 근속 15년 넘는 회사\n서울 LG그룹 HR 신입 뽑음",
+   "closer": "15년 넘게 다니는 사람 많은 회사, 신입 HR로 들어가는 길 열림",
+   "hook_type": "plain",
+   "tier": 4,
+   "logo": false,
+   "urgent": false,
+   "borrowed_from": "sniper",
+   "orig_thread_id": "18247320547315063",
+   "thread_id": "18163372021511932",
+   "comment_id": "18342466825272742",
+   "at": "2026-11-20 16:17"
   }
  ],
  "logo_tried": {
