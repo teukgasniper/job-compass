@@ -21372,5 +21372,67 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-185046": {
+  "at": "2026-11-20 21:06",
+  "url": "https://hiring03.ddolbestory.com/2026/11/sk-wk185046.html",
+  "source": "기업 채용 페이지 (https://careers.sk-materials.com/apply/jobView/381443368)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "학력: 고졸 이상",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격증 1개 이상 소지 필수 확인",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — SKCT",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형(1차)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 면접전형(2차)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "5단계 — 처우산정/채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종발표",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
