@@ -21295,5 +21295,82 @@
    "language": null,
    "written": null
   }
+ },
+ "306855": {
+  "at": "2026-11-20 11:33",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-306855.html",
+  "source": "(2026-11)공무직 모집공고.png (이미지 공고문 → 8조각)",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "간호사 2명, 방사선사A(전일제) 1명, 방사선사B(반일제) 1명을 뽑아요.",
+    "columns": [
+     "간호사",
+     "방사선사A(전일제)",
+     "방사선사B(반일제)"
+    ],
+    "rows": [
+     {
+      "label": "공무직",
+      "values": [
+       2,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "간호사 면허증 또는 방사선사 면허증 소지자만 지원 가능해요.",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월 9일~23일",
+     "desc": "응시자격 충족 여부·불성실 작성 여부 확인(적·부 심사)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "2026년 11월 중"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 실무면접",
+     "date": "12월 3일(목)",
+     "desc": "입사지원서·인성·조직적합·직무역량 종합평가",
+     "note": "모집인원의 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "실무면접 합격자 발표",
+     "date": "2026년 12월 중"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 관리자면접",
+     "date": "2026년 12월 중",
+     "desc": "입사지원서·인성·조직적합·직무역량 종합평가",
+     "note": "모집인원의 1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2026년 12월 중",
+     "desc": "결격사유 조회·신체검사 후 12월 21일 임용 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
