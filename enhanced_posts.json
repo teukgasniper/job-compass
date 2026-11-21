@@ -21627,5 +21627,128 @@
     "callout": null
    }
   }
+ },
+ "WK-185763": {
+  "at": "2026-11-21 20:41",
+  "url": "https://hiring03.ddolbestory.com/2026/11/celltrion-wk185763.html",
+  "source": "기업 채용 페이지 (https://celltrionph.recruiter.co.kr/career/jobs/134195)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "석사 이상",
+    "text": "필수 자격요건: 석사 이상 학위 소지자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 역량검사",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 실무/PT/임원면접",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진/처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "5단계 — 최종합격",
+     "date": null,
+     "desc": null,
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 700점 이상 또는 이에 상응하는 공인 외국어 성적이 필요해요. 영어권 국가 학위 취득자·장기 거주자는 제외돼요.",
+    "highlight": "700점 이상"
+   },
+   "written": null
+  }
+ },
+ "WK-185566": {
+  "at": "2026-11-21 20:41",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-185566.html",
+  "source": "기업 채용 페이지 이미지 2조각 (https://trinityairways.recruiter.co.kr/career/jobs/133186)",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형 및 역량검사",
+     "date": null,
+     "desc": "지원서 접수 후 서류전형과 역량검사를 진행해요",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "역량검사 대상자 발표",
+     "date": "11월 27일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차 면접",
+     "date": null,
+     "desc": null,
+     "note": "일정은 합격자 발표 시 안내"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 2차 면접",
+     "date": null,
+     "desc": "학력·어학·자격증·경력 증빙서류 제출 필요",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격",
+     "date": null,
+     "desc": "입사 예정일은 2027년 1월이에요",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "TOEIC 700점 이상 또는 TOEIC Speaking IM2, OPIc IM2 이상이어야 해요.",
+    "highlight": "700점 이상"
+   },
+   "written": null
+  }
  }
 }
