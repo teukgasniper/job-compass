@@ -1,14 +1,9 @@
 {
- "updated": "2026-11-21 20:41",
+ "updated": "2026-11-22 04:43",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
   "hiring.ddolbestory.com": {
-   "20260922": [
-    335,
-    188,
-    188
-   ],
    "20260923": [
     5552,
     3493,
@@ -305,17 +300,17 @@
     2122
    ],
    "20261121": [
-    2412,
-    1492,
-    1379
+    3199,
+    1955,
+    1790
+   ],
+   "20261122": [
+    50,
+    27,
+    24
    ]
   },
   "hiring01.ddolbestory.com": {
-   "20260922": [
-    1594,
-    1240,
-    1211
-   ],
    "20260923": [
     11455,
     9217,
@@ -403,11 +398,6 @@
    ]
   },
   "hiring03.ddolbestory.com": {
-   "20260922": [
-    99,
-    72,
-    72
-   ],
    "20260923": [
     2974,
     1829,
@@ -704,9 +694,14 @@
     1139
    ],
    "20261121": [
-    1656,
-    783,
-    754
+    2308,
+    1020,
+    976
+   ],
+   "20261122": [
+    31,
+    12,
+    12
    ]
   },
   "ac.ddolbestory.com": {
@@ -971,18 +966,14 @@
     27
    ],
    "20261121": [
-    36,
-    11,
-    9
+    39,
+    15,
+    12
    ]
   }
  },
  "sources": {
   "hiring.ddolbestory.com": {
-   "20260922": {
-    "(direct)": 333,
-    "blogger.com": 2
-   },
    "20260923": {
     "(direct)": 5511,
     "blogger.com": 20,
@@ -1474,19 +1465,18 @@
     "(not set)": 1
    },
    "20261121": {
-    "(direct)": 2089,
-    "l.threads.com": 161,
-    "(not set)": 146,
-    "naver": 7,
-    "m.search.naver.com": 6,
-    "google": 3
+    "(direct)": 2755,
+    "l.threads.com": 226,
+    "(not set)": 190,
+    "google": 13,
+    "m.search.naver.com": 8,
+    "naver": 7
+   },
+   "20261122": {
+    "(direct)": 50
    }
   },
   "hiring01.ddolbestory.com": {
-   "20260922": {
-    "(direct)": 1591,
-    "l.threads.com": 3
-   },
    "20260923": {
     "(direct)": 11386,
     "l.threads.com": 52,
@@ -1562,10 +1552,6 @@
    }
   },
   "hiring03.ddolbestory.com": {
-   "20260922": {
-    "(direct)": 97,
-    "blogger.com": 2
-   },
    "20260923": {
     "(direct)": 2952,
     "l.threads.com": 10,
@@ -2045,12 +2031,15 @@
     "(not set)": 1
    },
    "20261121": {
-    "(direct)": 1310,
-    "(not set)": 207,
-    "l.threads.com": 119,
-    "naver": 12,
-    "m.search.naver.com": 5,
-    "google": 3
+    "(direct)": 1776,
+    "(not set)": 329,
+    "l.threads.com": 161,
+    "google": 20,
+    "naver": 13,
+    "m.search.naver.com": 9
+   },
+   "20261122": {
+    "(direct)": 31
    }
   },
   "ac.ddolbestory.com": {
@@ -2338,8 +2327,8 @@
    },
    "20261121": {
     "(not set)": 20,
-    "(direct)": 8,
-    "naver": 4,
+    "(direct)": 10,
+    "naver": 5,
     "google": 2,
     "m.search.naver.com": 2
    }

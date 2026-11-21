@@ -21750,5 +21750,135 @@
    },
    "written": null
   }
+ },
+ "GJ-400129": {
+  "at": "2026-11-22 04:43",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-400129.html",
+  "source": "1. 한국예술종합학교 총무과 공무직 근로자(사무원) 채용 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": "12월 1일~4일",
+     "desc": "응시자격·우대사항 확인, 적격 또는 고득점 순 선발",
+     "note": "3배수 이하 적격심사, 초과시 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 및 면접시험 공고",
+     "date": "12월 8일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "12월 9일~11일",
+     "desc": "직무수행능력·적격성 등 평정요소별 상·중·하 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "전력조회·결격사유 조회 후 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "307153": {
+  "at": "2026-11-22 04:43",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-307153.html",
+  "source": "붙임 1. 한국생명존중희망재단 제5차 직원채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "자살예방 상담사 23명, 자살예방 상담 수석상담사 2명, SNS상담사 8명을 뽑아요.",
+    "columns": [
+     "상담사",
+     "수석상담사",
+     "SNS상담사"
+    ],
+    "rows": [
+     {
+      "label": "자살예방 상담사",
+      "values": [
+       23,
+       null,
+       null
+      ]
+     },
+     {
+      "label": "자살예방 상담 수석상담사",
+      "values": [
+       null,
+       2,
+       null
+      ]
+     },
+     {
+      "label": "SNS 상담사",
+      "values": [
+       null,
+       null,
+       8
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류심사",
+     "date": null,
+     "desc": "자격요건 충족 및 경력 등 적합 여부 심사",
+     "note": "5배수 내외 선발(수석상담사 2배수)"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "12월 30일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접심사",
+     "date": "1월 7일~8일",
+     "desc": "업무수행능력 및 재단 직원 적격성 등 종합 면접",
+     "note": "한글타자 200타·정확도 90%↑"
+    },
+    {
+     "type": "notice",
+     "label": "면접합격자 발표",
+     "date": "1월 13일(수)"
+    },
+    {
+     "type": "notice",
+     "label": "결격사유조회 및 신체검사",
+     "date": "1월 14일~22일"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "1월 27일(수)",
+     "desc": "결격사유조회·신체검사 후 임용, 시용계약 1/29 시작",
+     "note": "임용 포기 시 예비합격자 발표"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
