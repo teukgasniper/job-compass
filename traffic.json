@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21 05:40",
+ "updated": "2026-11-21 11:46",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -300,14 +300,14 @@
     4371
    ],
    "20261120": [
-    3640,
-    2417,
-    2145
+    3641,
+    2415,
+    2122
    ],
    "20261121": [
-    300,
-    196,
-    191
+    1020,
+    629,
+    599
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -699,14 +699,14 @@
     2245
    ],
    "20261120": [
-    2534,
-    1225,
-    1144
+    2536,
+    1224,
+    1139
    ],
    "20261121": [
-    233,
-    114,
-    112
+    745,
+    346,
+    341
    ]
   },
   "ac.ddolbestory.com": {
@@ -966,14 +966,14 @@
     40
    ],
    "20261120": [
-    58,
-    31,
-    26
+    59,
+    32,
+    27
    ],
    "20261121": [
-    1,
-    1,
-    0
+    29,
+    5,
+    3
    ]
   }
  },
@@ -1466,17 +1466,17 @@
     "naver": 7
    },
    "20261120": {
-    "(direct)": 3280,
-    "l.threads.com": 196,
-    "(not set)": 138,
+    "(direct)": 3409,
+    "l.threads.com": 205,
     "m.search.naver.com": 12,
     "naver": 8,
-    "google": 6
+    "google": 6,
+    "(not set)": 1
    },
    "20261121": {
-    "(direct)": 286,
-    "l.threads.com": 9,
-    "(not set)": 5
+    "(direct)": 900,
+    "l.threads.com": 64,
+    "(not set)": 56
    }
   },
   "hiring01.ddolbestory.com": {
@@ -2034,17 +2034,19 @@
     "google": 24
    },
    "20261120": {
-    "(direct)": 2135,
-    "(not set)": 220,
-    "l.threads.com": 116,
-    "naver": 29,
-    "m.search.naver.com": 20,
-    "google": 14
+    "(direct)": 2338,
+    "l.threads.com": 119,
+    "naver": 41,
+    "m.search.naver.com": 22,
+    "google": 15,
+    "(not set)": 1
    },
    "20261121": {
-    "(direct)": 211,
-    "(not set)": 15,
-    "l.threads.com": 7
+    "(direct)": 587,
+    "(not set)": 103,
+    "l.threads.com": 51,
+    "google": 2,
+    "naver": 2
    }
   },
   "ac.ddolbestory.com": {
@@ -2324,15 +2326,17 @@
     "l.threads.com": 1
    },
    "20261120": {
-    "m.search.naver.com": 24,
-    "(direct)": 19,
+    "m.search.naver.com": 25,
+    "(direct)": 20,
     "naver": 8,
     "chatgpt.com": 3,
-    "google": 3,
-    "(not set)": 1
+    "google": 3
    },
    "20261121": {
-    "(direct)": 1
+    "(not set)": 20,
+    "(direct)": 5,
+    "naver": 3,
+    "google": 1
    }
   }
  }

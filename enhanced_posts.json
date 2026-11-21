@@ -21562,5 +21562,70 @@
    "language": null,
    "written": null
   }
+ },
+ "307130": {
+  "at": "2026-11-21 11:46",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-307130.html",
+  "source": "공고문_2026년 하반기 인천항만공사 무기계약직(차량운전원) 채용_최종.pdf",
+  "parts": [
+   "written",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "학력·전공 제한 없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 적격·부적격 판정(적격자 전원 합격)",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 9일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 필기·면접전형",
+     "date": "12월 22일(화)",
+     "desc": "인성검사 및 역량면접(집단/개별) 실시",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "면접합격자 발표",
+     "date": "12월 30일(수)"
+    },
+    {
+     "type": "final",
+     "title": "임용",
+     "date": "1월 12일(화)",
+     "desc": "예비소집·신체검사·신원조사 적격자 임용"
+    }
+   ],
+   "language": null,
+   "written": {
+    "summary": "필기는 인성검사로만 진행돼요. 총 250문항, 30분 동안 응시해요.",
+    "highlight": "250문항",
+    "subjects": [
+     {
+      "name": "인성검사",
+      "count": "250문항/30분",
+      "scope": null,
+      "note": "적격·부적격 판정(적격자 전원 합격)",
+      "ncs": false
+     }
+    ],
+    "callout": null
+   }
+  }
  }
 }
