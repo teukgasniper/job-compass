@@ -7335,6 +7335,25 @@
    "comment_id": "18120568391112841",
    "at": "2026-11-21 16:24",
    "views": 136
+  },
+  {
+   "id": "WK-185524",
+   "instNm": "우리금융캐피탈",
+   "title": "2027년 정규직 신입사원 채용 공고",
+   "combo_idx": 1,
+   "combo_v": 2,
+   "combo_cat": "fact",
+   "hook": "📍서울 캐피탈사 정규직 신입\n경영·디지털 두 분야 동시 모집",
+   "closer": "경영이든 디지털이든, 서울에서 캐피탈사 신입으로 시작하는 공채",
+   "hook_type": "plain",
+   "tier": 4,
+   "logo": false,
+   "urgent": false,
+   "borrowed_from": "sniper",
+   "orig_thread_id": "18103319201401061",
+   "thread_id": "17997247971062072",
+   "comment_id": "17944279698391337",
+   "at": "2026-11-21 19:21"
   }
  ],
  "logo_tried": {
