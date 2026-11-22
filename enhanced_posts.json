@@ -21939,5 +21939,68 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-308261": {
+  "at": "2026-11-22 20:55",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-308261.html",
+  "source": "01. 2026년 제3차 국립중앙박물관 시설관리과 공무직 근로자 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "기계 1명, 조경 1명, 미화 주임 1명, 미화원 1명을 뽑아요.",
+    "columns": [
+     "기계",
+     "조경",
+     "미화주임",
+     "미화원"
+    ],
+    "rows": [
+     {
+      "label": "모집인원",
+      "values": [
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "응시요건 적격심사 또는 배수별 고득점자 선발",
+     "note": "지원배수에 따라 3~5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류 합격자 발표",
+     "date": "12월 8일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 15일(화)",
+     "desc": "자기소개서·직무수행계획서 기반 개별면접",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 23일(수)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
