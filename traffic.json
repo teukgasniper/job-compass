@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-22 04:43",
+ "updated": "2026-11-22 10:32",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -301,13 +301,13 @@
    ],
    "20261121": [
     3199,
-    1955,
-    1790
+    1959,
+    1769
    ],
    "20261122": [
-    50,
-    27,
-    24
+    170,
+    105,
+    92
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -696,12 +696,12 @@
    "20261121": [
     2308,
     1020,
-    976
+    972
    ],
    "20261122": [
-    31,
-    12,
-    12
+    148,
+    54,
+    53
    ]
   },
   "ac.ddolbestory.com": {
@@ -969,6 +969,11 @@
     39,
     15,
     12
+   ],
+   "20261122": [
+    2,
+    2,
+    2
    ]
   }
  },
@@ -1465,15 +1470,17 @@
     "(not set)": 1
    },
    "20261121": {
-    "(direct)": 2755,
-    "l.threads.com": 226,
-    "(not set)": 190,
+    "(direct)": 2909,
+    "l.threads.com": 261,
     "google": 13,
     "m.search.naver.com": 8,
-    "naver": 7
+    "naver": 8
    },
    "20261122": {
-    "(direct)": 50
+    "(direct)": 160,
+    "l.threads.com": 7,
+    "(not set)": 2,
+    "m.search.naver.com": 1
    }
   },
   "hiring01.ddolbestory.com": {
@@ -2031,15 +2038,16 @@
     "(not set)": 1
    },
    "20261121": {
-    "(direct)": 1776,
-    "(not set)": 329,
-    "l.threads.com": 161,
+    "(direct)": 2067,
+    "l.threads.com": 197,
     "google": 20,
-    "naver": 13,
+    "naver": 15,
     "m.search.naver.com": 9
    },
    "20261122": {
-    "(direct)": 31
+    "(direct)": 144,
+    "(not set)": 2,
+    "l.threads.com": 2
    }
   },
   "ac.ddolbestory.com": {
@@ -2326,11 +2334,14 @@
     "google": 3
    },
    "20261121": {
-    "(not set)": 20,
-    "(direct)": 10,
+    "(direct)": 30,
     "naver": 5,
     "google": 2,
     "m.search.naver.com": 2
+   },
+   "20261122": {
+    "(direct)": 1,
+    "m.search.naver.com": 1
    }
   }
  }

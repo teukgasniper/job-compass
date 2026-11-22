@@ -21880,5 +21880,64 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-400053": {
+  "at": "2026-11-22 10:32",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-400053.html",
+  "source": "공무직근로자 채용 공고(제2026-19호).pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "휴대품검역1과 4명, 휴대품검역2과 1명 총 5명을 뽑아요.",
+    "columns": [
+     "휴대품검역1과",
+     "휴대품검역2과"
+    ],
+    "rows": [
+     {
+      "label": "검역지원요원",
+      "values": [
+       4,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 2일(수)",
+     "desc": "자격부합도·지원서·직무수행계획서 평가(100점)+가점",
+     "note": "면접 3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 3일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 9일(수)",
+     "desc": "정신자세·예의품행·창의력·의사발표·전문지식 평가",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "12월 11일(금)",
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
