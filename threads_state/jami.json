@@ -7481,6 +7481,23 @@
    "comment_id": "18116024564624857",
    "at": "2026-11-22 23:28",
    "views": 232
+  },
+  {
+   "id": "WK-185901",
+   "instNm": "이랜드리테일",
+   "title": "2027 상반기 신입사원 채용",
+   "combo_idx": 8,
+   "combo_v": 2,
+   "combo_cat": "sniper",
+   "hook": "📍쇼핑몰 돌아다니는 거 좋아하면\n패션 회사 정규직 신입 뽑음",
+   "closer": "매장 돌아다니며 눈여겨보던 브랜드, 이제 안에서 일할 수 있음",
+   "hook_type": "plain",
+   "tier": 3,
+   "logo": false,
+   "urgent": false,
+   "thread_id": "18344267956272890",
+   "comment_id": "17967731286229919",
+   "at": "2026-11-23 07:21"
   }
  ],
  "logo_tried": {
