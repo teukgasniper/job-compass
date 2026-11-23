@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23 04:56",
+ "updated": "2026-11-23 10:56",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -305,9 +305,9 @@
     365
    ],
    "20261123": [
-    56,
-    30,
-    29
+    141,
+    78,
+    74
    ]
   },
   "hiring03.ddolbestory.com": {
@@ -612,9 +612,9 @@
     216
    ],
    "20261123": [
-    53,
-    20,
-    18
+    167,
+    50,
+    45
    ]
   },
   "ac.ddolbestory.com": {
@@ -1479,7 +1479,9 @@
     "chatgpt.com": 1
    },
    "20261123": {
-    "(direct)": 56
+    "(direct)": 131,
+    "(not set)": 8,
+    "l.threads.com": 2
    }
   },
   "hiring03.ddolbestory.com": {
@@ -1971,7 +1973,9 @@
     "l.instagram.com": 2
    },
    "20261123": {
-    "(direct)": 53
+    "(direct)": 127,
+    "(not set)": 39,
+    "l.threads.com": 1
    }
   },
   "ac.ddolbestory.com": {
