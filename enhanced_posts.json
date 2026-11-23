@@ -22002,5 +22002,118 @@
    "language": null,
    "written": null
   }
+ },
+ "306988": {
+  "at": "2026-11-23 22:34",
+  "url": "https://hiring03.ddolbestory.com/2026/11/nps-306988.html",
+  "source": "2026년 제1차 준법감시담당자(기금운용직) 채용 공고문.pdf",
+  "parts": [
+   "crew",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "컴플라이언스 분야 1명, 국내변호사 분야 1명을 뽑아요.",
+    "columns": [
+     "컴플라이언스",
+     "국내변호사"
+    ],
+    "rows": [
+     {
+      "label": "인원",
+      "values": [
+       1,
+       1
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·연령·학력 등 제한없음",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "'26.12월중",
+     "desc": "직무적합성, 전문능력 등 평가 후 인성검사·평판조회 실시",
+     "note": "7배수 선발"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 경력검증",
+     "date": "'27.1월중",
+     "desc": "경력 증빙자료 제출 및 요구 경력 충족 여부 확인",
+     "note": "미제출 시 응시 제한"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "'27.2월중",
+     "desc": "전문능력, 직업윤리의식 등 평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "4단계 — 최종 합격자 검증",
+     "date": "'27.3월중",
+     "desc": "전력조회·신원조사·약물검사 등 검증 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-400069": {
+  "at": "2026-11-23 22:34",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-400069.html",
+  "source": "2027년 청송군 공무직근로자(단순노무원) 채용 공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "학력무관",
+    "text": "성별·학력 제한 없음(남자는 병역필 또는 면제)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 8일(화)",
+     "desc": "자기소개서30+거주기간30+실무경력40점, 가점 포함 평가",
+     "note": "7배수(21명) 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 10일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 15일(화)",
+     "desc": "정신자세·전문지식·의사발표 등 5개 요소 평가",
+     "note": "최종 3명, 예비 1명 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 17일(목)",
+     "desc": "증빙서류 검증 후 최종합격자 확정",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
