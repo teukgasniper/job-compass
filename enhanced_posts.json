@@ -22257,5 +22257,52 @@
    "language": null,
    "written": null
   }
+ },
+ "GJ-400241": {
+  "at": "2026-11-24 23:12",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-400241.html",
+  "source": "[2026-38] 전북대학교 대학회계직(무기계약직) 사무원 공개경쟁채용시험 공고.hwp",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "자격요건 서면심사 및 우대·가산요건 반영",
+     "note": "5배수 초과 시 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표(예정)",
+     "date": "12월 11일(금)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접시험",
+     "date": "12월 21일(월)",
+     "desc": "직무수행계획서·AI프롬프트 과제 기반 질의응답",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표(예정)",
+     "date": "12월 중",
+     "desc": "결격사유 조회·신체검사 후 임용"
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "토익 750점, 토플(iBT) 85점, TEPS 327점, 토익스피킹 130점, OPIc IM2 이상 중 하나 또는 한국사능력검정시험 1급이 필요해요.",
+    "highlight": "토익 750점"
+   },
+   "written": null
+  }
  }
 }
