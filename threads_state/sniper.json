@@ -5623,6 +5623,23 @@
    "comment_id": "18458062762132058",
    "at": "2026-11-25 00:41",
    "views": 470
+  },
+  {
+   "id": "WK-186268",
+   "instNm": "현대모비스",
+   "title": "AV 품질분석",
+   "combo_idx": 5,
+   "combo_v": 2,
+   "combo_cat": "monologue",
+   "hook": "📍경력직 공고인 줄 알고 넘겼는데\n현대차그룹 계열사 신입 정규직이었음",
+   "closer": "자율주행 센서 고장, 현미경 들여다보듯 잡아내는 자리임",
+   "hook_type": "plain",
+   "tier": 3,
+   "logo": true,
+   "urgent": false,
+   "thread_id": "18103644980560446",
+   "comment_id": "18112849655186926",
+   "at": "2026-11-25 06:31"
   }
  ],
  "views_refreshed_at": "2026-11-25 02:33",
