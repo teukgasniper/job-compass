@@ -22115,5 +22115,147 @@
    "language": null,
    "written": null
   }
+ },
+ "307284": {
+  "at": "2026-11-24 11:32",
+  "url": "https://hiring03.ddolbestory.com/2026/11/khnp-307284.html",
+  "source": "[2026년도 제5차 신입사원(고졸수준) 선발] 모집요강.pdf",
+  "parts": [
+   "crew",
+   "language",
+   "written",
+   "restriction",
+   "steps"
+  ],
+  "data": {
+   "crew": {
+    "summary": "고졸수준 신입사원은 기계 16명, 전기전자 24명으로 총 40명을 뽑아요.",
+    "columns": [
+     "기계",
+     "전기전자"
+    ],
+    "rows": [
+     {
+      "label": "선발인원",
+      "values": [
+       16,
+       24
+      ]
+     }
+    ],
+    "note": null
+   },
+   "edu": {
+    "label": "고졸 이상",
+    "text": "마이스터고·특성화고 2학년 재학생, 2028년 1~2월 졸업예정자만 지원 가능해요.",
+    "open": true
+   },
+   "restriction": "마이스터고 또는 원자력발전소 소재 기초자치단체 내 특성화고 2학년 재학생이 학교장 추천을 받아야만 지원할 수 있어요.",
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 1차전형",
+     "date": "1월 9일(토)",
+     "desc": "NCS 직무역량검사(70점)+영어(30점)+인재상·심리검사",
+     "note": "3배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "1차 전형 합격자 발표",
+     "date": "1월 19일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 2차전형(면접)",
+     "date": "2월 1일~4일",
+     "desc": "직업기초능력면접+직무수행능력면접+관찰면접",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "2차 전형 합격자 발표",
+     "date": "2월 19일(금)"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "2028년 2월~3월",
+     "desc": "학업성적·어학성적·이러닝·오리엔테이션·신체검사·신원조사 적부판정"
+    }
+   ],
+   "language": {
+    "title": "어학 기준",
+    "text": "1차전형에서 토익 환산점수(30점)를 반영하고, 최종전형에서는 토익 700점 이상 등 어학성적 적격 기준을 충족해야 해요.",
+    "highlight": "700점 이상"
+   },
+   "written": {
+    "summary": "필기는 NCS 직무역량검사(직업기초능력+직무수행능력)와 인재상·조직적합도검사, 심리건강진단으로 봐요. 총 80문항이에요.",
+    "highlight": "80문항",
+    "subjects": [
+     {
+      "name": "직업기초능력검사",
+      "count": "50문항",
+      "scope": "의사소통, 수리, 문제해결, 자원관리, 기술능력",
+      "note": null,
+      "ncs": true
+     },
+     {
+      "name": "직무수행능력검사",
+      "count": "30문항",
+      "scope": "선발분야별 기초전공지식(25문항), 원자력·회사·일반 상식(5문항)",
+      "note": null,
+      "ncs": true
+     }
+    ],
+    "callout": null
+   }
+  }
+ },
+ "306078": {
+  "at": "2026-11-24 11:32",
+  "url": "https://hiring03.ddolbestory.com/2026/10/redcross-306078.html",
+  "source": "무기계약직 채용공고.hwp",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "면허·자격 필수",
+    "text": "사무분야 자격증(비서·워드프로세서·컴퓨터활용능력 등) 1개 이상 소지 필수",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "필수자격증 확인, 자기소개서·자기개발실적 평가",
+     "note": null
+    },
+    {
+     "type": "notice",
+     "label": "서류심사 합격자 발표",
+     "date": "11월 12일(목)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "11월 18일(수)",
+     "desc": "신분증 및 서류전형 증빙서류 지참",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "11월 24일(화)",
+     "desc": "신체검사·신원조사 후 임용",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
