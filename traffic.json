@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25 09:04",
+ "updated": "2026-11-25 18:02",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -301,13 +301,13 @@
    ],
    "20261124": [
     1854,
-    1209,
-    1085
+    1213,
+    1073
    ],
    "20261125": [
-    283,
-    180,
-    170
+    1846,
+    1213,
+    1130
    ]
   },
   "hiring03.ddolbestory.com": {
@@ -608,13 +608,13 @@
    ],
    "20261124": [
     1508,
-    614,
-    576
+    612,
+    570
    ],
    "20261125": [
-    234,
-    87,
-    85
+    1225,
+    611,
+    595
    ]
   },
   "ac.ddolbestory.com": {
@@ -897,6 +897,11 @@
     39,
     30,
     25
+   ],
+   "20261125": [
+    7,
+    8,
+    7
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -1469,19 +1474,20 @@
     "chatgpt.com": 1
    },
    "20261124": {
-    "(direct)": 1608,
-    "(not set)": 121,
-    "l.threads.com": 85,
-    "google": 18,
+    "(direct)": 1715,
+    "l.threads.com": 87,
+    "google": 29,
     "m.search.naver.com": 13,
-    "naver": 8,
+    "naver": 9,
     "l.instagram.com": 1
    },
    "20261125": {
-    "(direct)": 276,
-    "l.threads.com": 3,
-    "google": 2,
-    "m.search.naver.com": 2
+    "(direct)": 1701,
+    "l.threads.com": 70,
+    "(not set)": 51,
+    "google": 10,
+    "m.search.naver.com": 9,
+    "naver": 5
    }
   },
   "hiring03.ddolbestory.com": {
@@ -1969,18 +1975,19 @@
     "(not set)": 1
    },
    "20261124": {
-    "(direct)": 1177,
-    "(not set)": 198,
-    "l.threads.com": 56,
-    "m.search.naver.com": 29,
-    "google": 26,
+    "(direct)": 1358,
+    "l.threads.com": 58,
+    "google": 35,
+    "m.search.naver.com": 35,
     "naver": 22
    },
    "20261125": {
-    "(direct)": 198,
-    "(not set)": 19,
-    "google": 9,
-    "m.search.naver.com": 8
+    "(direct)": 1047,
+    "(not set)": 112,
+    "l.threads.com": 27,
+    "m.search.naver.com": 18,
+    "google": 16,
+    "naver": 5
    }
   },
   "ac.ddolbestory.com": {
@@ -2285,11 +2292,14 @@
     "m.search.naver.com": 7
    },
    "20261124": {
-    "(direct)": 19,
-    "m.search.naver.com": 9,
+    "(direct)": 20,
+    "m.search.naver.com": 10,
     "google": 6,
-    "naver": 3,
-    "(not set)": 2
+    "naver": 3
+   },
+   "20261125": {
+    "(direct)": 6,
+    "google": 1
    }
   },
   "hiring01.ddolbestory.com": {
