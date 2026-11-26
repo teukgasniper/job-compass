@@ -22304,5 +22304,61 @@
    },
    "written": null
   }
+ },
+ "WK-186081": {
+  "at": "2026-11-26 12:44",
+  "url": "https://hiring03.ddolbestory.com/2026/11/hanwha-wk186081.html",
+  "source": "기업 채용 페이지 이미지 6조각 (https://www.hanwhain.com/portal/apply/recruit/detail?rtSeq=20180)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "정규 4년제 대학 학사·석사·박사 기졸업자 또는 2027년 2월 졸업예정자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "11월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 1차면접",
+     "date": "12월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 임원면접 & 인성검사",
+     "date": "12월",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — 채용검진/인턴십",
+     "date": "'27년 1~2월",
+     "desc": "인턴십 기간 풀타임 근무 가능자 대상",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "정규직 전환",
+     "date": "'27년 3월",
+     "desc": "인턴십 수료 및 최종 면접 합격 시 전환",
+     "note": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
