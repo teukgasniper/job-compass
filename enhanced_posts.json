@@ -22360,5 +22360,107 @@
    "language": null,
    "written": null
   }
+ },
+ "307189": {
+  "at": "2026-11-27 02:15",
+  "url": "https://hiring03.ddolbestory.com/2026/11/ex-307189.html",
+  "source": "2026년 한국도로공사 전문연구원(AI·데이터분석) 채용 공고문.pdf",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "학사+6년, 석사+3년 경력자 또는 박사 학위 소지자만 지원 가능해요.",
+    "open": false
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 9일~10일",
+     "desc": "전공적합성(20)+논문(30)+연구경력(10)+연구실적(10)+전문성(30)",
+     "note": "5배수 선발, 법정가점 반영"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 15일"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 조직적합도 검사(적부)",
+     "date": null,
+     "desc": "성격역량검사, 적응위험요인검사(JAT)",
+     "note": "미응시자는 면접 대상 제외"
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접전형",
+     "date": "12월 22일~23일",
+     "desc": "논문면접(발표·질의응답) + 일반면접",
+     "note": "블라인드 면접으로 진행"
+    },
+    {
+     "type": "final",
+     "title": "최종 합격자 발표",
+     "date": "1월 6일(수)",
+     "desc": "서류·논문면접·일반면접 합산 후 임용",
+     "note": "배치는 1월 중 예정"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
+ },
+ "GJ-400366": {
+  "at": "2026-11-27 02:15",
+  "url": "https://hiring03.ddolbestory.com/2026/11/gj-400366.html",
+  "source": "2026년 제5차 공무직 근로자(행정원) 채용 공고(2026-173호).pdf",
+  "parts": [
+   "language",
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": "필수 자격요건 적격여부 및 제출서류 심사",
+     "note": "채용예정인원 5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류전형 합격자 발표",
+     "date": "12월 8일(화)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 10일(목)",
+     "desc": "소통·헌신·창의·윤리 등 종합 역량 개별면접",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 15일(화)",
+     "desc": "결격사유 조회 및 채용신체검사 후 임용",
+     "note": null
+    }
+   ],
+   "language": {
+    "title": "어학 기준 (우대요건)",
+    "text": "공인 어학성적(영어) 소지자는 우대돼요. 토익 790점, 토플 PBT 567점 등 이상이면 인정돼요.",
+    "highlight": "790점"
+   },
+   "written": null
+  }
  }
 }
