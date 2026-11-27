@@ -196,7 +196,7 @@ def selling_tags(hire_type, total_count, edu_label, deadline_short, blind=True, 
     return f'<div style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px;">{tags}</div>'
 
 # ───────── 클린아이 제시 연봉 / 전형방법 ─────────
-SOURCE_NAME = {"alio": "잡알리오", "cleaneye": "클린아이", "gojobs": "나라일터", "work24": "고용24 공채속보", "work24pub": "고용24 공채속보"}
+SOURCE_NAME = {"alio": "잡알리오", "cleaneye": "클린아이", "gojobs": "나라일터", "work24": "고용24 공채속보", "work24pub": "고용24 공채속보", "work24emp": "고용24 채용정보"}
 
 
 def is_always(job):
@@ -583,6 +583,18 @@ def gojobs_contents_block(job):
             + (" (일부 — 전체 내용은 원문 공고에서 확인)" if cut else "") + "</p></div>")
 
 
+def work24emp_job_block(job):
+    """[2026-11-27] 고용24 채용정보 공고: 기관이 적은 직무내용(jobCont)을 그대로 싣는 상자 (요약·각색 없음)"""
+    raw = (job.get("jobCont") or "").strip()
+    if job.get("_source") != "work24emp" or len(raw) < 20:
+        return ""
+    return (p("고용24에 기관이 직접 적은 직무 내용이에요. 자세한 자격·근무 조건은 원문 공고에서 확인하세요.")
+            + '<div style="background:#F9FAFB; border:1px solid #E5E7EB; border-radius:12px; padding:16px 18px; margin:12px 0 20px; '
+              'font-size:15px; line-height:1.75; color:#374151; word-break:keep-all;">'
+            + _html.escape(raw)
+            + '<p style="font-size:13px; color:#6B7280; margin:12px 0 0;">출처: 고용24 채용정보</p></div>')
+
+
 def nope_text(job):
     n = job.get("recrutNope") or 0
     return f"{n}명" if n > 0 else "공고 참조"
@@ -737,6 +749,7 @@ def build_html(job, src, related=None, enh=None):
              + ([] if priv else [["대체인력 여부", "대체인력 채용" if repl else "해당 없음"]]), ["30%", "70%"])
           + ("" if priv else ncs_tags(nl))
           + gojobs_contents_block(job)               # [2026-10-19] 나라일터: 공고 원문 내용을 그대로 보여줌 (팩트 보강)
+          + work24emp_job_block(job)                 # [2026-11-27] 고용24 채용정보: 직무 내용
           + (work24_jobs_table(wk.get("jobs")) if wkd else "")
           + p("그런데 가장 중요한 건 모집 분야별 세부 인원이에요. 분야마다 뽑는 인원과 근무지가 나뉘어 있어서, 내가 지원할 분야를 먼저 골라야 해요.")
           + p("생각보다 선택지가 많아서 놀라시는 분이 많아요. 모집 분야부터 확인해보세요.")

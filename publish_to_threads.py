@@ -315,6 +315,8 @@ MIXED_TRACK_RE = re.compile(r"(보훈|장애)[^,)\]]{0,15}포함|일반\s*(경�
 def eligible(job: dict, today: dt.date) -> bool:
     if job.get("ongoingYn") != "Y":
         return False
+    if job.get("_contractBig"):                   # [2026-11-27] 대형 기간제·계약직 공고는 카드·본문만 — 쓰레드 자동발행 제외 (지침 v3.7)
+        return False
     if is_manual_id(job.get("recrutPblntSn")):    # [2026-10-16] 수동 공고는 직접 고른 공고 → 고용형태·신입·제목 필터 없이 마감만 확인
         return job.get("always") or dday(job.get("pbancEndYmd", ""), today) >= 1
     title = job.get("recrutPbancTtl") or ""

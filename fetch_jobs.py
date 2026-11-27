@@ -59,6 +59,10 @@ RELAY_TOKEN = os.environ.get("RELAY_TOKEN", "").strip()
 GOJOBS_KEY = os.environ.get("GOJOBS_API_KEY", "").strip()
 CLEANEYE_KEY = os.environ.get("CLEANEYE_API_KEY", "").strip()
 WORK24_KEY = os.environ.get("WORK24_GONGCHAE_KEY", "").strip()
+WORK24_EMPLOY_KEY = os.environ.get("WORK24_EMPLOY_KEY", "").strip()   # [2026-11-27] 고용24 채용정보(210L01, 기업회원 키) — 공공기관 자회사용
+# [2026-11-27] 대형 기간제·계약직 공고도 카드 + 본문 (코레일테크 565명·서울에너지공사 사례) — 쓰레드에는 안 나감(_contractBig)
+CONTRACT_BIG_MIN = 20
+CONTRACT_BIG_BAD_RE = re.compile(r"대체|육아휴직|출산|병가|단기|아르바이트|알바|일용|시간제|시간선택|강사|위촉|미화|청소")
 
 if not KEY and not RELAY_URL:
     sys.exit("ALIO_API_KEY 또는 RELAY_URL 이 필요합니다.")
@@ -187,14 +191,32 @@ def is_quality_post(x):
         return True
     if x.get("_source") == "cleaneye":
         return True  # 클린아이는 collect 단계에서 이미 필터됨
-    if x.get("_source") in ("work24", "work24pub"):
+    if x.get("_source") in ("work24", "work24pub", "work24emp"):
         return True  # 공채속보도 collect 단계에서 정규직 포함 공고만 남김
     ht = x.get("hireTypeNmLst") or ""
     types = [h.strip() for h in ht.split(",")]
     # [2026-10-26] 체험형 인턴도 수집 (한전 체험형 청년인턴 450명 등 조회수 높음) — 쓰레드 자동발행은 따로 제외
     if any("체험형" in t for t in types) or "체험형" in (x.get("recrutPbancTtl") or ""):
         return True
-    return any(t in ("정규직", "무기계약직") or "채용형" in t for t in types)
+    if any(t in ("정규직", "무기계약직") or "채용형" in t for t in types):
+        return True
+    return is_contract_big(x)
+
+
+def is_contract_big(x):
+    """[2026-11-27] 정규직·무기계약이 없는 기간제·비정규직 공고 중 인원 CONTRACT_BIG_MIN명 이상 (대체인력·시간제·단기 제외)
+    → 카드·본문은 만들고 쓰레드 자동발행에서는 빠지도록 _contractBig 표시"""
+    title = x.get("recrutPbancTtl") or ""
+    if x.get("replmprYn") == "Y" or CONTRACT_BIG_BAD_RE.search(title):
+        return False
+    try:
+        n = int(x.get("recrutNope") or 0)
+    except (TypeError, ValueError):
+        n = 0
+    if n < CONTRACT_BIG_MIN:
+        return False
+    x["_contractBig"] = True
+    return True
 
 
 def get_json(url, timeout):
@@ -477,7 +499,14 @@ def collect_cleaneye():
                     continue
                 # 필터 5: 고용형태 품질 (정규직·무기계약직 + 인턴)
                 type_ok = any(qt in job_type for qt in CLEANEYE_QUALITY_TYPES) or job_type == "인턴"
-                if not type_ok:
+                # [2026-11-27] 기간제·계약직이라도 CONTRACT_BIG_MIN명 이상이면 카드로 (쓰레드 제외 표시 _contractBig)
+                big_contract = False
+                if not type_ok and item.get("RE_MAN_YN") != "Y" and not CONTRACT_BIG_BAD_RE.search(title):
+                    try:
+                        big_contract = int(item.get("EMPLOY_NUM", 0) or 0) >= CONTRACT_BIG_MIN
+                    except (TypeError, ValueError):
+                        big_contract = False
+                if not type_ok and not big_contract:
                     n_excluded["quality"] += 1
                     continue
                 # 필터 6: 대체인력 제외
@@ -486,6 +515,10 @@ def collect_cleaneye():
                     continue
 
                 converted = cleaneye_to_alio_format(item)
+                if big_contract:
+                    converted["_contractBig"] = True
+                    n_excluded.setdefault("contract_big_kept", 0)
+                    n_excluded["contract_big_kept"] += 1
                 all_items.append(converted)
                 passed += 1
 
@@ -916,6 +949,176 @@ def collect_gongchae():
     return out
 
 # ─────────────────────────────────────────────────────────────
+# 4-2. [2026-11-27] 고용24 채용정보 (210L01 목록 + 210D01 상세) — 기업형태 '공공기관'(coTp=04)
+#   잡알리오·클린아이·공채속보에 안 올라오는 공공기관 자회사(인천공항에너지·KPS파트너스·코스포서비스 등) 보완
+#   기업회원 인증키 필요 (개인회원 키는 "개인회원은 사용할 수 없는 OPEN-API" 오류) → 키 없으면 건너뜀
+# ─────────────────────────────────────────────────────────────
+WORK24_EMPLOY_FAILED = False
+WE_LIST_URL = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210L01.do"
+WE_DETAIL_URL = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210D01.do"
+WE_CO_TYPES = ["04"]               # 04 공공기관
+WE_MAX_PAGES = 10                  # 100건 × 10쪽
+WE_MAX_DETAIL = 80                 # 한 번 실행에 상세 조회 최대 건수 (나머지는 직전 데이터 재사용)
+WE_EMP_OK = {"10": "정규직", "20": "기간제"}   # 10 기간의 정함이 없는 근로계약 / 20 기간제 (11·21 시간제, 4 파견, Y 대체인력 제외)
+WE_TITLE_EXCLUDE = re.compile(r"합격자|취소|연기|정정|대체|육아휴직|출산|병가|단기|아르바이트|알바|일용|시간제|시간선택|"
+                              r"미화|청소|경비원|주차|강사|위촉|실습|봉사|공익|노인일자리")
+
+
+def _we_text(el, tag):
+    v = el.findtext(tag)
+    return (v or "").strip()
+
+
+def _we_date(text):
+    """'26-11-28' / '채용시까지 26-11-28' / '20261128' → '20261128' (날짜 없으면 '')"""
+    t = text or ""
+    m = re.search(r"(20\d{2})[-./]?(\d{2})[-./]?(\d{2})", t)
+    if m:
+        return "".join(m.groups())
+    m = re.search(r"(\d{2})-(\d{2})-(\d{2})", t)
+    if m:
+        return "20" + "".join(m.groups())
+    return ""
+
+
+def _we_career(text):
+    t = text or ""
+    if "관계없음" in t or "무관" in t or ("신입" in t and "경력" in t):
+        return "신입+경력"
+    if "신입" in t:
+        return "신입"
+    if "경력" in t:
+        return "경력"
+    return ""
+
+
+def _we_edu(min_edu, max_edu=""):
+    t = (min_edu or "").strip()
+    if not t or "무관" in t or "관계없음" in t:
+        return "학력무관"
+    return t
+
+
+def fetch_we_page(co_tp, page):
+    q = urllib.parse.urlencode({"authKey": WORK24_EMPLOY_KEY, "callTp": "L", "returnType": "XML",
+                                "startPage": page, "display": 100, "coTp": co_tp})
+    try:
+        root = ET.fromstring(get_xml(f"{WE_LIST_URL}?{q}", 30))
+    except Exception as e:
+        print(f"[채용정보] {co_tp} {page}쪽 실패: {e}")
+        return 0, None
+    err = root.findtext(".//message") or root.findtext(".//error")
+    if err and not root.findall(".//wanted"):
+        print(f"[채용정보] 오류 응답: {err.strip()[:120]}")
+        return 0, None
+    try:
+        total = int(root.findtext("total") or 0)
+    except ValueError:
+        total = 0
+    return total, root.findall(".//wanted")
+
+
+def fetch_we_detail(auth_no):
+    """상세: 모집인원·경력·학력·직무내용 (필드가 없으면 빈 dict)"""
+    q = urllib.parse.urlencode({"authKey": WORK24_EMPLOY_KEY, "callTp": "D", "returnType": "XML",
+                                "wantedAuthNo": auth_no, "infoSvc": "VALIDATION"})
+    try:
+        root = ET.fromstring(get_xml(f"{WE_DETAIL_URL}?{q}", 20))
+    except Exception:
+        return {}
+    w = root.find(".//wantedInfo")
+    if w is None:
+        return {}
+    n = re.sub(r"[^0-9]", "", w.findtext("collectPsncnt") or "")
+    return {"nope": int(n) if n else 0,
+            "career": (w.findtext("enterTpNm") or "").strip(),
+            "edu": (w.findtext("eduNm") or "").strip(),
+            "job": re.sub(r"\s+", " ", (w.findtext("jobCont") or "")).strip()[:300]}
+
+
+def collect_work24_employ():
+    global WORK24_EMPLOY_FAILED
+    if not WORK24_EMPLOY_KEY:
+        print("[채용정보] WORK24_EMPLOY_KEY 없음 → 건너뜀")
+        return []
+    t0 = time.time()
+    today_str = datetime.now(timezone(timedelta(hours=9))).strftime("%Y%m%d")
+    raw = []
+    for co in WE_CO_TYPES:
+        page = 1
+        while page <= WE_MAX_PAGES:
+            total, items = fetch_we_page(co, page)
+            if items is None:
+                WORK24_EMPLOY_FAILED = True
+                break
+            raw += items
+            if len(items) < 100 or page * 100 >= total:
+                break
+            page += 1
+            time.sleep(0.4)
+    print(f"[채용정보] 목록 수집: {len(raw)}건 (기업형태 {','.join(WE_CO_TYPES)})")
+
+    n = {"마감·상시": 0, "고용형태": 0, "제목": 0, "인원": 0, "신입 불가": 0}
+    cand = []
+    for w in raw:
+        title = _we_text(w, "title")
+        emp = _we_text(w, "empTpCd")
+        end = _we_date(_we_text(w, "closeDt"))
+        if not end or end < today_str:
+            n["마감·상시"] += 1; continue
+        if emp not in WE_EMP_OK:
+            n["고용형태"] += 1; continue
+        if WE_TITLE_EXCLUDE.search(title) or any(kw in title for kw in DOCTOR_KEYWORDS) \
+                or any(kw in title for kw in EXECUTIVE_KEYWORDS):
+            n["제목"] += 1; continue
+        cand.append((w, title, emp, end))
+
+    out, detail_cnt = [], 0
+    for w, title, emp, end in cand:
+        if detail_cnt >= WE_MAX_DETAIL:
+            break
+        auth = _we_text(w, "wantedAuthNo")
+        d = fetch_we_detail(auth); detail_cnt += 1
+        time.sleep(0.3)
+        nope = d.get("nope", 0)
+        # 정규직(기간의 정함 없음)은 2명 이상, 기간제는 CONTRACT_BIG_MIN명 이상만
+        if nope < (2 if emp == "10" else CONTRACT_BIG_MIN):
+            n["인원"] += 1; continue
+        career = _we_career(d.get("career") or _we_text(w, "career"))
+        if career == "경력" and emp == "20":
+            n["신입 불가"] += 1; continue
+        region = (_we_text(w, "region") or "").split()
+        x = {
+            "recrutPblntSn": f"WE-{auth}",
+            "instNm": _we_text(w, "company"),
+            "recrutPbancTtl": title,
+            "hireTypeNmLst": WE_EMP_OK[emp],
+            "workRgnNmLst": region[0] if region else "",
+            "recrutSeNm": career,
+            "recrutNope": nope,
+            "pbancBgngYmd": _we_date(_we_text(w, "regDt")),
+            "pbancEndYmd": end,
+            "srcUrl": _we_text(w, "wantedInfoUrl") or f"https://www.work24.go.kr/wk/a/b/1500/empDetailAuthView.do?wantedAuthNo={auth}",
+            "acbgCondNmLst": _we_edu(d.get("edu") or _we_text(w, "minEdubg")),
+            "replmprYn": "N",
+            "ongoingYn": "Y",
+            "ncsCdNmLst": _we_text(w, "jobsNm") or "",
+            "bizType": "",
+            "salary": _we_text(w, "sal"),
+            "jobCont": d.get("job", ""),
+            "_source": "work24emp",
+        }
+        if emp == "20":
+            x["_contractBig"] = True
+        out.append(x)
+    print(f"[채용정보] 최종 {len(out)}건 (기간제 대형 {sum(1 for x in out if x.get('_contractBig'))}) · 상세조회 {detail_cnt}회 · {int(time.time()-t0)}초")
+    print("  제외 — " + " / ".join(f"{k}: {v}" for k, v in n.items()))
+    for x in out[:20]:
+        print(f"    - {x['instNm']} | {x['recrutPbancTtl'][:30]} | {x['hireTypeNmLst']} {x['recrutNope']}명")
+    return out
+
+
+# ─────────────────────────────────────────────────────────────
 # 5. 중복 소거 (잡알리오 1순위 → 클린아이 2순위 → 나라일터 3순위)
 # ─────────────────────────────────────────────────────────────
 def normalize_inst(name):
@@ -989,7 +1192,7 @@ def public_dup(x, merged, against=None):
     return False
 
 
-def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=()):
+def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=(), employ_items=()):
     seen = set()
     seen_items = {}   # [2026-10-14] 기관별 (접수기간·느슨한 제목) — 출처 간 같은 공고 판별용
     merged = []
@@ -1036,13 +1239,26 @@ def merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items=())
     for nm in wp_names[:20]:
         print(f"    + {nm}")
 
+    # [2026-11-27] 3-2순위: 고용24 채용정보 공공기관(자회사 등) — 위 공공 출처와 겹치면 버림
+    we_added, we_dups = 0, 0
+    for x in employ_items:
+        key = dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", ""))
+        if key in seen or same_posting(x, seen_items) or public_dup(x, merged, against=("alio", "cleaneye", "work24pub")):
+            we_dups += 1
+            continue
+        seen.add(key)
+        merged.append(x)
+        remember(x, seen_items)
+        we_added += 1
+    print(f"[병합] 고용24 채용정보 {len(employ_items)}건 → 중복 {we_dups}건 / 새 공공 카드 {we_added}건")
+
     # 4순위: 나라일터 (정보가 가장 부실 — 공공 출처 중 마지막)
     gj_added, gj_skipped = 0, 0
     for gj in gojobs_items:
         converted = gojobs_to_alio_format(gj)
         key = dedup_key(converted["instNm"], converted["recrutPbancTtl"])
         if key not in seen and not same_posting(converted, seen_items) \
-                and not public_dup(converted, merged, against=("work24pub",)):   # [2026-10-22] 공채속보 공공 카드와 겹치면 나라일터를 버림
+                and not public_dup(converted, merged, against=("work24pub", "work24emp")):   # [2026-10-22] 공채속보 공공 카드와 겹치면 나라일터를 버림
             seen.add(key)
             merged.append(converted)
             remember(converted, seen_items)
@@ -1080,7 +1296,8 @@ alio_items = collect_alio()
 cleaneye_items = collect_cleaneye()
 gojobs_items = collect_gojobs()
 gongchae_items = collect_gongchae()
-merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items)
+employ_items = collect_work24_employ()   # [2026-11-27]
+merged = merge_and_dedup(alio_items, cleaneye_items, gojobs_items, gongchae_items, employ_items)
 
 
 # [2026-10-08] 수동 공고 — 저장소의 manual_jobs.json (API에 없는 공고 직접 추가)
@@ -1158,7 +1375,7 @@ def reuse_previous(source, label, merged):
                 continue
             if dedup_key(x.get("instNm", ""), x.get("recrutPbancTtl", "")) in have_key:
                 continue
-            if source == "gojobs" and public_dup(x, merged, against=("work24pub",)):   # [2026-10-22] 공채속보 공공 카드가 우선
+            if source == "gojobs" and public_dup(x, merged, against=("work24pub", "work24emp")):   # [2026-10-22] 공채속보 공공 카드가 우선
                 continue
             reused.append(x)
         merged.extend(reused)
@@ -1174,6 +1391,8 @@ if GOJOBS_KEY and (not gojobs_items or NARA_FAILED):   # 일부 검색어만 실
 if WORK24_KEY and (GONGCHAE_FAILED or not gongchae_items):
     reuse_previous("work24", "공채속보", merged)
     reuse_previous("work24pub", "공채속보 공공", merged)   # [2026-10-22]
+if WORK24_EMPLOY_KEY and (WORK24_EMPLOY_FAILED or not employ_items):
+    reuse_previous("work24emp", "고용24 채용정보", merged)   # [2026-11-27]
 
 # ★ 알바급 제외 — 정규직·무기계약직·채용형인턴 포함 공고만 유지
 before = len(merged)

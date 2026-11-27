@@ -278,6 +278,14 @@ def slug_for(job):
             if name.startswith(k) and not name.startswith("엔에이치엔"):
                 return f"{v}-wk{seq}"
         return f"wk-{seq}"
+    # [2026-11-27] 고용24 채용정보 공고: {기관약칭}-we{번호} 또는 we-{번호}
+    if sn.startswith("WE-"):
+        seq = re.sub(r"[^0-9A-Za-z]", "", sn[3:]).lower()
+        name = clean_inst(job["instNm"])
+        for k, v in sorted(ABBR.items(), key=lambda kv: -len(kv[0])):
+            if k in name:
+                return f"{v}-we{seq}"
+        return f"we-{seq}"
     # 잡알리오 공고: 기존 로직
     name = clean_inst(job["instNm"])
     for k, v in sorted(ABBR.items(), key=lambda kv: -len(kv[0])):
@@ -419,10 +427,37 @@ def career_tier(job):
     return 0
 
 
+CONTRACT_BIG_MIN = 20          # [2026-11-27] fetch_jobs.py와 같은 값
+CONTRACT_BIG_PENALTY = 20      # 같은 단계 안에서 정규직 공고보다 조금 뒤로
+
+
+def is_contract_big(job):
+    """[2026-11-27] 대형 기간제·계약직 공고 (fetch_jobs.py가 _contractBig 표시) — 카드·본문은 발행, 쓰레드는 제외
+    예: 코레일테크 현장기간제 565명, 서울에너지공사 기간제. 의사직·임원·박사급·보훈 전용·강사·알바성은 기존 기준대로 제외"""
+    if not job.get("_contractBig") or is_gojobs(job):
+        return False
+    if int(job.get("recrutNope") or 0) < CONTRACT_BIG_MIN:
+        return False
+    title = job.get("recrutPbancTtl") or ""
+    if any(w in title for w in DOCTOR_WORDS):
+        return False
+    if NOT_NEWBIE_RE.search(title.replace("경력경쟁", "")):
+        return False
+    if PHD_ONLY_RE.search(title) and not PHD_MIXED_RE.search(title):
+        return False
+    if re.search(r"보훈(?!병원|요양원|복지|지청|교육|재활|휴양)|국가유공자|취업지원\s*대상|장애인\s*(전형|전용|제한|직원\s*채용|채용)|장애인만", title) \
+            and not MIXED_TRACK_RE.search(title):
+        return False
+    if re.search(r"강사|프로그램\s*운영자|아르바이트|단기\s*근로|대체\s*인력|육아휴직|공모\s*직위|(과|국|부|팀)장급", title):
+        return False
+    return True
+
+
 def post_eligible(job, now=None):
     """[2026-10-28] 본문 발행 대상 = 쓰레드 글감 조건 + 대형 체험형 인턴
-    [2026-11-16] + 경력만 뽑는 공고(career_eligible)"""
-    return thread_eligible(job, now) or is_big_trial_intern(job) or career_eligible(job, now)
+    [2026-11-16] + 경력만 뽑는 공고(career_eligible)
+    [2026-11-27] + 대형 기간제·계약직 공고(is_contract_big)"""
+    return thread_eligible(job, now) or is_big_trial_intern(job) or career_eligible(job, now) or is_contract_big(job)
 
 
 def score(job, now=None):
@@ -599,7 +634,8 @@ def is_urgent(job, now):
 
 def queue_score(job, now):
     return (score(job, now) + (15 if is_new(job, now) else 0) + (FAMOUS_BONUS if is_famous_private(job) else 0)
-            + (URGENT_BONUS if is_urgent(job, now) else 0))
+            + (URGENT_BONUS if is_urgent(job, now) else 0)
+            - (CONTRACT_BIG_PENALTY if job.get("_contractBig") else 0))   # [2026-11-27]
 
 
 # ───────── 실행 ─────────
