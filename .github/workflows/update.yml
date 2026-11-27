@@ -84,6 +84,7 @@ jobs:
           GOJOBS_API_KEY: ${{ secrets.GOJOBS_API_KEY }}
           CLEANEYE_API_KEY: ${{ secrets.CLEANEYE_API_KEY }}
           WORK24_GONGCHAE_KEY: ${{ secrets.WORK24_GONGCHAE_KEY }}  # 고용24 공채속보 (대기업·중견기업)
+          WORK24_EMPLOY_KEY: ${{ secrets.WORK24_EMPLOY_KEY }}      # [2026-11-27] 고용24 채용정보 (공공기관 자회사, 기업회원 키)
         run: python fetch_jobs.py
 
       - name: 상세 글 자동 발행 (hiring03)
