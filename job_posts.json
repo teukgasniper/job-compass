@@ -20116,5 +20116,55 @@
   "instNm": "강원특별자치도원주의료원",
   "slug": "job-CE-81750",
   "published": "2026-11-27 13:42"
+ },
+ "MN-KORAILTECH-01": {
+  "postId": "2422192567082448983",
+  "url": "https://hiring03.ddolbestory.com/2026/11/korailtech-mn01.html",
+  "title": "코레일테크 2027년 제1차 현장기간제 사원 채용 — 차량정비·전기·시설·경비·역/차량/건물환경 565명 | 기간제 565명, 12월 4일 마감",
+  "instNm": "코레일테크",
+  "slug": "korailtech-mn01",
+  "published": "2026-11-27 16:20",
+  "manual": "html",
+  "html_hash": "a23859f40fae"
+ },
+ "MN-IAE-01": {
+  "postId": "8019150767325615141",
+  "url": "https://hiring03.ddolbestory.com/2026/11/iae-mn01.html",
+  "title": "인천공항에너지 '26년 하반기 신입직원(일반직) 채용 — 행정·기술(기계·전기) 정규직 8명 | 정규직 8명, 12월 9일 마감",
+  "instNm": "인천공항에너지",
+  "slug": "iae-mn01",
+  "published": "2026-11-27 16:20",
+  "manual": "html",
+  "html_hash": "861cc6026a6d"
+ },
+ "MN-KOSPOSVC-01": {
+  "postId": "6272456360548918033",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kosposvc-mn01.html",
+  "title": "코스포서비스 2026년 제7차 직원 모집 — 본사 행정·경비·미화·문화센터 정규직 22명 (+기간제 4명) | 정규직 외 22명, 12월 7일 마감",
+  "instNm": "코스포서비스",
+  "slug": "kosposvc-mn01",
+  "published": "2026-11-27 16:20",
+  "manual": "html",
+  "html_hash": "90c872ba130c"
+ },
+ "MN-IMBANK-01": {
+  "postId": "5971038108805419400",
+  "url": "https://hiring03.ddolbestory.com/2026/11/imbank-mn01.html",
+  "title": "2027년 상반기 iM뱅크 체험형 장기인턴 모집 — 본부부서·영업점 6개월 | 청년인턴(체험형) 채용, 12월 2일 마감",
+  "instNm": "iM뱅크",
+  "slug": "imbank-mn01",
+  "published": "2026-11-27 16:20",
+  "manual": "html",
+  "html_hash": "f9be5d72109d"
+ },
+ "MN-KPSP-01": {
+  "postId": "4363193164007178276",
+  "url": "https://hiring03.ddolbestory.com/2026/11/kpsp-mn01.html",
+  "title": "KPS파트너스 2026년 제2차 채용형인턴 공개채용 — 행정·시설관리·미화·경비 24명 (정규직 전환) | 청년인턴(채용형) 24명, 12월 3일 마감",
+  "instNm": "KPS파트너스",
+  "slug": "kpsp-mn01",
+  "published": "2026-11-27 16:20",
+  "manual": "html",
+  "html_hash": "7827b0873fb2"
  }
 }
