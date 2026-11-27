@@ -22462,5 +22462,60 @@
    },
    "written": null
   }
+ },
+ "WK-185901": {
+  "at": "2026-11-27 10:54",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-185901.html",
+  "source": "기업 채용 페이지 이미지 8조각 (https://careers.eland.co.kr/announce/recruit/hxCUGWt3k_V4dFtqbpnG_Wze2gLj)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "대졸 이상",
+    "text": "27년 2월 학사 졸업예정자 또는 기졸업자",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류접수",
+     "date": "~11월 29일(일) 마감",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — ESAT(직무적성검사)",
+     "date": "12월 1주차 예정",
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 면접",
+     "date": "12월 2주차 예정",
+     "desc": "사전과제 포함",
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "4단계 — R·F·D(Real Field Day)",
+     "date": "12월 3주차 예정",
+     "desc": "원데이 현장 테스트로 매장에서 직접 근무해요",
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종입사",
+     "date": null,
+     "desc": "채용검진 후 최종 입사, 3개월 수습 거쳐요"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
