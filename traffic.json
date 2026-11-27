@@ -1,14 +1,9 @@
 {
- "updated": "2026-11-27 22:02",
+ "updated": "2026-11-28 08:41",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
   "hiring.ddolbestory.com": {
-   "20260928": [
-    1166,
-    684,
-    629
-   ],
    "20260929": [
     5777,
     3342,
@@ -305,17 +300,17 @@
     1112
    ],
    "20261127": [
-    1040,
-    641,
-    563
+    1786,
+    1113,
+    964
+   ],
+   "20261128": [
+    253,
+    119,
+    104
    ]
   },
   "hiring03.ddolbestory.com": {
-   "20260928": [
-    1081,
-    472,
-    453
-   ],
    "20260929": [
     4826,
     2275,
@@ -612,9 +607,14 @@
     628
    ],
    "20261127": [
-    783,
-    316,
-    292
+    1313,
+    535,
+    497
+   ],
+   "20261128": [
+    181,
+    62,
+    61
    ]
   },
   "ac.ddolbestory.com": {
@@ -909,17 +909,17 @@
     18
    ],
    "20261127": [
-    20,
-    16,
-    11
+    40,
+    25,
+    15
+   ],
+   "20261128": [
+    9,
+    3,
+    1
    ]
   },
   "hiring01.ddolbestory.com": {
-   "20260928": [
-    12,
-    12,
-    3
-   ],
    "20260929": [
     4,
     3,
@@ -979,13 +979,6 @@
  },
  "sources": {
   "hiring.ddolbestory.com": {
-   "20260928": {
-    "(direct)": 1138,
-    "l.threads.com": 17,
-    "blogger.com": 5,
-    "google": 5,
-    "claude.ai": 1
-   },
    "20260929": {
     "(direct)": 5661,
     "l.threads.com": 100,
@@ -1485,22 +1478,24 @@
     "chatgpt.com": 4
    },
    "20261127": {
-    "(direct)": 877,
-    "(not set)": 83,
-    "l.threads.com": 62,
-    "google": 12,
-    "naver": 4,
-    "blogger.com": 2
+    "(direct)": 1556,
+    "l.threads.com": 103,
+    "(not set)": 100,
+    "google": 14,
+    "naver": 6,
+    "chatgpt.com": 3,
+    "blogger.com": 2,
+    "m.search.naver.com": 2
+   },
+   "20261128": {
+    "(direct)": 219,
+    "l.threads.com": 26,
+    "(not set)": 4,
+    "google": 2,
+    "m.search.naver.com": 2
    }
   },
   "hiring03.ddolbestory.com": {
-   "20260928": {
-    "(direct)": 1059,
-    "l.threads.com": 11,
-    "google": 9,
-    "blogger.com": 1,
-    "claude.ai": 1
-   },
    "20260929": {
     "(direct)": 4727,
     "l.threads.com": 78,
@@ -1989,12 +1984,21 @@
     "chatgpt.com": 2
    },
    "20261127": {
-    "(direct)": 636,
-    "(not set)": 97,
-    "l.threads.com": 34,
+    "(direct)": 1084,
+    "(not set)": 121,
+    "l.threads.com": 59,
+    "m.search.naver.com": 23,
+    "naver": 14,
     "google": 8,
-    "naver": 7,
+    "chatgpt.com": 3,
     "threads": 1
+   },
+   "20261128": {
+    "(direct)": 148,
+    "l.threads.com": 17,
+    "(not set)": 10,
+    "google": 4,
+    "m.search.naver.com": 2
    }
   },
   "ac.ddolbestory.com": {
@@ -2318,17 +2322,18 @@
     "chatgpt.com": 1
    },
    "20261127": {
-    "(direct)": 14,
-    "google": 3,
-    "(not set)": 2,
+    "(direct)": 18,
+    "m.search.naver.com": 13,
+    "google": 5,
+    "(not set)": 3,
     "naver": 1
+   },
+   "20261128": {
+    "(not set)": 7,
+    "(direct)": 2
    }
   },
   "hiring01.ddolbestory.com": {
-   "20260928": {
-    "(direct)": 11,
-    "l.threads.com": 1
-   },
    "20260929": {
     "(direct)": 3,
     "l.threads.com": 1

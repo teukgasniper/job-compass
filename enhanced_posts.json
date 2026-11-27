@@ -22559,5 +22559,53 @@
    "language": null,
    "written": null
   }
+ },
+ "WK-184925": {
+  "at": "2026-11-28 08:41",
+  "url": "https://hiring03.ddolbestory.com/2026/11/wk-184925.html",
+  "source": "기업 채용 페이지 (https://career.osstem.com/ko/o/242486)",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": {
+    "label": "고졸 이상",
+    "text": "학력: 고등학교 졸업 이상, 경력 무관(신입 지원 가능)",
+    "open": true
+   },
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형(1&2차 통합)",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "step",
+     "title": "3단계 — 처우협의",
+     "date": null,
+     "desc": null,
+     "note": null
+    },
+    {
+     "type": "final",
+     "title": "최종합격",
+     "date": null,
+     "desc": null
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
