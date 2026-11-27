@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27 10:54",
+ "updated": "2026-11-27 22:02",
  "days": 60,
  "note": "daily[host][YYYYMMDD] = [페이지뷰, 세션, 사용자] / sources[host][날짜] = {유입경로: 페이지뷰}",
  "daily": {
@@ -301,13 +301,13 @@
    ],
    "20261126": [
     2145,
-    1278,
-    1134
+    1282,
+    1112
    ],
    "20261127": [
-    262,
-    155,
-    142
+    1040,
+    641,
+    563
    ]
   },
   "hiring03.ddolbestory.com": {
@@ -607,14 +607,14 @@
     1217
    ],
    "20261126": [
-    1557,
-    674,
+    1556,
+    675,
     628
    ],
    "20261127": [
-    266,
-    85,
-    83
+    783,
+    316,
+    292
    ]
   },
   "ac.ddolbestory.com": {
@@ -906,7 +906,12 @@
    "20261126": [
     40,
     26,
-    19
+    18
+   ],
+   "20261127": [
+    20,
+    16,
+    11
    ]
   },
   "hiring01.ddolbestory.com": {
@@ -1472,19 +1477,20 @@
     "chatgpt.com": 2
    },
    "20261126": {
-    "(direct)": 1849,
-    "l.threads.com": 145,
-    "(not set)": 109,
-    "google": 17,
-    "naver": 15,
+    "(direct)": 1949,
+    "l.threads.com": 151,
+    "google": 19,
+    "naver": 16,
     "m.search.naver.com": 6,
     "chatgpt.com": 4
    },
    "20261127": {
-    "(direct)": 231,
-    "(not set)": 21,
-    "l.threads.com": 9,
-    "naver": 1
+    "(direct)": 877,
+    "(not set)": 83,
+    "l.threads.com": 62,
+    "google": 12,
+    "naver": 4,
+    "blogger.com": 2
    }
   },
   "hiring03.ddolbestory.com": {
@@ -1975,18 +1981,20 @@
     "l.instagram.com": 1
    },
    "20261126": {
-    "(direct)": 1265,
-    "(not set)": 143,
-    "l.threads.com": 92,
-    "naver": 26,
-    "google": 22,
+    "(direct)": 1390,
+    "l.threads.com": 99,
+    "naver": 30,
+    "google": 28,
     "m.search.naver.com": 7,
     "chatgpt.com": 2
    },
    "20261127": {
-    "(direct)": 213,
-    "(not set)": 49,
-    "l.threads.com": 4
+    "(direct)": 636,
+    "(not set)": 97,
+    "l.threads.com": 34,
+    "google": 8,
+    "naver": 7,
+    "threads": 1
    }
   },
   "ac.ddolbestory.com": {
@@ -2308,6 +2316,12 @@
     "naver": 5,
     "google": 2,
     "chatgpt.com": 1
+   },
+   "20261127": {
+    "(direct)": 14,
+    "google": 3,
+    "(not set)": 2,
+    "naver": 1
    }
   },
   "hiring01.ddolbestory.com": {

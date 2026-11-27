@@ -22517,5 +22517,47 @@
    "language": null,
    "written": null
   }
+ },
+ "307281": {
+  "at": "2026-11-27 22:02",
+  "url": "https://hiring03.ddolbestory.com/2026/11/job-307281.html",
+  "source": "2026년 4분기 투표권불법관리 채용공고.hwpx",
+  "parts": [
+   "steps"
+  ],
+  "data": {
+   "crew": null,
+   "edu": null,
+   "restriction": null,
+   "steps": [
+    {
+     "type": "step",
+     "title": "1단계 — 서류전형",
+     "date": "12월 8일(화)",
+     "desc": "자기소개서 적부평가 + 직무수행계획서 정성평가(100점)",
+     "note": "5배수 선발"
+    },
+    {
+     "type": "notice",
+     "label": "서류합격자 발표",
+     "date": "12월 9일(수)"
+    },
+    {
+     "type": "step",
+     "title": "2단계 — 면접전형",
+     "date": "12월 15일(화)",
+     "desc": "직무수행능력 및 인성 등 종합평가",
+     "note": "1배수 선발"
+    },
+    {
+     "type": "final",
+     "title": "최종합격자 발표",
+     "date": "12월 22일(화)",
+     "desc": "신체검사·경력 검증 후 최종 임용"
+    }
+   ],
+   "language": null,
+   "written": null
+  }
  }
 }
